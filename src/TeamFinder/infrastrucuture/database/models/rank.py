@@ -5,7 +5,7 @@ from sqlalchemy import UUID, Column, ForeignKey, Integer, String
 from .base import Base
 
 
-class Rank(Base):
+class RankORM(Base):
     __tablename__ = "rank"
 
     rank_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)

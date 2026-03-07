@@ -6,7 +6,7 @@ from sqlalchemy import UUID, Column, DateTime, ForeignKey, Integer
 from .base import Base
 
 
-class PlayerRaiting(Base):
+class PlayerRatingORM(Base):
     __tablename__ = "player_raiting"
 
     reiting_id = Column(UUID(as_uuid=True), primary_key=True, defualt=uuid4)

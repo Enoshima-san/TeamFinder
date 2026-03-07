@@ -8,25 +8,25 @@ from ....domain.enums import UserRole
 from .base import Base
 
 
-class User(Base):
+class UserORM(Base):
     __tablename__ = "user"
 
     user_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    username = Column(String(255), unique=True, nullable=False)
+    username = Column(String(15), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     registration_date = Column(DateTime, default=datetime.now)
     last_login = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     is_active = Column(Boolean, default=True)
-    role = Column(String(255), nullable=False, default=UserRole.USER.value)
+    role = Column(String(15), nullable=False, default=UserRole.USER.value)
     has_microphone = Column(Boolean, default=False)
-    age = Column(Integer)
+    age = Column(Integer, nullable=True)
     about_me = Column(String(255))
     is_blocked = Column(Boolean, default=False)
     blocked_reason = Column(String(255))
 
-    user_games = relationship("UserGames", back_populates="user")
-    raitings = relationship("PlayerRating", back_populates="user")
-    responses = relationship("Response", back_populates="user")
-    announcements = relationship("Announcement", back_populates="user")
-    complaints = relationship("Complaints", back_populates="user")
+    user_games = relationship("UserGamesORM", back_populates="user")
+    raitings = relationship("PlayerRatingORM", back_populates="user")
+    responses = relationship("ResponseORM", back_populates="user")
+    announcements = relationship("AnnouncementORM", back_populates="user")
+    complaints = relationship("ComplaintsORM", back_populates="user")

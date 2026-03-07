@@ -8,7 +8,7 @@ from ....domain.enums import ResponseStatus
 from .base import Base
 
 
-class Response(Base):
+class ResponseORM(Base):
     __tablename__ = "response"
 
     response_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -22,4 +22,4 @@ class Response(Base):
         DateTime, nullable=False, default=datetime.now, onupdate=datetime.now
     )
 
-    complaints = relationship("Complaints", back_populates="response")
+    complaints = relationship("ComplaintsORM", back_populates="response")

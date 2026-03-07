@@ -7,7 +7,7 @@ from ....domain.enums import ComplaintStatus
 from .base import Base
 
 
-class Complaints(Base):
+class ComplaintsORM(Base):
     __tablename__ = "complaints"
 
     complaint_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)

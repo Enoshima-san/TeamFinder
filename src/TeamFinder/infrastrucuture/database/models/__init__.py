@@ -1,19 +1,19 @@
-from .announcement import Announcement
-from .complaints import Complaints
-from .game import Game
-from .player_raiting import PlayerRaiting
-from .rank import Rank
-from .response import Response
-from .user import User
-from .user_games import UserGames
+from .announcement import AnnouncementORM
+from .complaints import ComplaintsORM
+from .game import GameORM
+from .player_raiting import PlayerRatingORM
+from .rank import RankORM
+from .response import ResponseORM
+from .user import UserORM
+from .user_games import UserGamesORM
 
 __all__ = [
-    "Announcement",
-    "Complaints",
-    "Game",
-    "PlayerRaiting",
-    "Rank",
-    "Response",
-    "User",
-    "UserGames",
+    "AnnouncementORM",
+    "ComplaintsORM",
+    "GameORM",
+    "PlayerRatingORM",
+    "RankORM",
+    "ResponseORM",
+    "UserORM",
+    "UserGamesORM",
 ]
