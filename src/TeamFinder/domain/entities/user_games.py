@@ -10,8 +10,6 @@ class UserGames:
 
     preferred: bool = False
 
-    def get_preferred(self):
-        return self.preferred
-
     def set_preferred(self, preferred: bool):
+        """Устанавливает предпочтение пользователя для игры"""
         self.preferred = preferred

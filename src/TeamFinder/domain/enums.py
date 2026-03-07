@@ -9,8 +9,8 @@ class AnnouncementStatus(str, Enum):
 
 class ResponseStatus(str, Enum):
     PENDING = "рассматривается"
-    DECLINED = "отклонен"
     ACCEPTED = "принят"
+    DECLINED = "отклонен"
 
 
 class ComplaintStatus(str, Enum):
@@ -22,3 +22,9 @@ class ComplaintStatus(str, Enum):
 class UserRole(str, Enum):
     ADMIN = "admin"
     USER = "user"
+
+
+class PlayersBehavior(int, Enum):
+    MIN_RATING = 1
+    MAX_RATING = 100
+    NEUTRAL = 50

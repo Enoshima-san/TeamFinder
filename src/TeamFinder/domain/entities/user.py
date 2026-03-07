@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional
@@ -33,6 +34,22 @@ class User:
     user_announcements: List["Announcement"] = field(default_factory=list)
     user_complaints: List["Complaints"] = field(default_factory=list)
 
+    def set_username(self, username: str):
+        """Установка имени пользователя"""
+        if len(username) == 0:
+            raise ValueError("Имя пользователя не может быть пустым")
+        if len(username) < 3:
+            raise ValueError("Имя пользователя слишком короткое")
+        if len(username) > 15:
+            raise ValueError("Имя пользователя слишком длинное")
+        self.username = username
+
+    def set_about(self, about: str):
+        """Установка описания пользователя"""
+        if len(about) > 255:
+            raise ValueError("Описание пользователя слишком длинное")
+        self.about = about
+
     def go_online(self):
         """Пользователь онлайн"""
         self.is_active = True
@@ -42,7 +59,7 @@ class User:
         self.is_active = False
 
     def block(self, reason: str):
-        """Блокировка пользователя с проверкой правил"""
+        """Блокировка пользователя"""
         if self.is_blocked:
             raise ValueError("Пользователь уже заблокирован")
         if not reason:
@@ -58,10 +75,6 @@ class User:
 
         self.is_blocked = False
         self.blocked_reason = None
-
-    def can_play(self) -> bool:
-        """Может ли пользователь играть в игры"""
-        return self.is_active and not self.is_blocked
 
     def is_admin(self) -> bool:
         """Проверка роли"""
@@ -81,7 +94,7 @@ class User:
         self.user_games = [ug for ug in self.user_games if ug.game_id != game_id]
 
     @staticmethod
-    def create_new(
+    def create(
         email: str,
         username: str,
         password_hash: str,
@@ -94,11 +107,17 @@ class User:
         is_active: bool = True,
         is_blocked: bool = False,
     ) -> "User":
-        """Фабричный метод для создания нового пользователя"""
-        if not email or "@" not in email:
+        if (
+            not email
+            or "@"
+            or len(email) > 255
+            or not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email)
+        ):
             raise ValueError("Некорректный email")
         if len(username) < 3:
             raise ValueError("Имя пользователя слишком короткое")
+        if len(username) > 15:
+            raise ValueError("Имя пользователя слишком длинное")
 
         return User(
             email=email,
@@ -110,4 +129,6 @@ class User:
             is_active=is_active,
             is_blocked=is_blocked,
             blocked_reason=blocked_reason,
+            registration_date=registration_date,
+            last_login=last_login,
         )
