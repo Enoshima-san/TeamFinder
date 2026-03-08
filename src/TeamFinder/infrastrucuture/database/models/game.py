@@ -16,3 +16,4 @@ class GameORM(Base):
     user_games = relationship("UserGamesORM", back_populates="game")
     announcements = relationship("AnnouncementORM", back_populates="game")
     ranks = relationship("RankORM", back_populates="game")
+    ratings = relationship("PlayerRating")
