@@ -7,15 +7,26 @@ requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.18.4",
     "asyncpg>=0.31.0",
-    "bcrypt>=5.0.0",
     "fastapi>=0.135.1",
     "httpx>=0.28.1",
+    "passlib>=1.7.4",
     "pydantic-settings>=2.13.1",
     "pyjwt>=2.11.0",
     "pytest>=9.0.2", # Unit-тесты
+    "python-jose>=3.5.0",
+    "python-multipart>=0.0.22",
     "redis>=7.2.1",
     "sqlalchemy>=2.0.48",
     "uvicorn>=0.41.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --strict-markers"
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration"
 ]
 
 [tool.setuptools.packages.find]
