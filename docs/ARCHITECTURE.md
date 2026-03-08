@@ -30,24 +30,19 @@ TeamFinder/
         │
         ├── application/          # Application Layer (Use Cases/Services)
         │   ├── __init__.py
-        │   ├── services/         # Оркестраторы (работа с БД и API, в общем - наша бизнес-логики)
+        │   ├── services/         # Оркестраторы (не прямая работа с БД и API, в общем - наша бизнес-логики)
         │   ├── use_cases/        # Конкретные сценарии (опционально)
         │   └── interfaces/       # Абстракции репозиториев (Protocol)
         │
         ├── core/                 #  Core (Config, Constants, Base Classes)
         │   ├── settings.py       # Pydantic Settings (все конфиги в Singleton-классе)
         │   ├── config/           # Разделённые конфиги 
-        │   ├── exceptions.py     # Базовые исключения приложения (опционально, запарно как будто)
-        │   ├── constants.py      # Константы, Enum общего назначения (опционально)
         │   ├── security.py       # JWT, password hashing (JWT под вопросом, хэширование делаем)
         │   └── logging.py        # Конфигурация логгера
         │
         ├── domain/               # Domain Layer (Business Logic)
         │   ├── entities/         # Чистые бизнес-объекты
-        │   ├── value_objects/    # Неизменяемые объекты
-        │   ├── repositories/     # Абстрактные интерфейсы 
-        │   ├── services/         # Доменная логика (для логики с сущностями)
-        │   └── events/           # Доменные события
+        │   └── repositories/     # Абстрактные интерфейсы 
         │
         └── infrastructure/       # Infrastructure Layer (External Adapters) <- реализуют технические детали для Application/Domain слоев
             ├── database/
@@ -67,10 +62,6 @@ TeamFinder/
             │   ├── jwt.py        # JWT token generation/validation (мб Редиса хватит хз)
             │   └── oauth/        # OAuth провайдеры (Steam, Discord, VK)
             │
-            ├── graphql/          # GraphQL (если будет)
-            │   ├── schema.py
-            │   ├── types.py
-            │   └── resolvers/
             │
             └── external/         # Сторонние API (Discord, Steam, VK)
 ```
