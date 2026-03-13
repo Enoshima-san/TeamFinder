@@ -1,5 +1,9 @@
+```python
+# Import necessary mappers
 from .player_rating import PlayerRatingMapper
 from .user import UserMapper
 from .user_games import UserGamesMapper
 
-__all__ = ["PlayerRatingMapper", "UserGamesMapper", "UserMapper"]
+# Define the list of modules to be exported
+__all__ = ["PlayerRatingMapper", "UserMapper", "UserGamesMapper"]
+```
