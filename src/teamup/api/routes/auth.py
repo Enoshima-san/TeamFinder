@@ -9,7 +9,7 @@ auth_router = APIRouter()
 
 
 @auth_router.post(
-    "/register", response_model=TokenPair, status_code=status.HTTP_201_CREATED
+    "/registration", response_model=TokenPair, status_code=status.HTTP_201_CREATED
 )
 async def register(
     req: RegisterRequest, auth_service: IAuthService = Depends(get_auth_service)
