@@ -1,47 +1,64 @@
+```python
 from uuid import UUID
+from typing import Optional
 
 from src.teamup.application import IAuthService, IUserRepository
 from src.teamup.core import logger
 from src.teamup.domain import User
-from src.teamup.schemas import LoginRequest, RegisterRequest, TokenData, TokenPair
+from src.teamup.schemas import (
+    LoginRequest,
+    RegisterRequest,
+    TokenData,
+    TokenPair,
+)
 
 from ..security import JWTHandler, PasswordHasher
 
 
 class AuthService(IAuthService):
     """
-    Класс авторизации пользователя, отвечающий за формирование JWT
-    и внесение в базу новых пользователей.\n\n
-    returns:
-        `TokenPair` - объект-обёртка с данными для JWT
+    Service class responsible for user authentication and token management.
     """
 
     def __init__(self, user_repository: IUserRepository):
-        logger.info("Инициализация AuthService")
+        """
+        Initializes the AuthService instance.
+
+        Args:
+            user_repository (IUserRepository): User repository instance.
+        """
+        logger.info("Initializing AuthService")
         self.user_repository = user_repository
 
-    async def register(self, req: RegisterRequest) -> TokenPair | None:
+    async def register_user(
+        self, register_request: RegisterRequest
+    ) -> Optional[TokenPair]:
         """
-        Регистрация пользователя с автоматическим входом в систему.\n
-        При попытке ввести существующие данные базе, возвращает `None`.
-        """
-        if len(req.password.encode("utf-8")) > 72:
-            raise ValueError("Пароль не должен превышать 72 байта")
+        Registers a new user with automatic login.
 
-        if await self.user_repository.check_new_user(req.email, req.username):
-            logger.info("Пользователь с таким email или username уже существует")
+        Args:
+            register_request (RegisterRequest): User registration request.
+
+        Returns:
+            TokenPair: Token pair for the newly created user or None if user already exists.
+        """
+        if len(register_request.password.encode("utf-8")) > 72:
+            raise ValueError("Password should not exceed 72 bytes")
+
+        if await self.user_repository.check_new_user(register_request.email, register_request.username):
+            logger.info("User with this email or username already exists")
             return None
 
-        password_hash = PasswordHasher.hash(req.password)
+        password_hash = PasswordHasher.hash(register_request.password)
         created_user = User(
-            email=req.email,
-            username=req.username,
+            email=register_request.email,
+            username=register_request.username,
             password_hash=password_hash,
         )
 
         created_user = await self.user_repository.create(created_user)
         if not created_user:
-            logger.error("Не удалось создать пользователя")
+            logger.error("Failed to create user")
             return None
 
         token_data = JWTHandler.get_token_data(
@@ -53,16 +70,21 @@ class AuthService(IAuthService):
             refresh_token=JWTHandler.create_refresh_token(token_data),
         )
 
-    async def login(self, req: LoginRequest) -> TokenPair | None:
+    async def login_user(self, login_request: LoginRequest) -> Optional[TokenPair]:
         """
-        Вход в систему существующих пользователей.\n
-        При отсутствии совпададений вернёт `None`.
+        Logs in an existing user.
+
+        Args:
+            login_request (LoginRequest): User login request.
+
+        Returns:
+            TokenPair: Token pair for the logged-in user or None if login credentials are invalid.
         """
         login_user = None
-        if "@" in req.login:
-            login_user = await self.user_repository.get_by_email(req.login)
+        if "@" in login_request.login:
+            login_user = await self.user_repository.get_by_email(login_request.login)
         else:
-            login_user = await self.user_repository.get_by_username(req.login)
+            login_user = await self.user_repository.get_by_username(login_request.login)
 
         if not login_user:
             return None
@@ -76,12 +98,17 @@ class AuthService(IAuthService):
             refresh_token=JWTHandler.create_refresh_token(token_data),
         )
 
-    async def refresh_tokens(self, token: str) -> TokenPair | None:
+    async def refresh_tokens(self, refresh_token: str) -> Optional[TokenPair]:
         """
-        Обновление пары токенов по `refresh_token`.\n
-        Вернёт новую пару или `None`
+        Refreshes the token pair using the refresh token.
+
+        Args:
+            refresh_token (str): Refresh token to use for refreshing.
+
+        Returns:
+            TokenPair: New token pair or None if refresh token is invalid.
         """
-        payload = JWTHandler.verify_token(token, "refresh")
+        payload = JWTHandler.verify_token(refresh_token, "refresh")
         if not payload:
             return None
 
@@ -96,10 +123,15 @@ class AuthService(IAuthService):
             refresh_token=JWTHandler.create_refresh_token(token_data),
         )
 
-    async def verify_access_token(self, token: str) -> TokenData | None:
+    async def verify_access_token(self, token: str) -> Optional[TokenData]:
         """
-        Извдекает и проверяет токен из заголовка.
-        Автоматически вызывается из-за `Depends()`
+        Verifies and extracts the token from the request headers.
+
+        Args:
+            token (str): Access token to verify.
+
+        Returns:
+            TokenData: Token data or None if token is invalid.
         """
         payload = JWTHandler.verify_token(token, "access")
         if not payload:
@@ -109,3 +141,4 @@ class AuthService(IAuthService):
             username=payload["username"],
             role=payload["role"],
         )
+```
