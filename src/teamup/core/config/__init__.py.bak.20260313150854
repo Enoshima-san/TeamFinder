@@ -1,13 +1,9 @@
-```python
-# Import application settings, database settings, and Redis settings
 from .application import ApplicationSettings
 from .database import DatabaseSettings
 from .redis import RedisSettings
 
-# Define the list of modules to be exported
 __all__ = [
     "ApplicationSettings",
     "DatabaseSettings",
     "RedisSettings",
 ]
-```
