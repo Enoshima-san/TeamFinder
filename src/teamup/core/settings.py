@@ -1,5 +1,5 @@
+```python
 from functools import lru_cache
-
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
@@ -9,20 +9,28 @@ from .config.redis import RedisSettings
 from .config.security import SecuritySettings
 
 
-class Settings(BaseSettings):
+class BaseSettings(BaseSettings):
     """
-    Базовый класс настроек, который отвечает инкапсулирование секретов
+    Base class for application settings, encapsulating sensitive information.
     """
 
-    db: DatabaseSettings = Field(default_factory=DatabaseSettings)  # type: ignore[reportArgumentType]
-    redis: RedisSettings = Field(default_factory=RedisSettings)  # type: ignore[reportArgumentType]
-    application: ApplicationSettings = Field(default_factory=ApplicationSettings)  # type: ignore[reportArgumentType]
-    security: SecuritySettings = Field(default_factory=SecuritySettings)  # type: ignore[reportArgumentType]
+    db: DatabaseSettings = Field(default_factory=DatabaseSettings)
+    redis: RedisSettings = Field(default_factory=RedisSettings)
+    application: ApplicationSettings = Field(default_factory=ApplicationSettings)
+    security: SecuritySettings = Field(default_factory=SecuritySettings)
 
 
 @lru_cache()
-def get_settings() -> Settings:
-    return Settings()
+def get_application_settings() -> BaseSettings:
+    """
+    Returns the application settings instance, cached for performance.
+
+    Returns:
+        BaseSettings: The application settings instance.
+    """
+    return BaseSettings()
 
 
-settings = get_settings()
+# Get the application settings instance
+application_settings = get_application_settings()
+```
