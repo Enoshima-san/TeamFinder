@@ -1,12 +1,3 @@
-```python
-"""
-Module containing database models for the application.
-
-This module imports and exports various ORM (Object-Relational Mapping) models
-used to interact with the database. Each model represents a specific entity
-in the application, such as users, games, announcements, and more.
-"""
-
 from .announcement import AnnouncementORM
 from .base import Base
 from .complaints import ComplaintsORM
@@ -28,4 +19,3 @@ __all__ = [
     "UserGamesORM",
     "Base",
 ]
-```
