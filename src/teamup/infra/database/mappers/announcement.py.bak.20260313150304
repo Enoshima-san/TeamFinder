@@ -1,35 +1,18 @@
-```python
 from src.teamup.domain import Announcement
+
 from ..models import AnnouncementORM
 from .complaints import ComplaintsMapper
 from .response import ResponseMapper
 
 
 class AnnouncementMapper:
-    """
-    Mapper for converting between Announcement domain objects and AnnouncementORM models.
-    """
-
     @staticmethod
     def to_domain(orm: AnnouncementORM | None) -> Announcement:
-        """
-        Converts an AnnouncementORM model to a domain Announcement object.
-
-        Args:
-            orm: The AnnouncementORM model to convert.
-
-        Returns:
-            The converted Announcement domain object.
-
-        Raises:
-            ValueError: If the orm object is None.
-        """
         if not orm:
             raise ValueError("ORM object is None")
 
-        # Map complaints and responses to their respective domain objects
-        complaints = ComplaintsMapper.to_domain(orm.complaints) if orm.complaints else []
-        responses = ResponseMapper.to_domain(orm.responses) if orm.responses else []
+        complaints = [ComplaintsMapper.to_domain(c) for c in orm.complaints]
+        responses = [ResponseMapper.to_domain(r) for r in orm.responses]
 
         return Announcement(
             announcement_id=orm.announcement_id,  # type: ignore[reportArgumentType]
@@ -48,18 +31,6 @@ class AnnouncementMapper:
 
     @staticmethod
     def to_orm(entity: Announcement | None) -> AnnouncementORM:
-        """
-        Converts an Announcement domain object to an AnnouncementORM model.
-
-        Args:
-            entity: The Announcement domain object to convert.
-
-        Returns:
-            The converted AnnouncementORM model.
-
-        Raises:
-            ValueError: If the entity object is None.
-        """
         if not entity:
             raise ValueError("Entity is None")
 
@@ -75,4 +46,3 @@ class AnnouncementMapper:
             created_at=entity.created_at,
             updated_at=entity.updated_at,
         )
-```
