@@ -1,32 +1,16 @@
-```python
 from src.teamup.domain import Response
+
 from ..models import ResponseORM
 from .complaints import ComplaintsMapper
 
+
 class ResponseMapper:
-    """
-    Mapper class for converting between Response domain objects and ResponseORM database objects.
-    """
-
     @staticmethod
-    def to_domain(orm: ResponseORM | None) -> Response:
-        """
-        Maps a ResponseORM object to a Response domain object.
-
-        Args:
-            orm: The ResponseORM object to map.
-
-        Returns:
-            The mapped Response domain object.
-
-        Raises:
-            ValueError: If the orm object is None.
-        """
+    def to_domain(orm: ResponseORM | None):
         if not orm:
             raise ValueError("ORM object is None")
 
-        # Map complaints from ORM to domain
-        complaints = ComplaintsMapper.to_domain(orm.complaints) if orm.complaints else []
+        complaints = [ComplaintsMapper.to_domain(c) for c in orm.complaints]
 
         return Response(
             response_id=orm.response_id,  # type: ignore[reportArgumentType]
@@ -40,18 +24,6 @@ class ResponseMapper:
 
     @staticmethod
     def to_orm(entity: Response | None) -> ResponseORM:
-        """
-        Maps a Response domain object to a ResponseORM database object.
-
-        Args:
-            entity: The Response domain object to map.
-
-        Returns:
-            The mapped ResponseORM database object.
-
-        Raises:
-            ValueError: If the entity object is None.
-        """
         if not entity:
             raise ValueError("Entity is None")
 
@@ -63,4 +35,3 @@ class ResponseMapper:
             created_at=entity.created_at,
             updated_at=entity.updated_at,
         )
-```
