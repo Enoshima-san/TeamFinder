@@ -1,4 +1,3 @@
-```python
 from datetime import datetime
 from uuid import uuid4
 
@@ -9,48 +8,19 @@ from .base import Base
 
 
 class PlayerRatingORM(Base):
-    """
-    Represents a player's rating in a game.
-
-    Attributes:
-        rating_id (UUID): Unique identifier for the rating.
-        game_id (UUID): Foreign key referencing the game.
-        user_id (UUID): Foreign key referencing the user.
-        response_id (UUID): Foreign key referencing the response.
-        rating_value (int): The player's rating value.
-        created_at (datetime): Timestamp when the rating was created.
-    """
-
     __tablename__ = "player_rating"
 
-    # Unique identifier for the rating
     rating_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-
-    # Foreign key referencing the game
     game_id = Column(UUID(as_uuid=True), ForeignKey("game.game_id"), nullable=False)
-
-    # Foreign key referencing the user
     user_id = Column(UUID(as_uuid=True), ForeignKey("user.user_id"), nullable=False)
-
-    # Foreign key referencing the response
     response_id = Column(
         UUID(as_uuid=True),
         ForeignKey("response.response_id"),
         nullable=False,
     )
-
-    # The player's rating value
     rating_value = Column(Integer, nullable=False, default=0)
-
-    # Timestamp when the rating was created
     created_at = Column(DateTime, nullable=False, default=datetime.now)
 
-    # Relationship with the User model
     user = relationship("UserORM", back_populates="player_rating")
-
-    # Relationship with the Game model
     game = relationship("GameORM", back_populates="player_rating")
-
-    # Relationship with the Response model
     response = relationship("ResponseORM", back_populates="player_rating")
-```
