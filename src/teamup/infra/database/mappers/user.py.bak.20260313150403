@@ -1,5 +1,5 @@
-```python
 from typing import Any, Callable, TypeVar, cast
+
 from sqlalchemy.inspection import inspect
 
 from src.teamup.domain import User
@@ -18,18 +18,10 @@ def _safe_map_relation(
     orm: Any, relation_name: str, mapper: Callable[[Any], T]
 ) -> list[T]:
     """
-    Safely maps a relation: if not loaded, returns an empty list.
-
-    Args:
-        orm: The ORM object to inspect.
-        relation_name: The name of the relation to map.
-        mapper: A function to map each item in the relation.
-
-    Returns:
-        A list of mapped items or an empty list if the relation is not loaded.
+    Безопасно маппит отношение: если не загружено — возвращает пустой список.
     """
     try:
-        # Check if the relation is loaded using SQLAlchemy inspection API
+        # Проверяем, загружено ли отношение через SQLAlchemy inspection API
         insp = inspect(orm)
         if relation_name in insp.unloaded:
             return []
@@ -37,29 +29,13 @@ def _safe_map_relation(
         data = getattr(orm, relation_name)
         return [mapper(item) for item in (data or [])]
     except Exception:
-        # Any error (e.g., accessing an unloaded relation) returns an empty list
+        # Любая ошибка (например, доступ к незагруженному отношению) → пустой список
         return []
 
 
 class UserMapper:
-    """
-    A mapper for User entities.
-    """
-
     @staticmethod
     def to_domain(orm: UserORM | None) -> User:
-        """
-        Maps a User ORM object to a Domain User object.
-
-        Args:
-            orm: The User ORM object to map.
-
-        Returns:
-            A Domain User object.
-
-        Raises:
-            ValueError: If the ORM object is None.
-        """
         if not orm:
             raise ValueError("ORM object is None")
 
@@ -97,18 +73,6 @@ class UserMapper:
 
     @staticmethod
     def to_orm(entity: User | None) -> UserORM:
-        """
-        Maps a Domain User object to a User ORM object.
-
-        Args:
-            entity: The Domain User object to map.
-
-        Returns:
-            A User ORM object.
-
-        Raises:
-            ValueError: If the entity is None.
-        """
         if not entity:
             raise ValueError("Entity is None")
 
@@ -125,6 +89,5 @@ class UserMapper:
             is_active=entity.is_active,
             role=entity.role,
             is_blocked=entity.is_blocked,
-            # ← Relations are not mapped here, they are managed through session.add()/relationships
+            # ← Отношения не маппим здесь — они управляются через session.add()/relationships
         )
-```
