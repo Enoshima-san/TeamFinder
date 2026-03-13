@@ -1,3 +1,7 @@
+"""
+Module for authentication services and utilities.
+"""
+
 from .jwt import get_current_user
 from .repositories import get_user_repository
 from .services import get_auth_service
