@@ -1,4 +1,3 @@
-```python
 from datetime import datetime
 from uuid import uuid4
 
@@ -11,25 +10,6 @@ from .base import Base
 
 
 class UserORM(Base):
-    """
-    Represents a user in the database.
-
-    Attributes:
-        user_id (UUID): Unique identifier for the user.
-        username (str): The user's username.
-        email (str): The user's email address.
-        password_hash (str): The hashed password for the user.
-        registration_date (datetime): The date the user registered.
-        last_login (datetime): The date and time of the user's last login.
-        is_active (bool): Whether the user's account is active.
-        role (str): The user's role.
-        has_microphone (bool): Whether the user has a microphone.
-        age (int): The user's age.
-        about_me (str): A short bio about the user.
-        is_blocked (bool): Whether the user's account is blocked.
-        blocked_reason (str): The reason for blocking the user's account.
-    """
-
     __tablename__ = "user"
 
     user_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -46,10 +26,8 @@ class UserORM(Base):
     is_blocked = Column(Boolean, default=False)
     blocked_reason = Column(String(255))
 
-    # Relationships with other tables
     user_games = relationship("UserGamesORM", back_populates="user")
     player_rating = relationship("PlayerRatingORM", back_populates="user")
     response = relationship("ResponseORM", back_populates="user")
     announcement = relationship("AnnouncementORM", back_populates="user")
     complaints = relationship("ComplaintsORM", back_populates="user")
-```
