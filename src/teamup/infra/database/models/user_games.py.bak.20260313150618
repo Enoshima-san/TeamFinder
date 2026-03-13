@@ -1,22 +1,12 @@
-```python
 from uuid import uuid4
+
 from sqlalchemy import UUID, Boolean, Column, ForeignKey
 from sqlalchemy.orm import relationship
 
 from .base import Base
 
 
-class UserGameORM(Base):
-    """
-    Represents a many-to-many relationship between users and games.
-    
-    Attributes:
-        user_game_id (UUID): Unique identifier for the user-game association.
-        game_id (UUID): Foreign key referencing the GameORM model.
-        user_id (UUID): Foreign key referencing the UserORM model.
-        preferred (bool): Flag indicating whether the user prefers the game.
-    """
-
+class UserGamesORM(Base):
     __tablename__ = "user_games"
 
     user_game_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -26,4 +16,3 @@ class UserGameORM(Base):
 
     user = relationship("UserORM", back_populates="user_games")
     game = relationship("GameORM", back_populates="user_games")
-```
