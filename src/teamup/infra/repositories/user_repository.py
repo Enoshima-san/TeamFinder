@@ -152,18 +152,18 @@ class UserRepository(IUserRepository):
             logger.warning(f"Пользователь с id {user.user_id} не найден")
             return None
 
-        orm_user.username = user.username  # type: ignore[reportAttributeAccessIssue]
-        orm_user.email = user.email  # type: ignore[reportAttributeAccessIssue]
-        orm_user.password_hash = user.password_hash  # type: ignore[reportAttributeAccessIssue]
-        orm_user.registration_date = user.registration_date  # type: ignore[reportAttributeAccessIssue]
-        orm_user.last_login = user.last_login  # type: ignore[reportAttributeAccessIssue]
-        orm_user.is_active = user.is_active  # type: ignore[reportAttributeAccessIssue]
-        orm_user.role = user.role  # type: ignore[reportAttributeAccessIssue]
-        orm_user.has_microphone = user.has_microphone  # type: ignore[reportAttributeAccessIssue]
-        orm_user.age = user.age  # type: ignore[reportAttributeAccessIssue]
-        orm_user.about_me = user.about_me  # type: ignore[reportAttributeAccessIssue]
-        orm_user.is_blocked = user.is_blocked  # type: ignore[reportAttributeAccessIssue]
-        orm_user.blocked_reason = user.blocked_reason  # type: ignore[reportAttributeAccessIssue]
+        orm_user.username = user.username
+        orm_user.email = user.email
+        orm_user.password_hash = user.password_hash
+        orm_user.registration_date = user.registration_date
+        orm_user.last_login = user.last_login
+        orm_user.is_active = user.is_active
+        orm_user.role = user.role
+        orm_user.has_microphone = user.has_microphone
+        orm_user.age = user.age
+        orm_user.about_me = user.about_me
+        orm_user.is_blocked = user.is_blocked
+        orm_user.blocked_reason = user.blocked_reason
 
         await self.session.commit()
         await self.session.refresh(orm_user)

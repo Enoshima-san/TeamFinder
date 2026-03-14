@@ -1,6 +1,11 @@
+from datetime import datetime
+from typing import cast
+from uuid import UUID
+
 from src.teamup.domain import Response
 
 from ..models import ResponseORM
+from ._map_relation import _map_relation
 from .complaints import ComplaintsMapper
 
 
@@ -10,15 +15,15 @@ class ResponseMapper:
         if not orm:
             raise ValueError("ORM object is None")
 
-        complaints = [ComplaintsMapper.to_domain(c) for c in orm.complaints]
+        complaints = _map_relation(orm, "complaints", ComplaintsMapper.to_domain)
 
         return Response(
-            response_id=orm.response_id,  # type: ignore[reportArgumentType]
-            announcement_id=orm.announcement_id,  # type: ignore[reportArgumentType]
-            user_id=orm.user_id,  # type: ignore[reportArgumentType]
-            status=orm.status,  # type: ignore[reportArgumentType]
-            created_at=orm.created_at,  # type: ignore[reportArgumentType]
-            updated_at=orm.updated_at,  # type: ignore[reportArgumentType]
+            response_id=cast(UUID, orm.response_id),
+            announcement_id=cast(UUID, orm.announcement_id),
+            user_id=cast(UUID, orm.user_id),
+            status=cast(str, orm.status),
+            created_at=cast(datetime, orm.created_at),
+            updated_at=cast(datetime, orm.updated_at),
             complaints=complaints,
         )
 

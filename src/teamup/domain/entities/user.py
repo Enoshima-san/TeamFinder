@@ -30,9 +30,9 @@ class User:
     blocked_reason: Optional[str] = None
 
     user_games: List["UserGames"] = field(default_factory=list)
-    user_ratings: List["PlayerRating"] = field(default_factory=list)
-    user_responses: List["Response"] = field(default_factory=list)
-    user_announcements: List["Announcement"] = field(default_factory=list)
+    user_rating: List["PlayerRating"] = field(default_factory=list)
+    user_response: List["Response"] = field(default_factory=list)
+    user_announcement: List["Announcement"] = field(default_factory=list)
     user_complaints: List["Complaints"] = field(default_factory=list)
 
     def set_username(self, username: str):

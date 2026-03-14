@@ -22,7 +22,7 @@ class Announcement:
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
 
-    responses: List["Response"] = field(default_factory=list)
+    response: List["Response"] = field(default_factory=list)
     complaints: List["Complaints"] = field(default_factory=list)
 
     def start(self):

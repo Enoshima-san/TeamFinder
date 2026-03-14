@@ -11,13 +11,13 @@ from .user_games import UserGames
 @dataclass
 class Game:
     game_name: str
-    icon: bytes
+    game_icon: bytes
     game_id: UUID = field(default_factory=uuid4)
 
-    announcements: List["Announcement"] = field(default_factory=list)
-    ranks: List["Rank"] = field(default_factory=list)
+    announcement: List["Announcement"] = field(default_factory=list)
+    rank: List["Rank"] = field(default_factory=list)
     user_games: List["UserGames"] = field(default_factory=list)
-    player_ratings: List["PlayerRating"] = field(default_factory=list)
+    player_rating: List["PlayerRating"] = field(default_factory=list)
 
     def set_game_name(self, game_name: str):
         """Устанавливает название игры"""
@@ -31,7 +31,7 @@ class Game:
         """Устанавливает логотип игры"""
         if not icon:
             raise ValueError("Логотип игры не может быть пустой")
-        self.icon = icon
+        self.game_icon = icon
 
     @staticmethod
     def create(
@@ -44,4 +44,4 @@ class Game:
             raise ValueError("Название игры не может быть больше 50 символов")
         if not icon:
             raise ValueError("Логотип игры не может быть пустой")
-        return Game(game_name=game_name, icon=icon)
+        return Game(game_name=game_name, game_icon=icon)

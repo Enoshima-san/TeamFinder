@@ -1,7 +1,11 @@
+from typing import cast
+from uuid import UUID
+
 from domain import Game
 from rank import RankMapper
 
 from ..models import GameORM
+from ._map_relation import _map_relation
 from .announcement import AnnouncementMapper
 from .player_rating import PlayerRatingMapper
 from .user_games import UserGamesMapper
@@ -13,18 +17,21 @@ class GameMapper:
         if not orm:
             raise ValueError("ORM object is None")
 
-        user_games = [UserGamesMapper.to_domain(ug) for ug in orm.user_games]
-        announcements = [AnnouncementMapper.to_domain(a) for a in orm.announcements]
-        ranks = [RankMapper.to_domain(r) for r in orm.ranks]
-        player_ratings = [PlayerRatingMapper.to_domain(pr) for pr in orm.ratings]
+        user_games = _map_relation(orm, "user_games", UserGamesMapper.to_domain)
+        announcement = _map_relation(orm, "announcement", AnnouncementMapper.to_domain)
+        rank = _map_relation(orm, "rank", RankMapper.to_domain)
+        player_rating = _map_relation(
+            orm, "player_rating", PlayerRatingMapper.to_domain
+        )
 
         return Game(
-            game_name=orm.game_name,  # type: ignore[reportAttributeAccessIssue]
-            icon=orm.icon,  # type: ignore[reportAttributeAccessIssue]
+            game_id=cast(UUID, orm.game_id),
+            game_name=cast(str, orm.game_name),
+            game_icon=cast(bytes, orm.game_icon),
             user_games=user_games,
-            announcements=announcements,
-            ranks=ranks,
-            player_ratings=player_ratings,
+            announcement=announcement,
+            rank=rank,
+            player_rating=player_rating,
         )
 
     @staticmethod
@@ -33,6 +40,7 @@ class GameMapper:
             raise ValueError("Entity is None")
 
         return GameORM(
+            game_id=entity.game_id,
             game_name=entity.game_name,
-            icon=entity.icon,
+            game_icon=entity.game_icon,
         )

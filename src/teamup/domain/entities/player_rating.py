@@ -10,7 +10,7 @@ class PlayerRating:
     user_id: UUID
     game_id: UUID
     response_id: UUID
-    raiting_id: UUID = field(default_factory=uuid4)
+    rating_id: UUID = field(default_factory=uuid4)
 
     rating_value: int = PlayersBehavior.MAX_RATING.value
     created_at: datetime = field(default_factory=datetime.now)

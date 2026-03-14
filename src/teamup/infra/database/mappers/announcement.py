@@ -1,6 +1,11 @@
+from datetime import datetime
+from typing import Any, cast
+from uuid import UUID
+
 from src.teamup.domain import Announcement
 
 from ..models import AnnouncementORM
+from ._map_relation import _map_relation
 from .complaints import ComplaintsMapper
 from .response import ResponseMapper
 
@@ -11,21 +16,21 @@ class AnnouncementMapper:
         if not orm:
             raise ValueError("ORM object is None")
 
-        complaints = [ComplaintsMapper.to_domain(c) for c in orm.complaints]
-        responses = [ResponseMapper.to_domain(r) for r in orm.responses]
+        complaints = _map_relation(orm, "complaints", ComplaintsMapper.to_domain)
+        responses = _map_relation(orm, "response", ResponseMapper.to_domain)
 
         return Announcement(
-            announcement_id=orm.announcement_id,  # type: ignore[reportArgumentType]
-            user_id=orm.user_id,  # type: ignore[reportArgumentType]
-            game_id=orm.game_id,  # type: ignore[reportArgumentType]
-            type=orm.type,  # type: ignore[reportArgumentType]
-            rank_min=orm.rank_min,  # type: ignore[reportArgumentType]
-            rank_max=orm.rank_max,  # type: ignore[reportArgumentType]
-            description=orm.description,  # type: ignore[reportArgumentType]
-            status=orm.status,  # type: ignore[reportArgumentType]
-            created_at=orm.created_at,  # type: ignore[reportArgumentType]
-            updated_at=orm.updated_at,  # type: ignore[reportArgumentType]
-            responses=responses,
+            announcement_id=cast(UUID, orm.announcement_id),
+            user_id=cast(UUID, orm.user_id),
+            game_id=cast(UUID, orm.game_id),
+            type=cast(Any, orm.type),
+            rank_min=cast(None, orm.rank_min),
+            rank_max=cast(None, orm.rank_max),
+            description=cast(Any, orm.description),
+            status=cast(Any, orm.status),
+            created_at=cast(datetime, orm.created_at),
+            updated_at=cast(datetime, orm.updated_at),
+            response=responses,
             complaints=complaints,
         )
 
