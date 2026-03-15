@@ -1,0 +1,90 @@
+@font-face {
+    font-family: "HaettenSchweiler";
+    src: url("../fonts/haettenschweiler.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Inter";
+    src: url("../fonts/Inter-Regular.otf") format("truetype");
+}
+
+body{
+    margin:0;
+    font-family: "Inter";
+    background:#f1f1f1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    width:414px;
+    background:#dcdcdc;
+    padding:35px;
+    border-radius:12px;
+    text-align:center;
+}
+
+.logo{
+    font-family: "HaettenSchweiler";
+    font-size: 82px;
+    font-weight:550;
+    margin-bottom:auto;
+    margin-top: -40px;
+}
+
+.title{
+    font-size:18px;
+    margin-bottom:auto;
+}
+
+form{
+    display:flex;
+    flex-direction:column;
+}
+
+label{
+    text-align:left;
+    margin:8px 0 5px;
+    font-size:14px;
+}
+
+input{
+    padding:10px;
+    border:none;
+    border-radius:5px;
+    background:#B8B6B6;
+    margin-bottom:10px;
+}
+
+button{
+    margin-top:15px;
+    padding:12px;
+    border:none;
+    border-radius:6px;
+    background:#8a8080;
+    color:black;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#6e6565;
+}
+
+.links{
+    display:flex;
+    justify-content:space-between;
+    margin-top:15px;
+}
+
+.links a{
+    text-decoration:none;
+    color:#444;
+    font-size:14px;
+}
+
+.links a:hover{
+    text-decoration:underline;
+}

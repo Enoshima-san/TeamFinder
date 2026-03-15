@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>TeamUp - Регистрация</title>
+<link rel="stylesheet" href="../styles/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1 class="logo">TeamUP</h1>
+    <h2 class="title">Регистрация</h2>
+
+    <form id="registerForm">
+
+        <label>Ваш email:</label>
+        <input type="email" id="email" required placeholder="pochta@mail.ru">
+
+        <label>Ваш никнейм:</label>
+        <input type="text" id="nickname" minlength="2"  required placeholder="John">
+
+        <label>Пароль:</label>
+        <input type="password" id="password" minlength="6" required placeholder="********">
+
+        <button type="submit">Зарегистрироваться</button>
+
+    </form>
+
+    <div class="links">
+        <a href="#">Уже есть аккаунт?</a>
+    </div>
+
+</div>
+
+<script src="../scripts/script.js"></script>
+
+</body>
+</html>
