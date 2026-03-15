@@ -1,0 +1,59 @@
+body {
+    background-color: #e0e0e0; /* светлый серый фон страницы */
+    display: flex;
+    justify-content: center; /* по горизонтали по центру */
+    align-items: center;     /* по вертикали по центру */
+    height: 70vh;           /* высота окна браузера */
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+label {
+    font-size: 14px;
+}
+
+.container {
+    background-color: #d3d3d3; /* светло-серый фон блока */
+    padding: 20px;
+    border-radius: 10px;       /* скругление углов */
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* тень вокруг блока */
+}
+
+h1 {
+    margin: 0 0 10px 0;
+    font-size: 50px;
+    text-align: center;
+    font-family: Haettenschweiler, Impact, 'Arial Narrow Bold', sans-serif;
+    font-weight: normal;
+}
+
+p {
+    margin: 8px 0;
+    text-align: center;
+}
+
+input[type="email"], input[type="password"], input[type="text"] {
+    width: 93.5%;
+    padding: 10px;
+    margin-top: 4px;
+    margin-bottom: 12px;
+    border: none;
+    border-radius: 5px;
+    background-color: #b0b0b0; /* чуть темнее серое для полей */
+    font-size: 14px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #686868;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #333333;
+}
