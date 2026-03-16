@@ -1,14 +1,20 @@
 from uuid import UUID
 
-from src.teamup.application import IAuthService, IUserRepository
-from src.teamup.core import logger
-from src.teamup.domain import User
-from src.teamup.schemas import LoginRequest, RegisterRequest, TokenData, TokenPair
+from src.teamup.core import get_logger
+from src.teamup.domain import IUserRepository, User
+from src.teamup.infra import JWTHandler, PasswordHasher
+from src.teamup.schemas import (
+    LoginRequest,
+    RegisterRequest,
+    TokenData,
+    TokenPair,
+    UserResponse,
+)
 
-from ..security import JWTHandler, PasswordHasher
+logger = get_logger()
 
 
-class AuthService(IAuthService):
+class AuthService:
     """
     Класс авторизации пользователя, отвечающий за формирование JWT
     и внесение в базу новых пользователей.\n\n
@@ -20,14 +26,11 @@ class AuthService(IAuthService):
         logger.info("Инициализация AuthService")
         self.user_repository = user_repository
 
-    async def register(self, req: RegisterRequest) -> TokenPair | None:
+    async def register(self, req: RegisterRequest) -> UserResponse | None:
         """
         Регистрация пользователя с автоматическим входом в систему.\n
         При попытке ввести существующие данные базе, возвращает `None`.
         """
-        if len(req.password.encode("utf-8")) > 72:
-            raise ValueError("Пароль не должен превышать 72 байта")
-
         if await self.user_repository.check_new_user(req.email, req.username):
             logger.info("Пользователь с таким email или username уже существует")
             return None
@@ -44,13 +47,15 @@ class AuthService(IAuthService):
             logger.error("Не удалось создать пользователя")
             return None
 
-        token_data = JWTHandler.get_token_data(
-            created_user.user_id, created_user.username, created_user.role
-        )
-
-        return TokenPair(
-            access_token=JWTHandler.create_access_token(token_data),
-            refresh_token=JWTHandler.create_refresh_token(token_data),
+        return UserResponse(
+            username=created_user.username,
+            email=created_user.email,
+            registration_date=created_user.registration_date,
+            last_login=created_user.last_login,
+            is_active=created_user.is_active,
+            role=created_user.role,
+            age=created_user.age,
+            about_me=created_user.about_me,
         )
 
     async def login(self, req: LoginRequest) -> TokenPair | None:

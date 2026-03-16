@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from sqlalchemy import or_, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 
 from src.teamup.core import get_logger
@@ -22,13 +23,15 @@ class UserRepository(IUserRepository):
         Если пользователь уже в базе, возваращает `None`,
         иначе возвращаем пустого пользователся
         """
-        stmt = select(UserORM).where(
-            UserORM.email == user.email and UserORM.username == user.username
+        stmt = (
+            select(UserORM)
+            .where(UserORM.email == user.email)
+            .where(UserORM.username == user.username)
         )
         result = await self.session.execute(stmt)
 
         already_exists_user = result.scalar()
-        if already_exists_user:
+        if already_exists_user is not None:
             logger.warning(
                 (
                     f"Пользователь с почтой {user.email} и/или "
@@ -38,29 +41,25 @@ class UserRepository(IUserRepository):
             return None
 
         orm = UserMapper.to_orm(user)
-        self.session.add(orm)
-        await self.session.commit()
-        await self.session.refresh(orm)
-        logger.info(f"Пользователь с id {user.user_id} создан")
 
-        return UserMapper.to_domain(orm)
-
-    async def delete(self, user: int | User) -> bool:
-        """Возвращает результат удаения пользователя"""
-        if isinstance(user, int):
-            orm_user = await self.session.get(UserORM, user)
-            if not orm_user:
-                logger.warning(f"Пользователь с id {user} не найден")
-                return False
-            await self.session.delete(orm_user)
+        try:
+            self.session.add(orm)
             await self.session.commit()
-            logger.info(f"Пользователь с id {user} удален")
-            return True
+            await self.session.refresh(orm)
+            logger.info(f"Пользователь с id {user.user_id} создан")
+            return UserMapper.to_domain(orm)
+        except IntegrityError:
+            logger.error(f"Ошибка при создании пользователя с id {user.user_id}")
+            await self.session.rollback()
+            return None
 
+    async def delete(self, user: User) -> bool:
+        """Возвращает результат удаения пользователя"""
         orm_user = await self.session.get(UserORM, user.user_id)
-        if not orm_user:
+        if orm_user is None:
             logger.warning(f"Пользователь с id {user.user_id} не найден")
             return False
+
         await self.session.delete(orm_user)
         await self.session.commit()
         logger.info(f"Пользователь с id {user.user_id} удален")
@@ -81,7 +80,7 @@ class UserRepository(IUserRepository):
         result = await self.session.execute(stmt)
         user = result.scalar()
 
-        if not user:
+        if user is None:
             logger.warning(f"Пользователь с id {id} не найден")
             return None
 
@@ -108,7 +107,7 @@ class UserRepository(IUserRepository):
         result = await self.session.execute(stmt)
         user = result.scalar()
 
-        if not user:
+        if user is None:
             logger.warning(f"Пользователь с email {email} не найден")
             return None
 
@@ -123,7 +122,7 @@ class UserRepository(IUserRepository):
         result = await self.session.execute(stmt)
         user = result.scalar()
 
-        if not user:
+        if user is None:
             logger.warning(f"Пользователь с username {username} не найден")
             return None
 
@@ -138,7 +137,7 @@ class UserRepository(IUserRepository):
         result = await self.session.execute(stmt)
         users = result.scalars().all()
 
-        return [UserMapper.to_domain(user) for user in users]
+        return [UserMapper.to_domain(u) for u in users]
 
     async def update(self, user: User) -> User | None:
         """
@@ -149,7 +148,7 @@ class UserRepository(IUserRepository):
         result = await self.session.execute(stmt)
         orm_user = result.scalar()
 
-        if not orm_user:
+        if orm_user is None:
             logger.warning(f"Пользователь с id {user.user_id} не найден")
             return None
 

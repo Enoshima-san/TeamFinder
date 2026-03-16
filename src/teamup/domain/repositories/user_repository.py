@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from ...domain import User
+from src.teamup.domain import User
 
 
 class IUserRepository(ABC):
@@ -10,7 +10,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    async def delete(self, user: int | User) -> bool:
+    async def delete(self, user: User) -> bool:
         pass
 
     @abstractmethod

@@ -14,7 +14,6 @@ from .database import (
 )
 from .repositories import UserRepository
 from .security import JWTHandler, PasswordHasher
-from .services import AuthService
 
 __all__ = [
     "Base",
@@ -29,7 +28,6 @@ __all__ = [
     "PasswordHasher",
     "JWTHandler",
     "UserRepository",
-    "AuthService",
     "async_session",
     "check_database_connection",
     "engine",

@@ -1,4 +1,3 @@
-from .interfaces import IAuthService
-from .repositories import IUserRepository
+from .services import AuthService
 
-__all__ = ["IUserRepository", "IAuthService"]
+__all__ = ["AuthService"]
