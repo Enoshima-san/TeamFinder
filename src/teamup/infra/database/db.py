@@ -4,7 +4,9 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.sql import text
 
-from ...core import logger, settings
+from ...core import get_logger, settings
+
+logger = get_logger()
 
 engine = create_async_engine(
     settings.db.get_dsn(), echo=settings.application.get_debug()

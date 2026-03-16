@@ -8,10 +8,12 @@ from .api import (
     get_current_user,
     get_user_repository,
 )
-from .application import IUserRepository
-from .core import logger
+from .core import get_logger
+from .domain import IUserRepository
 from .infra import check_database_connection
 from .schemas import TokenData, UserResponse
+
+logger = get_logger()
 
 
 @asynccontextmanager

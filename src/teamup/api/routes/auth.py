@@ -1,11 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import json
 
-from src.teamup.application import IAuthService
-from src.teamup.schemas import LoginRequest, RegisterRequest, TokenPair
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+
+from src.teamup.application import AuthService
+from src.teamup.core import get_logger
+from src.teamup.schemas import LoginRequest, RegisterRequest, TokenPair, UserResponse
 
 from ..di import get_auth_service
 
-auth_router = APIRouter()
+logger = get_logger()
+
+auth_router = APIRouter(tags=["Auth"])
 
 
 @auth_router.post(

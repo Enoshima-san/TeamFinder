@@ -3,11 +3,12 @@ from uuid import UUID
 from sqlalchemy import or_, select
 from sqlalchemy.orm import selectinload
 
-from src.teamup.application import IUserRepository
-from src.teamup.core import logger
-from src.teamup.domain import User
+from src.teamup.core import get_logger
+from src.teamup.domain import IUserRepository, User
 
 from ..database import UserMapper, UserORM, async_session
+
+logger = get_logger()
 
 
 class UserRepository(IUserRepository):
