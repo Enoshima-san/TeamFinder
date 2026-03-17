@@ -8,10 +8,11 @@
     src: url("../fonts/Inter-Regular.otf") format("truetype");
 }
 
+
 body{
     margin:0;
     font-family: "Inter";
-    background:#f1f1f1;
+    background:#FFFFFF;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -58,18 +59,18 @@ input{
     margin-bottom:10px;
 }
 
-button{
-    margin-top:15px;
-    padding:12px;
+.login, .registration{
+    padding:15px;
     border:none;
     border-radius:6px;
-    background:#8a8080;
+    background:#7F7A7A;
     color:black;
     font-size:16px;
     cursor:pointer;
+    margin-top: 40px;
 }
 
-button:hover{
+.login:hover, .registration:hover{
     background:#6e6565;
 }
 
@@ -82,7 +83,7 @@ button:hover{
 .links a{
     text-decoration:none;
     color:#444;
-    font-size:14px;
+    font-size:15px;
 }
 
 .links a:hover{

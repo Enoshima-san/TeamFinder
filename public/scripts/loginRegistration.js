@@ -34,7 +34,7 @@ document
         sessionStorage.setItem("token", result.token);
         alert("Авторизация завершена");
         // Переход на новую страницу
-        window.location.assign("TEST.html");
+        window.location.assign("feed.html");
       } else {
         alert("Ошибка авторизации");
       }
