@@ -1,13 +1,13 @@
 from typing import cast
 from uuid import UUID
 
-from domain import Game
-from rank import RankMapper
+from src.teamup.domain import Game
 
 from ..models import GameORM
 from ._map_relation import _map_relation
 from .announcement import AnnouncementMapper
 from .player_rating import PlayerRatingMapper
+from .rank import RankMapper
 from .user_games import UserGamesMapper
 
 

@@ -1,5 +1,14 @@
 from .db import async_session, check_database_connection, engine
-from .mappers import UserMapper
+from .mappers import (
+    AnnouncementMapper,
+    ComplaintsMapper,
+    GameMapper,
+    PlayerRatingMapper,
+    RankMapper,
+    ResponseMapper,
+    UserGamesMapper,
+    UserMapper,
+)
 from .models import (
     AnnouncementORM,
     Base,
@@ -23,6 +32,13 @@ __all__ = [
     "UserGamesORM",
     "UserORM",
     "UserMapper",
+    "PlayerRatingMapper",
+    "AnnouncementMapper",
+    "UserGamesMapper",
+    "RankMapper",
+    "ResponseMapper",
+    "ComplaintsMapper",
+    "GameMapper",
     "async_session",
     "check_database_connection",
     "engine",
