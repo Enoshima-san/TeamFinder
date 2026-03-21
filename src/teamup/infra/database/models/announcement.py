@@ -18,7 +18,7 @@ class AnnouncementORM(Base):
         UUID(as_uuid=True), ForeignKey("user.user_id"), nullable=False
     )
     game_id: Mapped[Optional[UUID]] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("game.game_id"), nullable=True
+        UUID(as_uuid=True), ForeignKey("game.game_id"), nullable=False
     )
     type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     rank_min: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 from uuid import UUID
 
 from src.teamup.domain import User
@@ -6,33 +7,108 @@ from src.teamup.domain import User
 
 class IUserRepository(ABC):
     @abstractmethod
-    async def create(self, user: User) -> User | None:
+    async def create(self, user: User) -> Optional[User]:
+        """
+        Создаёт запись и возвращает объект пользователя. Проверяет уникальность email и имени пользователя.
+
+        Args:
+            `user` - доменная сущность пользователя
+
+        Returns:
+            - `User`
+            - `None`: если пользователь уже в базе
+        """
         pass
 
     @abstractmethod
     async def delete(self, user: User) -> bool:
+        """
+        Удалаяет запись о пользователе при найденном совпадении.
+
+        Args:
+            `user` - доменная сущность пользователя
+
+        Returns:
+            `True`/`False`: результат удаления пользователя
+        """
         pass
 
     @abstractmethod
-    async def get_by_id(self, id: UUID) -> User | None:
+    async def get_by_id(self, user_id: UUID) -> Optional[User]:
+        """
+        Возвращает пользователя по его id.
+
+        Args:
+            `user_id` - id пользователя
+
+        Returns:
+            - `User`
+            - `None`: если пользователь не найден
+        """
         pass
 
     @abstractmethod
-    async def check_new_user(self, email: str, username: str) -> bool:
+    async def get_by_email(self, email: str) -> Optional[User]:
+        """
+        Ищет пользователя по его email.
+
+        Args:
+            `email` - email пользователя
+
+        Returns:
+            - `User`
+            - `None`: если пользователь не найден
+        """
         pass
 
     @abstractmethod
-    async def get_by_email(self, email: str) -> User | None:
-        pass
+    async def get_by_username(self, username: str) -> Optional[User]:
+        """
+        Ищет пользователя по его имени в системе.
 
-    @abstractmethod
-    async def get_by_username(self, username: str) -> User | None:
+        Args:
+            `username` - уникальное имя пользователя в системе
+
+        Returns:
+            - `User`
+            - `None`: если пользователь не найден
+        """
         pass
 
     @abstractmethod
     async def get_all(self) -> list[User]:
+        """
+        Возвращает список всех пользователей в системе.
+
+        Returns:
+             list[`User`]: Список доменных объектов
+        """
         pass
 
     @abstractmethod
-    async def update(self, user: User) -> User | None:
+    async def update(self, user: User) -> Optional[User]:
+        """
+        Обновляет данные пользователя в системе.
+
+        Args:
+            `user` - доменный объект `User` с обновлёнными данными
+
+        Returns:
+            - `User`: обновлённый доменный объект
+            - `None`: если пользователь не найден
+        """
+        pass
+
+    @abstractmethod
+    async def check_new_user(self, email: str, username: str) -> bool:
+        """
+        Проверяет возможно ли создать пользователя с введёнными ими данными.\n
+
+        Args:
+            - `email`: электронная почта (уникальное поле в БД)
+            - `username`: имя пользователя внутри системы (уникальное поле в БД)
+
+        Returns:
+            `True`/`False`: результат проверки
+        """
         pass

@@ -12,7 +12,12 @@ from .database import (
     check_database_connection,
     engine,
 )
-from .repositories import UserRepository
+from .repositories import (
+    AnnouncementRepository,
+    GameRepository,
+    UserGamesRepository,
+    UserRepository,
+)
 from .security import JWTHandler, PasswordHasher
 
 __all__ = [
@@ -28,6 +33,9 @@ __all__ = [
     "PasswordHasher",
     "JWTHandler",
     "UserRepository",
+    "AnnouncementRepository",
+    "GameRepository",
+    "UserGamesRepository",
     "async_session",
     "check_database_connection",
     "engine",
