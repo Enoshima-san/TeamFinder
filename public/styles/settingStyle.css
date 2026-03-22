@@ -1,0 +1,142 @@
+@font-face {
+  font-family: "HaettenSchweiler";
+  src: url("../fonts/haettenschweiler.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter-Regular.otf") format("truetype");
+}
+
+body {
+  display: flex;
+  margin: 0;
+  height: 100vh;
+  background-color: #f0f0f0;
+}
+
+.logo{
+  font-family: "HaettenSchweiler";
+  font-size: 82px;
+  font-weight:550;
+  margin-bottom:auto;
+  margin-top: 4%;
+}
+
+/* Боковая панель */
+.sidebar {
+  margin-left: 55px;
+  width: 23%;
+  background-color: #fff;
+}
+
+/* Основная часть */
+.main {
+  margin-top: 2%;
+  flex: 0.97;
+  padding: 20px;
+  background:#d9d9d9;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+/* Кнопки меню */
+.menu-btn {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 20px;
+  margin-bottom: 10px;
+  border-radius: 25px;
+  background-color: #DCD5D5;
+  height: 50px;
+  font-family: "Inter";
+}
+.menu-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.save-btn{
+  background-color: #FFF9F9;
+  align-items: center;
+}
+
+label{
+  text-align:left;
+  margin:8px 0 5px;
+  font-size:17px;
+}
+
+input{
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#B8B6B6;
+  margin-bottom:10px;
+  width: 97%;
+  height: 40px;
+  font-family: "Inter";
+  font-size: 22px;
+}
+
+textarea{
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#B8B6B6;
+  margin-bottom:10px;
+  width: 97%;
+  height: 47px;
+  resize: none;
+  font-family: "Inter";
+  font-size: 15px;
+}
+
+button{
+  margin-top:15px;
+  padding:12px;
+  border:none;
+  border-radius:25px;
+  background:#8a8080;
+  color:black;
+  font-size:16px;
+  cursor:pointer;
+  height: 45px;
+}
+
+.icon {
+  width: 30px;
+  height: 30px;
+  margin-top: -4px;
+  vertical-align:middle;
+}
+
+button:hover{
+  background:#6e6565;
+}
+
+.links{
+  display:flex;
+  justify-content:space-between;
+  margin-top:15px;
+}
+
+.links a{
+  text-decoration:none;
+  color:#444;
+  font-size:14px;
+}
+
+.links a:hover{
+  text-decoration:underline;
+}
+
+.title{
+  font-size:24px;
+  margin-top: -8px;
+  font-weight: normal;
+}
+
