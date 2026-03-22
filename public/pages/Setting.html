@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TeamUp</title>
+<link rel="stylesheet" href="../styles/settingStyle.css" />
+</head>
+<body>
+
+<!-- Боковая панель -->
+<div class="sidebar">
+  <h1 class="logo">TeamUP</h1s>
+  <button class="menu-btn"><img src="../png/Feed.png" alt="Иконка ленты" class="icon"/>Лента</button>
+
+  <button class="menu-btn"><img src="../png/Achievement.png" alt="Иконка достижения" class="icon"/>Мои достижения</button>
+
+  <button class="menu-btn"><img src="../png/Rating.png" alt="Иконка рейтинга" class="icon"/>Рейтинг игроков</button>
+
+  <button class="menu-btn"><img src="../png/Response.png" alt="Иконка откликов" class="icon"/>Отклики</button>
+  
+  <button class="menu-btn" style="background-color: #B8B6B6;"><img src="../png/Profile.png" alt="Иконка сохранения" class="icon"/>Профиль</button>
+  
+  <div style="margin-top: 450px">
+    <button class="menu-btn"><img src="../png/Avatar.png" alt="Иконка аватара" class="icon"/>Ник пользователя</button>
+  </div>
+</div>
+
+<!-- Основная часть -->
+<div class="main">
+  <h2 class="title">Настройки профиля</h2>
+  <form id="SettingForm">
+    <div class="form-group">
+      <label>Ник пользователя</label>
+      <input type="text" id="nickname" name="nickname"/>
+    </div>
+    <div class="form-group">
+      <label>Описание</label>
+      <textarea id="description" name="description" rows="4"></textarea>
+    </div>
+    <button class="save-btn" type="submit"><img src="../png/Save.png" alt="Иконка сохранения" class="icon"/>Сохранить</button>
+  </form>
+</div>
+</body>
+<script src="../scripts/SettingScr.js"></script>
+</html>
