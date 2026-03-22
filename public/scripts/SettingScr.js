@@ -7,7 +7,7 @@ document
     const nickname = document.getElementById("nickname").value;
     const description = document.getElementById("description").value;
     // Требование данных
-    if (nickname == "") {
+    if (nickname === "") {
       alert("Ник пользователя не может быть пустым");
       return;
     }
