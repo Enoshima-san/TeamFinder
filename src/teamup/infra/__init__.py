@@ -15,6 +15,7 @@ from .database import (
 from .repositories import (
     AnnouncementRepository,
     GameRepository,
+    ResponseRepository,
     UserGamesRepository,
     UserRepository,
 )
@@ -36,6 +37,7 @@ __all__ = [
     "AnnouncementRepository",
     "GameRepository",
     "UserGamesRepository",
+    "ResponseRepository",
     "async_session",
     "check_database_connection",
     "engine",
