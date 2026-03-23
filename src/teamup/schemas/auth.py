@@ -7,10 +7,18 @@ from pydantic import BaseModel, EmailStr, Field
 from ..domain import UserRole
 
 
+class JwtPayload(BaseModel):
+    sub: str
+    username: str
+    role: UserRole
+    exp: int
+
+
 class TokenData(BaseModel):
     user_id: UUID
     username: str
-    role: str
+    role: UserRole
+    exp: int
 
 
 class TokenPair(BaseModel):
@@ -21,13 +29,19 @@ class TokenPair(BaseModel):
 
 class RegisterRequest(BaseModel):
     email: EmailStr
-    username: str
-    password: str
+    username: str = Field(
+        ...,
+        min_length=3,
+        max_length=15,
+        pattern=r"^[a-z0-9_]+$",
+        description="Только маленькие буквы, цифры и подчеркивание. Без пробелов.",
+    )
+    password: str = Field(..., min_length=8)
 
 
 class LoginRequest(BaseModel):
-    login: str | EmailStr = Field(..., alias="login")
-    password: str
+    login: str = Field(..., max_length=50, description="Email или имя пользователя")
+    password: str = Field(..., min_length=1)
 
 
 class UserResponse(BaseModel):
