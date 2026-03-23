@@ -6,8 +6,8 @@ from starlette.middleware.cors import CORSMiddleware
 from .api import (
     auth_router,
     get_current_user,
-    get_user_repository,
 )
+from .application import get_user_repository
 from .core import get_logger
 from .domain import IUserRepository
 from .infra import check_database_connection
