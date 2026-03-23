@@ -5,11 +5,13 @@ from starlette.middleware.cors import CORSMiddleware
 
 from .api import (
     auth_router,
+    exception_handler,
+    feed_router,
     get_current_user,
+    wrapper_router,
 )
-from .application import get_user_repository
+from .application import AnnouncementException, AuthException, get_user_repository
 from .core import get_logger
-from .domain import IUserRepository
 from .infra import check_database_connection
 from .schemas import TokenData, UserResponse
 
@@ -26,7 +28,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI()
 
-app.include_router(auth_router, prefix="/auth")
+app.include_router(auth_router)
+app.include_router(feed_router)
+app.include_router(wrapper_router)
+
+
+app.add_exception_handler(AnnouncementException, exception_handler)
+app.add_exception_handler(AuthException, exception_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,7 +46,7 @@ app.add_middleware(
 
 
 @app.get("/")
-async def root():
+async def info():
     return {
         "head": "TeamUP",
         "message": "find ur femboy",
@@ -49,20 +57,20 @@ async def root():
 @app.get("/users/me", response_model=UserResponse)
 async def get_current_user_info(
     curr_user: TokenData = Depends(get_current_user),
-    user_repository: IUserRepository = Depends(get_user_repository),
 ):
-    user = await user_repository.get_by_id(curr_user.user_id)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден"
+    async with await get_user_repository() as user_repository:
+        user = await user_repository.get_by_id(curr_user.user_id)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден"
+            )
+        return UserResponse(
+            username=user.username,
+            email=user.email,
+            registration_date=user.registration_date,
+            age=user.age,
+            about_me=user.about_me,
         )
-    return UserResponse(
-        username=user.username,
-        email=user.email,
-        registration_date=user.registration_date,
-        age=user.age,
-        about_me=user.about_me,
-    )
 
 
 @app.get("/protected")
@@ -79,7 +87,7 @@ if __name__ == "__main__":
 
     uvicorn.run(
         "src.teamup.main:app",
-        host="0.0.0.0",
+        host="127.0.0.1",
         port=8000,
         reload=True,  # ← автоперезагрузка
         reload_dirs=["src/teamup"],  # ← какие папки отслеживать
