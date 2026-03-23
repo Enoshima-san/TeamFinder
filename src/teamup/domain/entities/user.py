@@ -109,8 +109,7 @@ class User:
         is_blocked: bool = False,
     ) -> "User":
         if (
-            not email
-            or "@"
+            "@" not in email
             or len(email) > 255
             or not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email)
         ):

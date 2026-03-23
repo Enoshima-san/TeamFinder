@@ -74,8 +74,8 @@ class Announcement:
         rank_max: Optional[int] = None,
         description: Optional[str] = None,
         status: str = AnnouncementStatus.ACTIVE.value,
-        created_at: datetime = field(default_factory=datetime.now),
-        updated_at: datetime = field(default_factory=datetime.now),
+        created_at: datetime = datetime.now(),
+        updated_at: datetime = datetime.now(),
     ) -> "Announcement":
 
         if rank_min and rank_max:

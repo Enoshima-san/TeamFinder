@@ -36,12 +36,12 @@ class Game:
     @staticmethod
     def create(
         game_name: str,
-        icon: bytes,
+        game_icon: bytes,
     ) -> "Game":
         if len(game_name) < 3:
             raise ValueError("Название игры должно быть больше 3 символов")
         if len(game_name) > 50:
             raise ValueError("Название игры не может быть больше 50 символов")
-        if not icon:
+        if not game_icon:
             raise ValueError("Логотип игры не может быть пустой")
-        return Game(game_name=game_name, game_icon=icon)
+        return Game(game_name=game_name, game_icon=game_icon)
