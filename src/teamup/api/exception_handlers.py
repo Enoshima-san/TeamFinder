@@ -7,22 +7,34 @@ from src.teamup.application import (
     AnnouncementUpdateError,
     ForbiddenError,
     GameNotFoundError,
+    InvalidCredentialsError,
     InvalidRankRangeError,
-    UserNotFoundError,
+    InvalidTokenError,
+    PasswordMismatchError,
+    PermissionDeniedError,
+    UserAlreadyExistsError,
+    UserCreationError,
 )
 
 
-async def announcement_exception_handler(request: Request, exc: Exception):
+async def exception_handler(request: Request, exc: Exception):
     """Глобальный обработчик всех исключений объявлений"""
 
     status_code_map = {
+        # Announcements
         AnnouncementNotFoundError: 404,
         GameNotFoundError: 404,
-        UserNotFoundError: 401,
         ForbiddenError: 403,
         InvalidRankRangeError: 400,
         AnnouncementCreationError: 500,
         AnnouncementUpdateError: 500,
+        # Auth
+        PermissionDeniedError: 401,
+        UserAlreadyExistsError: 409,
+        UserCreationError: 500,
+        InvalidCredentialsError: 401,
+        InvalidTokenError: 401,
+        PasswordMismatchError: 401,
     }
 
     status_code = status_code_map.get(type(exc), 500)
