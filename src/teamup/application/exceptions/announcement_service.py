@@ -16,6 +16,12 @@ class AnnouncementCreationError(AnnouncementException):
     pass
 
 
+class AnnouncementDeleteError(AnnouncementException):
+    """Ошибка при удалении объявления"""
+
+    pass
+
+
 class AnnouncementUpdateError(AnnouncementException):
     """Ошибка при обновлении объявления"""
 
@@ -24,12 +30,6 @@ class AnnouncementUpdateError(AnnouncementException):
 
 class InvalidRankRangeError(AnnouncementException):
     """Некорректный диапазон рангов"""
-
-    pass
-
-
-class UserNotFoundError(AnnouncementException):
-    """Пользователь не найден"""
 
     pass
 

@@ -1,5 +1,6 @@
 from .announcement_service import (
     AnnouncementCreationError,
+    AnnouncementDeleteError,
     AnnouncementException,
     AnnouncementNotFoundError,
     AnnouncementUpdateError,
@@ -7,10 +8,19 @@ from .announcement_service import (
     GameNotFoundError,
     InvalidRankRangeError,
     UnauthorizedError,
-    UserNotFoundError,
+)
+from .auth_service import (
+    AuthException,
+    InvalidCredentialsError,
+    InvalidTokenError,
+    PasswordMismatchError,
+    PermissionDeniedError,
+    UserAlreadyExistsError,
+    UserCreationError,
 )
 
 __all__ = [
+    "AuthException",
     "AnnouncementCreationError",
     "AnnouncementException",
     "AnnouncementNotFoundError",
@@ -19,5 +29,11 @@ __all__ = [
     "GameNotFoundError",
     "InvalidRankRangeError",
     "UnauthorizedError",
-    "UserNotFoundError",
+    "UserAlreadyExistsError",
+    "UserCreationError",
+    "PermissionDeniedError",
+    "InvalidCredentialsError",
+    "InvalidTokenError",
+    "PasswordMismatchError",
+    "AnnouncementDeleteError",
 ]
