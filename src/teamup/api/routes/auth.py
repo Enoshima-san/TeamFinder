@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from src.teamup.application import AuthService
 from src.teamup.core import get_logger
-from src.teamup.schemas import LoginRequest, RegisterRequest
+from src.teamup.schemas import LoginRequest, RegisterRequest, UserResponse, TokenPair
 
 from ..di import get_auth_service
 
@@ -13,7 +13,7 @@ logger = get_logger()
 auth_router = APIRouter(tags=["Auth"], prefix="/auth")
 
 
-@auth_router.post("/registration", status_code=status.HTTP_201_CREATED)
+@auth_router.post("/registration", status_code=status.HTTP_201_CREATED, response_model=UserResponse)
 async def register(
     req: RegisterRequest, auth_service: AuthService = Depends(get_auth_service)
 ):
@@ -26,7 +26,7 @@ async def register(
     return res
 
 
-@auth_router.post("/login", status_code=status.HTTP_200_OK)
+@auth_router.post("/login", status_code=status.HTTP_200_OK, response_model=TokenPair)
 async def login(
     request: Request, auth_service: AuthService = Depends(get_auth_service)
 ):
@@ -75,7 +75,7 @@ async def login(
     return res
 
 
-@auth_router.post("/refresh", status_code=status.HTTP_200_OK)
+@auth_router.post("/refresh", status_code=status.HTTP_200_OK, response_model=TokenPair)
 async def refresh(req: dict, auth_service: AuthService = Depends(get_auth_service)):
     """Обновление пары токенов"""
     token = req.get("refresh", None)

@@ -1,7 +1,7 @@
 from base64 import b64encode
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.teamup.domain import Response, UserGames
 from src.teamup.infra import (
@@ -24,7 +24,9 @@ async def _check_user(user_id: UUID):
             raise HTTPException(status_code=403, detail="Пользователь не найден")
 
 
-@wrapper_router.post("/a/{announcement_id}/responses/new")
+@wrapper_router.post(
+    "/a/{announcement_id}/responses/new", status_code=status.HTTP_201_CREATED
+)
 async def create_response(
     announcement_id: UUID, user: TokenData = Depends(get_current_user)
 ):
