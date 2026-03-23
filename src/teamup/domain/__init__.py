@@ -12,6 +12,7 @@ from .enums import AnnouncementStatus, ComplaintStatus, ResponseStatus, UserRole
 from .repositories import (
     IAnnouncementRepository,
     IGameRepository,
+    IResponseRepository,
     IUserGamesRepository,
     IUserRepository,
 )
@@ -33,7 +34,7 @@ __all__ = [
     "UserRole",
     # Repositories
     "IUserRepository",
-    "IComplaintRepository",
+    "IComplaintsRepository",
     "IGameRepository",
     "IPlayerRatingRepository",
     "IRankRepository",

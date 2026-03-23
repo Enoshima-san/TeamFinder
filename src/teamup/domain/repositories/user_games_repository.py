@@ -1,24 +1,26 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Optional
 from uuid import UUID
 
 from src.teamup.domain import UserGames
 
+from .base_repository import BaseRepository
 
-class IUserGamesRepository(ABC):
+
+class IUserGamesRepository(BaseRepository):
     @abstractmethod
-    async def add(self, user_game: UserGames) -> Optional[UserGames]:
+    async def create(self, user_game: UserGames) -> Optional[UserGames]:
         """
         Создает запись и возвращает объект игры пользователя.
 
         Args:
-            `user_game` - предварительно заполненная сущность `UserGames` с установленными вторичными ключами
+            `user_game`: предварительно заполненная сущность `UserGames` с установленными вторичными ключами
 
         Returns:
             - `UserGames`: сущность, хранящая связи (FK) `User` и `Game`
             - `None` при провале операции
         """
-        pass
+        ...
 
     @abstractmethod
     async def remove(self, user_id: UUID, game_id: UUID) -> bool:
@@ -26,12 +28,12 @@ class IUserGamesRepository(ABC):
         Удаление игры пользователя.
 
         Args:
-            `user_game` - предварительно заполненная сущность `UserGames` с установленными вторичными ключами
+            `user_game`: предварительно заполненная сущность `UserGames` с установленными вторичными ключами
 
         Returns:
             - `True`/`False`: результат выполнения операции
         """
-        pass
+        ...
 
     @abstractmethod
     async def get(self, user_id: UUID, game_id: UUID) -> Optional[UserGames]:
@@ -46,7 +48,7 @@ class IUserGamesRepository(ABC):
             - `UserGames`: сущность хранящая связи (FK) `User` и `Game`
             - `None`: если совпадений не найдено
         """
-        pass
+        ...
 
     @abstractmethod
     async def get_all(self, user_id: UUID) -> list[UserGames]:
@@ -59,4 +61,4 @@ class IUserGamesRepository(ABC):
         Returns:
             - `list[UserGames]`: список сущностей хранящих связи (FK) `User` и `Game`
         """
-        pass
+        ...

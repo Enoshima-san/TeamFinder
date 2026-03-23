@@ -1,24 +1,26 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Optional
 from uuid import UUID
 
 from src.teamup.domain import Announcement, Game, User
 
+from .base_repository import BaseRepository
 
-class IAnnouncementRepository(ABC):
+
+class IAnnouncementRepository(BaseRepository):
     @abstractmethod
     async def create(self, announcement: Announcement) -> Optional[Announcement]:
         """
         Создаёт запись и возвращает объект анонса.
 
         Args:
-            `announcement` - доменная сущность типа `Announcement` с заполненными полями для создания
+            `announcement`: доменная сущность типа `Announcement` с заполненными полями для создания
 
         Returns:
             - `Announcement`
             - `None`: если создание не удалось
         """
-        pass
+        ...
 
     @abstractmethod
     async def delete(self, announcement: Announcement) -> bool:
@@ -26,12 +28,12 @@ class IAnnouncementRepository(ABC):
         Удаляет запись об анонсе при найденном совпадении
 
         Args:
-            `announcement` - доменная сущность анонса
+            `announcement`: доменная сущность анонса
 
         Returns:
-            `True`/`False` - резульат удаления анонса
+            `True`/`False`: резульат удаления анонса
         """
-        pass
+        ...
 
     @abstractmethod
     async def get_all(self) -> list[Announcement]:
@@ -41,7 +43,7 @@ class IAnnouncementRepository(ABC):
         Returns:
             `list[Announcement]`: Список доменных объектов
         """
-        pass
+        ...
 
     @abstractmethod
     async def get_by_id(self, announcement_id: UUID) -> Optional[Announcement]:
@@ -49,21 +51,19 @@ class IAnnouncementRepository(ABC):
         Возвращает анонс по его id.
 
         Args:
-            `announcement_id` - id анонса
+            `announcement_id`: id анонса
 
         Returns:
             - `Announcement`: доменный объект анонса
             - `None`: если анонс не найден
         """
-        pass
+        ...
 
     @abstractmethod
-    async def get_by_user(self, user: User) -> list[Announcement]:
-        pass
+    async def get_by_user(self, user: User) -> list[Announcement]: ...
 
     @abstractmethod
-    async def get_by_game(self, game: Game) -> list[Announcement]:
-        pass
+    async def get_by_game(self, game: Game) -> list[Announcement]: ...
 
     @abstractmethod
     async def get_all_active_with_relations(
@@ -73,10 +73,9 @@ class IAnnouncementRepository(ABC):
         Возвращает все активные анонсы с связанными пользователями и играми.
 
         Returns:
-            `list[tuple[Announcement, User, Game]]` - Список всех объявлений с их связями (FK) (кортежи)
+            `list[tuple[Announcement, User, Game]]`: Список всех объявлений с их связями (FK) (кортежи)
         """
-        pass
+        ...
 
     @abstractmethod
-    async def update(self, announcement: Announcement) -> Optional[Announcement]:
-        pass
+    async def update(self, announcement: Announcement) -> Optional[Announcement]: ...
