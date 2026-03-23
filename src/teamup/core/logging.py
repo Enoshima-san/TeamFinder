@@ -21,21 +21,16 @@ class ColorFormatter(logging.Formatter):
     }
 
     def format(self, record):
-        # Сохраняем оригинальные цвета, чтобы не ломать другие хендлеры
         orig_levelname = record.levelname
         orig_name = record.name
 
-        # Применяем цвет к уровню
         color = self.COLORS.get(record.levelno, "")
         record.levelname = f"{color}{orig_levelname}{Style.RESET_ALL}"
 
-        # Применяем голубой цвет к имени модуля (пути)
         record.name = f"{Fore.BLUE}{orig_name}{Style.RESET_ALL}"
 
-        # Форматируем запись
         result = super().format(record)
 
-        # Восстанавливаем оригинальные значения (хорошая практика)
         record.levelname = orig_levelname
         record.name = orig_name
 
@@ -47,10 +42,9 @@ def setup_logging(level=logging.INFO):
     Единая настройка форматирования и хендлеров с поддержкой цветов.
     Вызывается один раз при старте приложения.
     """
-    if not logging.root.handlers:  # избегаем дублирования хендлеров
+    if not logging.root.handlers:
         handler = logging.StreamHandler(sys.stdout)
 
-        # Создаем наш цветной форматтер
         formatter = ColorFormatter(
             "%(asctime)s | %(name)-30s | %(levelname)-8s | %(message)s |",
             datefmt="%Y-%m-%d %H:%M:%S",
