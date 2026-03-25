@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function apiRequest(url, options = {}) {
         const token = sessionStorage.getItem('token');
         console.log(token);
-        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` }; // ! ИЗМЕНИТЬ НА НЕОБХОДИМЫЕ ПАРАМЕТРЫ ЗАПРОСА !
+        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
         try{
             const response = await fetch(url, options);
             return response;
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function loadAdvertisement(){
         try {
             // Запрос всех объявлений с сервера
-            const response = await apiRequest('http://localhost:8000/auth/advert'); // ! ЗАГЛУШКА - ДОБАВИТЬ АКТУАЛЬНЫЙ ЭНДПОИНТ !
+            const response = await apiRequest('http://localhost:8000/a'); // ! ЗАГЛУШКА - ДОБАВИТЬ АКТУАЛЬНЫЙ ЭНДПОИНТ !
             if (response.ok) {
                 const adData = await response.json();
 
@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Асинхронная функция запроса данных пользователя к серверу 
     async function loadUserData() {
         try {
-            const response = await apiRequest('http://localhost:8000/user-data'); // ! ЗАГЛУШКА - ДОБАВИТЬ АКТУАЛЬНЫЙ ЭНДПОИНТ !
+            const response = await apiRequest('http://localhost:8000/users/me'); // ! ЗАГЛУШКА - ДОБАВИТЬ АКТУАЛЬНЫЙ ЭНДПОИНТ !
             if (response.ok) {
                 const userData = await response.json();
                 
