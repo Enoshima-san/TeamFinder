@@ -74,12 +74,16 @@ class UserRepository(IUserRepository):
 
     async def get_by_id(self, user_id: UUID) -> Optional[User]:
         self.check_session()
-        stmt = select(UserORM).options(
-            selectinload(UserORM.user_games),
-            selectinload(UserORM.player_rating),
-            selectinload(UserORM.response),
-            selectinload(UserORM.announcement),
-            selectinload(UserORM.complaints),
+        stmt = (
+            select(UserORM)
+            .where(UserORM.user_id == user_id)
+            .options(
+                selectinload(UserORM.user_games),
+                selectinload(UserORM.player_rating),
+                selectinload(UserORM.response),
+                selectinload(UserORM.announcement),
+                selectinload(UserORM.complaints),
+            )
         )
         result = await self.session.execute(stmt)  # type: ignore[reportOptionalMemberAccess]
         user = result.scalar()
@@ -89,6 +93,13 @@ class UserRepository(IUserRepository):
             return None
 
         return UserMapper.to_domain(user)
+
+    async def get_by_id_light(self, user_id: UUID) -> Optional[User]:
+        self.check_session()
+        stmt = select(UserORM).where(UserORM.user_id == user_id)
+        result = await self.session.execute(stmt)  # type: ignore[reportOptionalMemberAccess]
+        user = result.scalar()
+        return UserMapper.to_domain(user) if user else None
 
     async def check_new_user(self, email: str, username: str) -> bool:
         self.check_session()
