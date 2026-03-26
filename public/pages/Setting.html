@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>TeamUp - Настройки</title>
+<link rel="stylesheet" href="../styles/settingStyle.css">
+</head>
+<body>
+
+   <div class="container">
+        <!-- Плавающие меню -->
+       <aside class="sidebar">
+       
+           <h1 class="logo">TeamUP</h1>
+           <button class="menu-btn" type="submit">
+               <img src="../images/Feed.png" alt="Лента" class="icon">
+               <span>Лента</span>
+           </button>
+            <button class="menu-btn">
+                <img src="../images/Achievement.png" alt="Достижения" class="icon">
+                <span>Мои достижения</span>
+            </button>
+            <button class="menu-btn">
+                <img src="../images/Rating.png" alt="Рейтинг" class="icon">
+                <span>Рейтинг игроков</span>
+            </button>
+            <button class="menu-btn">
+                <img src="../images/Response.png" alt="Отклики" class="icon">
+                <span>Отклики</span>
+            </button>
+            <button class="menu-btn feed active">
+                <img src="../images/Profile.png" alt="Профиль" class="icon">
+                <span>Профиль</span>
+            </button>
+
+            <!-- Скрытое меню аккаунта -->
+            <div class="account-box hidden">
+                <button class="account-btn">Настройки</button>
+                <hr class="separator-line">
+                <button class="account-btn" id="logOutBtn">Выход из аккаунта</button>
+            </div>
+            
+            <!-- Раздел аккаунта -->
+            <div class="user">
+                <div class="avatar" id="userAvatar">H</div>
+                <span id="userNickName">Ник пользователя</span>
+                <button class="open-settings-btn"></button>
+            </div>
+       
+       </aside>
+       
+
+       <!-- Основная часть -->
+            <div class="main">
+                <h2 class="title">Настройки профиля</h2>
+                <form id="SettingForm">
+                    <div class="form-group">
+                        <label>Ник пользователя</label>
+                        <input type="text" id="nickname" name="nickname"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Описание</label>
+                        <textarea id="description" name="description" rows="4"></textarea>
+                    </div>
+                    <button class="save-btn" type="submit" id="save-btn-setting">
+                        <img src="../images/Save.png" alt="Иконка сохранения" class="icon"/>
+                        Сохранить
+                    </button>
+                </form>
+            </div> 
+    </div>
+
+<script src="../scripts/SettingScript.js"></script>
+
+</body>
+</html>
