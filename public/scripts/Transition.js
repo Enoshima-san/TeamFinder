@@ -1,52 +1,62 @@
-// Переход на ввод нового пароля
-document
-  .getElementById("PRFirst")
-  ?.addEventListener("submit", async function (e) {
+document.getElementById("PRFormFirst").addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const email = document.getElementById("email").value;
-    const code = document.getElementById("code").value;
-    // Требование данных
-    if (email === "" || code === "") {
-      alert("Заполните все поля");
-      return;
-    }
-    // Формирование пакета данных пользователя
-    const data = {
-      email: email,
-      code: code,
-    };
-    // Попытка отправки данных на сервер
-    try {
-      // Формирование запроса
-      const response = await fetch("http://localhost:8000/auth/PasswordRecoveryFirst", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json;charset=utf-8",
-        },
-        body: JSON.stringify(data),
-      });
-      // Ожидание ответа от сервера
-      const result = await response.json();
-      // Проверка ответа от сервера
-      if (response.ok) {
-        alert("Верный код");
-        // Переход на страницу входа
-        window.location.assign("PasswordRecoverySecond.html");
-      } else {
-        alert("Неверный код");
-      }
+    const codeInput = document.getElementById("code");
+    const btnCode = document.getElementById("btn-code");
+    const btnEmail = document.getElementById("btn-email");
 
-      alert(result.message);
-      // Вывод ошибки
-    } catch (error) {
-      alert("Ошибка соединения с сервером");
-      console.error(error);
-    }
-  });
+    btnEmail?.addEventListener("click", async function () {
+        if (email === "") {
+            alert("Заполните все поля");
+            return;
+        }
+        else {
+            codeInput.disabled = false;
+            btnCode.disabled = false;
+        }
+    });
 
-  document
-  .getElementById("PRSecond")
+    btnCode?.addEventListener("click", async function () {
+        const code = document.getElementById("code").value;
+
+        // Формирование пакета данных пользователя
+        const data = {
+            email: email,
+            code: code,
+        };
+        // Попытка отправки данных на сервер
+        try {
+        // Формирование запроса
+        const response = await fetch("http://localhost:8000/auth/PasswordRecoveryFirst", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json;charset=utf-8",
+            },
+            body: JSON.stringify(data),
+        });
+        // Ожидание ответа от сервера
+        const result = await response.json();
+        // Проверка ответа от сервера
+        if (response.ok) {
+            alert("Верный код");
+            // Переход на страницу входа
+            window.location.assign("PasswordRecoverySecond.html");
+        } else {
+            alert("Неверный код");
+        }
+
+        alert(result.message);
+        // Вывод ошибки
+        } catch (error) {
+            alert("Ошибка соединения с сервером");
+            console.error(error);
+        }
+    });
+});
+
+document
+  .getElementById("PRFormSecond")
   ?.addEventListener("submit", async function (e) {
     e.preventDefault();
 
