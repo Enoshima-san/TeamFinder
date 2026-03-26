@@ -1,14 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    const filterBtn = document.getElementById("filterBtn");
     const logOutBtn = document.getElementById("logOutBtn");
     const sideBar = document.querySelector('.sidebar')
     const buttonSaveSetting = document.getElementById("save-btn-setting");
     
-    // Ссылка на страницу фильтра
-    filterBtn.addEventListener("click", () => {
-        window.location.assign("TEST.html");
-    });
 
     // Выход из аккаунта
     logOutBtn.addEventListener("click", () => {
