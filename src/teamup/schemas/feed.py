@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from src.teamup.domain import Announcement, Game, User
+from teamup.domain import Announcement, Game, User
 
 from .brief_dto import GameBriefDto, UserBriefDto
 

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, cast
 from uuid import UUID
 
-from src.teamup.domain import User
+from teamup.domain import User
 
 from ..models import UserORM
 from ._map_relation import _map_relation

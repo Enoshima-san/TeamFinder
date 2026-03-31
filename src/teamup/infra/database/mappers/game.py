@@ -1,7 +1,7 @@
 from typing import cast
 from uuid import UUID
 
-from src.teamup.domain import Game
+from teamup.domain import Game
 
 from ..models import GameORM
 from ._map_relation import _map_relation

@@ -4,7 +4,7 @@ from uuid import uuid4
 from sqlalchemy import UUID, DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.teamup.domain import ResponseStatus
+from teamup.domain import ResponseStatus
 
 from .base import Base
 

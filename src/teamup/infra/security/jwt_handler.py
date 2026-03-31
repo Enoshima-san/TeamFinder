@@ -4,7 +4,7 @@ from uuid import UUID
 
 import jwt
 
-from src.teamup.core import settings
+from teamup.core import settings
 
 
 class JWTHandler:

@@ -1,9 +1,9 @@
 from uuid import UUID
 
-from src.teamup.core import get_logger
-from src.teamup.domain import User
-from src.teamup.infra import JWTHandler, PasswordHasher
-from src.teamup.schemas import (
+from teamup.core import get_logger
+from teamup.domain import IUserRepository, User
+from teamup.infra import JWTHandler, PasswordHasher
+from teamup.schemas import (
     JwtPayload,
     LoginRequest,
     RegisterRequest,

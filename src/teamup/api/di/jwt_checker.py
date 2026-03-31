@@ -4,8 +4,8 @@ import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-from src.teamup.core import get_logger, settings
-from src.teamup.schemas import JwtPayload, TokenData
+from teamup.core import get_logger, settings
+from teamup.schemas import JwtPayload, TokenData
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 

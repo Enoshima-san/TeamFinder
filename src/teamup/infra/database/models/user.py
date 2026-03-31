@@ -5,7 +5,7 @@ from uuid import uuid4
 from sqlalchemy import UUID, Boolean, DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.teamup.domain import UserRole
+from teamup.domain import UserRole
 
 from .base import Base
 

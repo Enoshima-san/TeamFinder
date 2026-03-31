@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import cast
 from uuid import UUID
 
-from src.teamup.domain import Response
+from teamup.domain import Response
 
 from ..models import ResponseORM
 from ._map_relation import _map_relation

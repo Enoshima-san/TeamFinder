@@ -1,7 +1,7 @@
 from typing import cast
 from uuid import UUID
 
-from src.teamup.domain import Rank
+from teamup.domain import Rank
 
 from ..models import RankORM
 

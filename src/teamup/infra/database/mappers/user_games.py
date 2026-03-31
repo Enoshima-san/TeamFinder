@@ -1,7 +1,7 @@
 from typing import cast
 from uuid import UUID
 
-from src.teamup.domain import UserGames
+from teamup.domain import UserGames
 
 from ..models import UserGamesORM
 

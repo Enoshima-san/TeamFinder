@@ -2,9 +2,9 @@ import json
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
-from src.teamup.application import AuthService
-from src.teamup.core import get_logger
-from src.teamup.schemas import LoginRequest, RegisterRequest
+from teamup.core import get_logger
+from teamup.infra.database import get_async_session
+from teamup.schemas import LoginRequest, RegisterRequest, TokenPair, UserResponse
 
 from ..di import get_auth_service
 

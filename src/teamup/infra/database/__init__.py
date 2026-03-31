@@ -1,4 +1,4 @@
-from .db import async_session, check_database_connection, engine
+from .db import check_database_connection, engine, get_async_session
 from .mappers import (
     AnnouncementMapper,
     ComplaintsMapper,
@@ -39,7 +39,7 @@ __all__ = [
     "ResponseMapper",
     "ComplaintsMapper",
     "GameMapper",
-    "async_session",
+    "get_async_session",
     "check_database_connection",
     "engine",
 ]

@@ -1,7 +1,7 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-from src.teamup.application import (
+from teamup.application.exceptions import (
     AnnouncementCreationError,
     AnnouncementNotFoundError,
     AnnouncementUpdateError,

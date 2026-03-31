@@ -1,12 +1,12 @@
 from uuid import UUID
 
-from src.teamup.core import get_logger
-from src.teamup.domain import (
+from teamup.core import get_logger
+from teamup.domain import (
     Announcement,
     Game,
     User,
 )
-from src.teamup.schemas import (
+from teamup.schemas import (
     AnnouncementCreateIn,
     AnnouncementOut,
     AnnouncementSummaryOut,

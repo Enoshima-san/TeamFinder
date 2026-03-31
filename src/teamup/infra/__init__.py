@@ -8,9 +8,9 @@ from .database import (
     ResponseORM,
     UserGamesORM,
     UserORM,
-    async_session,
     check_database_connection,
     engine,
+    get_async_session,
 )
 from .repositories import (
     AnnouncementRepository,
@@ -38,7 +38,7 @@ __all__ = [
     "GameRepository",
     "UserGamesRepository",
     "ResponseRepository",
-    "async_session",
+    "get_async_session",
     "check_database_connection",
     "engine",
 ]

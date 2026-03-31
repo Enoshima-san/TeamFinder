@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import cast
 from uuid import UUID
 
-from src.teamup.domain import Complaints
+from teamup.domain import Complaints
 
 from ..models import ComplaintsORM
 
