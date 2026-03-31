@@ -4,28 +4,19 @@ from teamup.core import get_logger
 from teamup.domain import (
     Announcement,
     Game,
+    IAnnouncementRepository,
     User,
 )
 from teamup.schemas import (
     AnnouncementCreateIn,
-    AnnouncementOut,
-    AnnouncementSummaryOut,
     AnnouncementUpdateIn,
-    GameBriefDto,
-    UserBriefDto,
 )
 
-from ..di import (
-    get_announcement_repository,
-    get_game_repository,
-    get_user_repository,
-)
 from ..exceptions import (
     AnnouncementCreationError,
     AnnouncementDeleteError,
     AnnouncementNotFoundError,
     AnnouncementUpdateError,
-    ForbiddenError,
     GameNotFoundError,
     InvalidRankRangeError,
     PermissionDeniedError,
@@ -35,53 +26,13 @@ logger = get_logger()
 
 
 class AnnouncementListingService:
-    def __init__(
-        self,
-    ):
+    def __init__(self, ann_r: IAnnouncementRepository):
         logger.info("Инициализация AnnouncementListingService")
-
-    async def _get_user_or_fail(self, user_id: UUID) -> User:
-        """Helper: получить пользователя или выбросить исключение"""
-        async with await get_user_repository() as user_repository:
-            user = await user_repository.get_by_id(user_id)
-            if user is None:
-                logger.warning(f"Пользователь с ID {user_id} не найден.")
-                raise PermissionDeniedError(f"Пользователь с ID {user_id} не найден")
-            return user
-
-    async def _get_game_or_fail(self, game_id: UUID) -> Game:
-        """Helper: получить игру или выбросить исключение"""
-        async with await get_game_repository() as game_repository:
-            game = await game_repository.get_by_id(game_id)
-            if game is None:
-                logger.warning(f"Игра с ID {game_id} не найдена.")
-                raise GameNotFoundError(f"Игра с ID {game_id} не найдена")
-            return game
-
-    async def _get_announcement_or_fail(self, announcement_id: UUID) -> Announcement:
-        """Helper: получить объявление или выбросить исключение"""
-        async with await get_announcement_repository() as announcement_repository:
-            announcement = await announcement_repository.get_by_id(announcement_id)
-            if announcement is None:
-                logger.warning(f"Объявление с ID {announcement_id} не найдено.")
-                raise AnnouncementNotFoundError(
-                    f"Объявление с ID {announcement_id} не найдено"
-                )
-            return announcement
-
-    async def _check_ownership_or_admin(
-        self, announcement: Announcement, user: User
-    ) -> None:
-        """Helper: проверить, что пользователь владелец или админ"""
-        if announcement.user_id != user.user_id and not user.is_admin():
-            logger.warning(
-                f"Пользователь {user.user_id} не имеет прав на объявление {announcement.announcement_id}."
-            )
-            raise ForbiddenError("Нет прав на эту операцию")
+        self._ann_r = ann_r
 
     async def create_announcement(
         self, req: AnnouncementCreateIn, user_id: UUID
-    ) -> AnnouncementOut:
+    ) -> Announcement:
         """
         Создать объявление. Выбрасывает исключения при ошибке.
 
@@ -103,9 +54,6 @@ class AnnouncementListingService:
             logger.warning(f"Некорректный диапазон рангов в запросе от {user_id}.")
             raise InvalidRankRangeError("Некорректные значения требуемых рангов")
 
-        user = await self._get_user_or_fail(user_id)
-        game = await self._get_game_or_fail(req.game_id)
-
         logger.info(
             f"Пользователь {user_id} создаёт объявление для игры {req.game_id}."
         )
@@ -119,23 +67,16 @@ class AnnouncementListingService:
             rank_max=req.rank_max,
         )
 
-        async with await get_announcement_repository() as announcement_repository:
-            announcement = await announcement_repository.create(new_announcement)
-            if announcement is None:
-                logger.error(
-                    f"Не удалось создать объявление для пользователя {user_id}."
-                )
-                raise AnnouncementCreationError("Не удалось создать объявление")
+        announcement = await self._ann_r.create(new_announcement)
+        if announcement is None:
+            logger.error(f"Не удалось создать объявление для пользователя {user_id}.")
+            raise AnnouncementCreationError("Не удалось создать объявление")
 
-            logger.info(
-                f"Объявление {announcement.announcement_id} успешно создано пользователем {user.user_id}."
-            )
-
-            return AnnouncementOut.create(announcement, user, game)
+        return announcement
 
     async def get_active_announcements(
         self, user_id: UUID
-    ) -> list[AnnouncementSummaryOut]:
+    ) -> list[tuple[Announcement, User, Game]]:
         """
         Получить все активные объявления.
 
@@ -146,34 +87,15 @@ class AnnouncementListingService:
             list[AnnouncementSummaryOut]: Список активных объявлений.
         """
 
-        await self._get_user_or_fail(user_id)
-
-        async with await get_announcement_repository() as announcement_repository:
-            announcements = (
-                await announcement_repository.get_all_active_with_relations()
-            )
-
-            response_list = [
-                AnnouncementSummaryOut(
-                    announcement_id=a.announcement_id,
-                    type=a.type,
-                    rank_max=a.rank_max,
-                    rank_min=a.rank_min,
-                    status=a.status,
-                    user=UserBriefDto.from_user(u),
-                    game=GameBriefDto.from_game(g),
-                )
-                for a, u, g in announcements
-            ]
-
-            logger.info(
-                f"Получено {len(response_list)} активных объявлений для пользователя {user_id}."
-            )
-            return response_list
+        announcements = await self._ann_r.get_all_active_with_relations()
+        logger.info(
+            f"Получено {len(announcements)} активных объявлений для пользователя {user_id}."
+        )
+        return announcements
 
     async def get_announcement_by_id(
         self, announcement_id: UUID, user_id: UUID
-    ) -> AnnouncementOut:
+    ) -> tuple[Announcement, User, Game]:
         """Получить объявление по ID.
 
         Args:
@@ -186,31 +108,39 @@ class AnnouncementListingService:
             `GameNotFoundError`: Если игра не найдена.
         """
 
-        announcement = await self._get_announcement_or_fail(announcement_id)
-        user = await self._get_user_or_fail(user_id)
-        game = await self._get_game_or_fail(announcement.game_id)
+        row = await self._ann_r.get_by_id_with_relations(announcement_id)
+        if row is None:
+            raise AnnouncementNotFoundError(
+                f"Объявление с ID {announcement_id} не найдено"
+            )
+
+        a, u, g = row
+
+        if u is None:
+            raise PermissionDeniedError(
+                f"Пользователь {user_id} не имеет доступа к объявлению"
+            )
+        if g is None:
+            raise GameNotFoundError(f"Игра с ID {a.game_id} не найдена")
 
         logger.info(f"Объявление {announcement_id} получено пользователем {user_id}.")
-        return AnnouncementOut.create(announcement, user, game)
+        return a, u, g
 
-    async def delete_announcement(self, announcement_id: UUID, user_id: UUID) -> None:
+    async def delete_announcement(self, announcement_id: UUID, user_id: UUID):
         """Удалить объявление. Возвращает None при успехе."""
-
-        announcement = await self._get_announcement_or_fail(announcement_id)
-        user = await self._get_user_or_fail(user_id)
-
-        async with await get_announcement_repository() as announcement_repository:
-            await self._check_ownership_or_admin(announcement, user)
-
-            if not await announcement_repository.delete(announcement):
-                raise AnnouncementDeleteError("Некорректный запрос на удаление")
-            logger.info(
-                f"Объявление {announcement_id} удалено пользователем {user_id}."
+        ann = await self._ann_r.get_by_id(announcement_id)
+        if ann is None:
+            logger.warning(f"Объявление с ID {announcement_id} не найдено.")
+            raise AnnouncementNotFoundError(
+                f"Объявление с ID {announcement_id} не найдено"
             )
+        if not await self._ann_r.delete(ann):
+            raise AnnouncementDeleteError("Некорректный запрос на удаление")
+        logger.info(f"Объявление {announcement_id} удалено пользователем {user_id}.")
 
     async def update_announcement(
         self, req: AnnouncementUpdateIn, user_id: UUID
-    ) -> AnnouncementOut:
+    ) -> tuple[Announcement, User, Game]:
         """
         Обновить объявление.
 
@@ -227,27 +157,26 @@ class AnnouncementListingService:
             `PermissionDeniedError`: Если пользователь не имеет прав на обновление объявления.
             `GameNotFoundError`: Если игра не найдена.
         """
+        row = await self._ann_r.get_by_id_with_relations(req.announcement_id)
+        if row is None:
+            logger.error(f"Объявление {req.announcement_id} не найдено.")
+            raise AnnouncementNotFoundError("Объявление не найдено")
 
-        announcement = await self._get_announcement_or_fail(req.announcement_id)
-        user = await self._get_user_or_fail(user_id)
+        a, u, g = row
 
-        await self._check_ownership_or_admin(announcement, user)
+        a.type = req.type
+        a.description = req.description
+        a.rank_min = req.rank_min
+        a.rank_max = req.rank_max
+        a.status = req.status
 
-        announcement.type = req.type
-        announcement.description = req.description
-        announcement.rank_min = req.rank_min
-        announcement.rank_max = req.rank_max
-        announcement.status = req.status
+        u_ann = await self._ann_r.update(a)
+        if u_ann is None:
+            logger.error(f"Не удалось обновить объявление {req.announcement_id}.")
+            raise AnnouncementUpdateError("Не удалось обновить объявление")
 
-        async with await get_announcement_repository() as announcement_repository:
-            updated_announcement = await announcement_repository.update(announcement)
-            if updated_announcement is None:
-                logger.error(f"Не удалось обновить объявление {req.announcement_id}.")
-                raise AnnouncementUpdateError("Не удалось обновить объявление")
+        logger.info(
+            f"Объявление {a.announcement_id} обновлено пользователем {user_id}."
+        )
 
-            game = await self._get_game_or_fail(updated_announcement.game_id)
-
-            logger.info(
-                f"Объявление {announcement.announcement_id} обновлено пользователем {user_id}."
-            )
-            return AnnouncementOut.create(updated_announcement, user, game)
+        return u_ann, u, g

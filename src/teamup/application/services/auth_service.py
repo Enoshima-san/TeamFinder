@@ -8,17 +8,14 @@ from teamup.schemas import (
     LoginRequest,
     RegisterRequest,
     TokenData,
-    TokenPair,
-    UserResponse,
 )
 
-from ..di import get_user_repository
 from ..exceptions import (
     InvalidCredentialsError,
     InvalidTokenError,
-    PermissionDeniedError,
     UserAlreadyExistsError,
     UserCreationError,
+    UserNotFoundError,
 )
 
 logger = get_logger()
@@ -30,10 +27,11 @@ class AuthService:
     и внесение в базу новых пользователей.
     """
 
-    def __init__(self):
+    def __init__(self, user_r: IUserRepository):
         logger.info("Инициализация AuthService")
+        self._user_r = user_r
 
-    async def register(self, req: RegisterRequest) -> UserResponse:
+    async def register(self, req: RegisterRequest) -> User:
         """
         Регистрация пользователя.
 
@@ -42,43 +40,33 @@ class AuthService:
             - `UserCreationError`: Если не удалось создать пользователя в БД
 
         Returns:
-            `UserResponse`: Данные созданного пользователя
+            `User`: Доменная сущность пользователя
         """
-        async with await get_user_repository() as user_repository:
-            if await user_repository.check_new_user(req.email, req.username):
-                logger.warning(
-                    f"Попытка регистрации с существующим email или username: {req.email}"
-                )
-                raise UserAlreadyExistsError(
-                    "Пользователь с таким email или username уже существует"
-                )
-
-            password_hash = PasswordHasher.hash(req.password)
-            created_user = User.create(
-                email=req.email,
-                username=req.username,
-                password_hash=password_hash,
+        if await self._user_r.check_new_user(req.email, req.username):
+            logger.warning(
+                f"Попытка регистрации с существующим email или username: {req.email}"
+            )
+            raise UserAlreadyExistsError(
+                "Пользователь с таким email или username уже существует"
             )
 
-            created_user = await user_repository.create(created_user)
-            if not created_user:
-                logger.error(f"Не удалось создать пользователя: {req.email}")
-                raise UserCreationError("Не удалось создать пользователя")
+        password_hash = PasswordHasher.hash(req.password)
+        user = User.create(
+            email=req.email,
+            username=req.username,
+            password_hash=password_hash,
+        )
 
-            logger.info(f"Пользователь {created_user.username} успешно зарегистрирован")
+        user = await self._user_r.create(user)
+        if not user:
+            logger.error(f"Не удалось создать пользователя: {req.email}")
+            raise UserCreationError("Не удалось создать пользователя")
 
-            return UserResponse(
-                username=created_user.username,
-                email=created_user.email,
-                registration_date=created_user.registration_date,
-                last_login=created_user.last_login,
-                is_active=created_user.is_active,
-                role=created_user.role,
-                age=created_user.age,
-                about_me=created_user.about_me,
-            )
+        logger.info(f"Пользователь {user.username} успешно зарегистрирован")
 
-    async def login(self, req: LoginRequest) -> TokenPair:
+        return user
+
+    async def login(self, req: LoginRequest) -> tuple[str, str]:
         """
         Вход в систему существующих пользователей.
 
@@ -87,39 +75,34 @@ class AuthService:
             - `InvalidCredentialsError`: Если пароль неверный
 
         Returns:
-            `TokenPair`: Пара access и refresh токенов
+            `tuple[str, str`: пара access и refresh токенов
         """
-        async with await get_user_repository() as user_repository:
-            login_user = None
-            if "@" in req.login:
-                login_user = await user_repository.get_by_email(req.login)
-            else:
-                login_user = await user_repository.get_by_username(req.login)
+        login_user = None
+        if "@" in req.login:
+            login_user = await self._user_r.get_by_email(req.login)
+        else:
+            login_user = await self._user_r.get_by_username(req.login)
 
-            if not login_user:
-                logger.warning(
-                    f"Попытка входа с неверными учётными данными: {req.login}"
-                )
-                raise PermissionDeniedError("Пользователь не найден")
+        if not login_user:
+            logger.warning(f"Попытка входа с неверными учётными данными: {req.login}")
+            raise InvalidCredentialsError("Пользователь не найден")
 
-            if not PasswordHasher.verify(req.password, login_user.password_hash):
-                logger.warning(
-                    f"Неверный пароль для пользователя: {login_user.username}"
-                )
-                raise InvalidCredentialsError("Неверный пароль")
+        if not PasswordHasher.verify(req.password, login_user.password_hash):
+            logger.warning(f"Неверный пароль для пользователя: {login_user.username}")
+            raise InvalidCredentialsError("Неверный пароль")
 
-            token_data = JWTHandler.get_token_data(
-                login_user.user_id, login_user.username, login_user.role
-            )
+        token_data = JWTHandler.get_token_data(
+            login_user.user_id, login_user.email, login_user.username, login_user.role
+        )
 
-            logger.info(f"Пользователь {login_user.username} успешно вошёл в систему")
+        logger.info(f"Пользователь {login_user.username} успешно вошёл в систему")
 
-            return TokenPair(
-                access_token=JWTHandler.create_access_token(token_data),
-                refresh_token=JWTHandler.create_refresh_token(token_data),
-            )
+        return (
+            JWTHandler.create_access_token(token_data),
+            JWTHandler.create_refresh_token(token_data),
+        )
 
-    async def refresh_tokens(self, token: str) -> TokenPair:
+    async def refresh_tokens(self, token: str) -> tuple[str, str]:
         """
         Обновление пары токенов по `refresh_token`.
 
@@ -128,29 +111,28 @@ class AuthService:
             - `UserNotFoundError`: Если пользователь не найден
 
         Returns:
-            `TokenPair`: Новая пара access и refresh токенов
+            `tuple[str, str]`: Обновленная пара access и refresh токенов
         """
         payload = JWTHandler.verify_token(token, "refresh")
         if not payload:
             logger.warning("Попытка обновления с невалидным refresh токеном")
             raise InvalidTokenError("Невалидный или истёкший токен")
 
-        async with await get_user_repository() as user_repository:
-            user = await user_repository.get_by_id(UUID(payload["sub"]))
-            if not user:
-                logger.warning(f"Пользователь с ID {payload['sub']} не найден")
-                raise PermissionDeniedError("Пользователь не найден")
+        user = await self._user_r.get_by_id_light(UUID(payload["sub"]))
+        if not user:
+            logger.warning(f"Пользователь с ID {payload['sub']} не найден")
+            raise UserNotFoundError("Пользователь больше не существует")
 
-            token_data = JWTHandler.get_token_data(
-                user.user_id, user.username, user.role
-            )
+        token_data = JWTHandler.get_token_data(
+            user.user_id, user.email, user.username, user.role
+        )
 
-            logger.info(f"Токены обновлены для пользователя {user.username}")
+        logger.info(f"Токены обновлены для пользователя {user.username}")
 
-            return TokenPair(
-                access_token=JWTHandler.create_access_token(token_data),
-                refresh_token=JWTHandler.create_refresh_token(token_data),
-            )
+        return (
+            JWTHandler.create_access_token(token_data),
+            JWTHandler.create_refresh_token(token_data),
+        )
 
     async def verify_access_token(self, token: str) -> TokenData:
         """
@@ -173,6 +155,7 @@ class AuthService:
 
         return TokenData(
             user_id=UUID(validated.sub),
+            email=validated.email,
             username=validated.username,
             role=validated.role,
             exp=validated.exp,
