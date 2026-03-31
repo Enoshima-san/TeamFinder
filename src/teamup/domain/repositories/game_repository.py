@@ -2,12 +2,10 @@ from abc import abstractmethod
 from typing import Optional
 from uuid import UUID
 
-from src.teamup.domain import Game
-
-from .base_repository import BaseRepository
+from teamup.domain import Game
 
 
-class IGameRepository(BaseRepository):
+class IGameRepository:
     """
     Работа с "каталогом" игр\n\n
     `Admin only`

@@ -2,12 +2,10 @@ from abc import abstractmethod
 from typing import Optional
 from uuid import UUID
 
-from src.teamup.domain import UserGames
-
-from .base_repository import BaseRepository
+from teamup.domain import UserGames
 
 
-class IUserGamesRepository(BaseRepository):
+class IUserGamesRepository:
     @abstractmethod
     async def create(self, user_game: UserGames) -> Optional[UserGames]:
         """
@@ -23,7 +21,7 @@ class IUserGamesRepository(BaseRepository):
         ...
 
     @abstractmethod
-    async def remove(self, user_id: UUID, game_id: UUID) -> bool:
+    async def delete(self, user_id: UUID, game_id: UUID) -> bool:
         """
         Удаление игры пользователя.
 
@@ -36,7 +34,7 @@ class IUserGamesRepository(BaseRepository):
         ...
 
     @abstractmethod
-    async def get(self, user_id: UUID, game_id: UUID) -> Optional[UserGames]:
+    async def get_by_fk(self, user_id: UUID, game_id: UUID) -> Optional[UserGames]:
         """
         Возвращает игру пользователя.
 
@@ -52,6 +50,19 @@ class IUserGamesRepository(BaseRepository):
 
     @abstractmethod
     async def get_all(self, user_id: UUID) -> list[UserGames]:
+        """
+        Возвращает все игры пользователя, как связи.
+
+        Args:
+            - `user_id`: идентификатор пользователя
+
+        Returns:
+            - `list[UserGames]`: список сущностей хранящих связи (FK) `User` и `Game`
+        """
+        ...
+
+    @abstractmethod
+    async def get_all_by_user(self, user_id: UUID) -> list[UserGames]:
         """
         Возвращает все игры пользователя.
 

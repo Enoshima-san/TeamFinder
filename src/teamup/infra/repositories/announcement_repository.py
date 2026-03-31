@@ -4,9 +4,10 @@ from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.teamup.core import get_logger
-from src.teamup.domain import (
+from teamup.core import get_logger
+from teamup.domain import (
     Announcement,
     AnnouncementStatus,
     Game,
@@ -21,84 +22,66 @@ from ..database import (
     GameORM,
     UserMapper,
     UserORM,
-    async_session,
 )
 
 logger = get_logger()
 
 
 class AnnouncementRepository(IAnnouncementRepository):
-    def __init__(self):
-        super().__init__()
-        logger.info("AnnouncementRepository проиницилизирован")
-
-    async def __aenter__(self):
-        self.session = async_session()
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        return await super().__aexit__(exc_type, exc_val, exc_tb)
-
-    async def close(self):
-        if self.session:
-            await self.session.close()
-            self.session = None
+    def __init__(self, session: AsyncSession):
+        self.session = session
+        logger.info("Инициализация AnnouncementRepository")
 
     async def create(self, announcement: Announcement) -> Optional[Announcement]:
-        self.check_session()
         try:
             orm = AnnouncementMapper.to_orm(announcement)
-            self.session.add(orm)  # type: ignore[reportOptionalMemberAccess]
-            await self.session.commit()  # type: ignore[reportOptionalMemberAccess]
-            await self.session.refresh(orm)  # type: ignore[reportOptionalMemberAccess]
+            self.session.add(orm)
+            await self.session.flush()
+            await self.session.refresh(orm)
             return AnnouncementMapper.to_domain(orm)
         except IntegrityError as e:
             logger.error(f"Ошибка при создании объявления: {e}")
-            await self.session.rollback()  # type: ignore[reportOptionalMemberAccess]
+            await self.session.rollback()
             return None
 
     async def delete(self, announcement: Announcement) -> bool:
-        self.check_session()
-        delete_announcement = await self.session.get(  # type: ignore[reportOptionalMemberAccess]
+        delete_announcement = await self.session.get(
             AnnouncementORM, announcement.announcement_id
         )
         if delete_announcement is None:
             logger.error(f"Объявление с ID {announcement.announcement_id} не найдено")
             return False
 
-        await self.session.delete(delete_announcement)  # type: ignore[reportOptionalMemberAccess]
-        await self.session.commit()  # type: ignore[reportOptionalMemberAccess]
+        await self.session.flush()
+        await self.session.delete(delete_announcement)
         logger.info(f"Объявление с ID {announcement.announcement_id} успешно удалено")
         return True
 
     async def get_all(self) -> list[Announcement]:
-        self.check_session()
         stmt = select(AnnouncementORM)
-        result = await self.session.execute(stmt)  # type: ignore[reportOptionalMemberAccess]
+        result = await self.session.execute(stmt)
         announcements = result.scalars().all()
 
         return [AnnouncementMapper.to_domain(a) for a in announcements]
 
     async def get_by_id(self, announcement_id: UUID) -> Optional[Announcement]:
-        announcement = await self.session.get(AnnouncementORM, announcement_id)  # type: ignore[reportOptionalMemberAccess]
+        announcement = await self.session.get(AnnouncementORM, announcement_id)
         if announcement is None:
             return None
         return AnnouncementMapper.to_domain(announcement)
 
     async def get_by_user(self, user: User) -> list[Announcement]:
-        self.check_session()
         stmt = select(AnnouncementORM).where(AnnouncementORM.user_id == user.user_id)
 
-        result = await self.session.execute(stmt)  # type: ignore[reportOptionalMemberAccess]
+        result = await self.session.execute(stmt)
         announcements = result.scalars().all()
 
         return [AnnouncementMapper.to_domain(a) for a in announcements]
 
     async def get_by_game(self, game: Game) -> list[Announcement]:
-        self.check_session()
         stmt = select(AnnouncementORM).where(AnnouncementORM.game_id == game.game_id)
 
-        result = await self.session.execute(stmt)  # type: ignore[reportOptionalMemberAccess]
+        result = await self.session.execute(stmt)
         announcements = result.scalars().all()
 
         return [AnnouncementMapper.to_domain(a) for a in announcements]
@@ -106,7 +89,6 @@ class AnnouncementRepository(IAnnouncementRepository):
     async def get_all_active_with_relations(
         self,
     ) -> list[tuple[Announcement, User, Game]]:
-        self.check_session()
         stmt = (
             select(AnnouncementORM, UserORM, GameORM)
             .join(UserORM, AnnouncementORM.user_id == UserORM.user_id)
@@ -114,7 +96,7 @@ class AnnouncementRepository(IAnnouncementRepository):
             .where(AnnouncementORM.status == AnnouncementStatus.ACTIVE.value)
         )
 
-        result = await self.session.execute(stmt)  # type: ignore[reportOptionalMemberAccess]
+        result = await self.session.execute(stmt)
         announcements = result.all()
 
         return [
@@ -126,12 +108,30 @@ class AnnouncementRepository(IAnnouncementRepository):
             for a, u, g in announcements
         ]
 
+    async def get_by_id_with_relations(self, announcement_id):
+        stmt = (
+            select(AnnouncementORM, UserORM, GameORM)
+            .join(UserORM, AnnouncementORM.user_id == UserORM.user_id)
+            .join(GameORM, AnnouncementORM.game_id == GameORM.game_id)
+            .where(AnnouncementORM.announcement_id == announcement_id)
+        )
+        result = await self.session.execute(stmt)
+        row = result.one_or_none()
+        if row is None:
+            return None
+
+        a, u, g = row
+        return (
+            AnnouncementMapper.to_domain(a),
+            UserMapper.to_domain(u),
+            GameMapper.to_domain(g),
+        )
+
     async def update(self, announcement: Announcement) -> Optional[Announcement]:
-        self.check_session()
         stmt = select(AnnouncementORM).where(
             AnnouncementORM.announcement_id == announcement.announcement_id
         )
-        result = await self.session.execute(stmt)  # type: ignore[reportOptionalMemberAccess]
+        result = await self.session.execute(stmt)
         orm = result.scalar()
 
         if orm is None:
@@ -145,7 +145,7 @@ class AnnouncementRepository(IAnnouncementRepository):
         orm.status = orm.status
         orm.updated_at = datetime.now()
 
-        await self.session.commit()  # type: ignore[reportOptionalMemberAccess]
-        await self.session.refresh(orm)  # type: ignore[reportOptionalMemberAccess]
+        await self.session.flush()
+        await self.session.refresh(orm)
 
         return AnnouncementMapper.to_domain(orm)

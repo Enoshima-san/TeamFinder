@@ -2,12 +2,10 @@ from abc import abstractmethod
 from typing import Optional
 from uuid import UUID
 
-from src.teamup.domain import User
-
-from .base_repository import BaseRepository
+from teamup.domain import User
 
 
-class IUserRepository(BaseRepository):
+class IUserRepository:
     @abstractmethod
     async def create(self, user: User) -> Optional[User]:
         """
@@ -37,6 +35,19 @@ class IUserRepository(BaseRepository):
 
     @abstractmethod
     async def get_by_id(self, user_id: UUID) -> Optional[User]:
+        """
+        Возвращает пользователя и его связи по его id.
+
+        Args:
+            `user_id`: id пользователя
+
+        Returns:
+            - `User`
+            - `None`: если пользователь не найден
+        """
+        ...
+
+    async def get_by_id_light(self, user_id: UUID) -> Optional[User]:
         """
         Возвращает пользователя по его id.
 

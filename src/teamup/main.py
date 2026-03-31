@@ -35,6 +35,8 @@ app.include_router(wrapper_router)
 
 app.add_exception_handler(AnnouncementException, exception_handler)
 app.add_exception_handler(AuthException, exception_handler)
+app.add_exception_handler(ResponseException, exception_handler)
+app.add_exception_handler(UseCasesException, exception_handler)
 
 app.add_middleware(
     CORSMiddleware,

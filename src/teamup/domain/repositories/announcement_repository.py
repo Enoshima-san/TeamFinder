@@ -2,12 +2,10 @@ from abc import abstractmethod
 from typing import Optional
 from uuid import UUID
 
-from src.teamup.domain import Announcement, Game, User
-
-from .base_repository import BaseRepository
+from teamup.domain import Announcement, Game, User
 
 
-class IAnnouncementRepository(BaseRepository):
+class IAnnouncementRepository:
     @abstractmethod
     async def create(self, announcement: Announcement) -> Optional[Announcement]:
         """
@@ -56,6 +54,22 @@ class IAnnouncementRepository(BaseRepository):
         Returns:
             - `Announcement`: доменный объект анонса
             - `None`: если анонс не найден
+        """
+        ...
+
+    @abstractmethod
+    async def get_by_id_with_relations(
+        self, announcement_id: UUID
+    ) -> Optional[tuple[Announcement, User, Game]]:
+        """
+        Возвращает анонс по его id с его отношениями.
+
+        Args:
+            `announcement_id`: id анонса
+
+        Returns:
+            - `tuple[Announcement, User, Game]`: Доменный объект анонса с его связямя
+            - `None`: Если анонс не найден
         """
         ...
 

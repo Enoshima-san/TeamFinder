@@ -2,12 +2,10 @@ from abc import abstractmethod
 from typing import Optional
 from uuid import UUID
 
-from src.teamup.domain import Response
-
-from .base_repository import BaseRepository
+from teamup.domain import Response
 
 
-class IResponseRepository(BaseRepository):
+class IResponseRepository:
     @abstractmethod
     async def create(self, response: Response) -> Optional[Response]:
         """
