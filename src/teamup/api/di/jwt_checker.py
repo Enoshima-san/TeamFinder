@@ -23,9 +23,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
             settings.security.get_secret_key(),
             algorithms=[settings.security.get_algorithm()],
         )
-        validate_payload = JwtPayload(**payload)
+        validated_payload = JwtPayload(**payload)
 
-        user_data = validate_payload.sub
+        user_data = validated_payload.sub
         if not user_data:
             logger.error("Неверный токен")
             raise HTTPException(
@@ -43,8 +43,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
 
     logger.debug("Токен проверен. Получаем данные пользователя.")
     return TokenData(
-        user_id=UUID(validate_payload.sub),
-        username=validate_payload.username,
-        role=validate_payload.role,
-        exp=validate_payload.exp,
+        user_id=UUID(validated_payload.sub),
+        email=validated_payload.email,
+        username=validated_payload.username,
+        role=validated_payload.role,
+        exp=validated_payload.exp,
     )
