@@ -58,14 +58,3 @@ class AnnouncementOut(BaseModel):
             user=UserBriefDto.from_user(user),
             game=GameBriefDto.from_game(game),
         )
-
-
-class AnnouncementSummaryOut(BaseModel):
-    announcement_id: UUID
-    type: str
-    rank_min: Optional[int]
-    rank_max: Optional[int]
-    status: str
-
-    user: UserBriefDto
-    game: GameBriefDto

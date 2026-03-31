@@ -9,6 +9,7 @@ from ..domain import UserRole
 
 class JwtPayload(BaseModel):
     sub: str
+    email: str
     username: str
     role: UserRole
     exp: int
@@ -16,6 +17,7 @@ class JwtPayload(BaseModel):
 
 class TokenData(BaseModel):
     user_id: UUID
+    email: str
     username: str
     role: UserRole
     exp: int
@@ -28,13 +30,15 @@ class TokenPair(BaseModel):
 
 
 class RegisterRequest(BaseModel):
-    email: EmailStr
+    email: EmailStr = Field(
+        ..., pattern=r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    )
     username: str = Field(
         ...,
         min_length=3,
         max_length=15,
         pattern=r"^[a-z0-9_]+$",
-        description="Только маленькие буквы, цифры и подчеркивание. Без пробелов.",
+        description="Только строчные буквы, цифры и подчеркивание. Без пробелов.",
     )
     password: str = Field(..., min_length=8)
 
@@ -45,6 +49,7 @@ class LoginRequest(BaseModel):
 
 
 class UserResponse(BaseModel):
+    user_id: UUID
     username: str
     email: EmailStr
     registration_date: datetime

@@ -42,3 +42,43 @@ class GameBriefDto(BaseModel):
             game_name=game.game_name,
             game_icon=base64.b64encode(game.game_icon).decode("utf-8"),
         )
+
+
+class AnnouncementBriefDto(BaseModel):
+    announcement_id: UUID
+    type: str
+    rank_min: int | None
+    rank_max: int | None
+    description: str | None
+    status: str
+    created_at: datetime
+    updated_at: datetime
+
+    @staticmethod
+    def from_announcement(announcement: Announcement):
+        return AnnouncementBriefDto(
+            announcement_id=announcement.announcement_id,
+            type=announcement.type,
+            rank_min=announcement.rank_min,
+            rank_max=announcement.rank_max,
+            description=announcement.description,
+            status=announcement.status,
+            created_at=announcement.created_at,
+            updated_at=announcement.updated_at,
+        )
+
+
+class ResponseBriefDto(BaseModel):
+    response_id: UUID
+    status: str
+    created_at: datetime
+    updated_at: datetime
+
+    @staticmethod
+    def from_response(response: Response):
+        return ResponseBriefDto(
+            response_id=response.response_id,
+            status=response.status,
+            created_at=response.created_at,
+            updated_at=response.updated_at,
+        )
