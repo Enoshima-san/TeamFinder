@@ -34,5 +34,15 @@ class AnnouncementORM(Base):
 
     user = relationship("UserORM", back_populates="announcement")
     game = relationship("GameORM", back_populates="announcement")
-    response = relationship("ResponseORM", back_populates="announcement")
-    complaints = relationship("ComplaintsORM", back_populates="announcement")
+    response = relationship(
+        "ResponseORM",
+        back_populates="announcement",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    complaints = relationship(
+        "ComplaintsORM",
+        back_populates="announcement",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )

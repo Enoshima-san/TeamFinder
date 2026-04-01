@@ -33,8 +33,33 @@ class UserORM(Base):
     is_blocked: Mapped[bool] = mapped_column(Boolean, default=False)
     blocked_reason: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
-    user_games = relationship("UserGamesORM", back_populates="user")
-    player_rating = relationship("PlayerRatingORM", back_populates="user")
-    response = relationship("ResponseORM", back_populates="user")
-    announcement = relationship("AnnouncementORM", back_populates="user")
-    complaints = relationship("ComplaintsORM", back_populates="user")
+    user_games = relationship(
+        "UserGamesORM",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    player_rating = relationship(
+        "PlayerRatingORM",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    response = relationship(
+        "ResponseORM",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    announcement = relationship(
+        "AnnouncementORM",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    complaints = relationship(
+        "ComplaintsORM",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )

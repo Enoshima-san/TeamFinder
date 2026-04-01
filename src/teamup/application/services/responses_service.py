@@ -3,7 +3,7 @@ from uuid import UUID
 from teamup.core import get_logger
 from teamup.domain import IResponseRepository, Response
 
-from ..exceptions import ResponseCreationError, ResponseDeletionError
+from ..exceptions import ResponseCreationError
 
 logger = get_logger()
 
@@ -27,10 +27,3 @@ class ResponsesService:
     ) -> list[Response]:
         res = await self._res_r.get_by_announcement(announcement_id)
         return res
-
-    async def delete_with_announcement(self, announcement_id: UUID):
-        res = await self._res_r.get_by_announcement(announcement_id)
-        results = [await self._res_r.delete(r) for r in res]
-        if all(results):
-            return True
-        raise ResponseDeletionError("Не удалось удалить запросы, принадлежащие анонсу.")

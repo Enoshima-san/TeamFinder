@@ -20,10 +20,16 @@ class ComplaintsORM(Base):
         UUID(as_uuid=True), ForeignKey("user.user_id"), nullable=False
     )
     announcement_id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("announcement.announcement_id"), nullable=False
+        UUID(as_uuid=True),
+        ForeignKey("announcement.announcement_id", ondelete="CASCADE"),
+        nullable=False,
     )
     response_id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("response.response_id"), nullable=False
+        UUID(as_uuid=True),
+        ForeignKey(
+            "response.response_id", ondelete="CASCADE"
+        ),  # Так как БД "недоработана" жалоба пока что удаляется вместе с ответом
+        nullable=False,
     )
     status: Mapped[str] = mapped_column(
         String(20), nullable=False, default=ComplaintStatus.OPEN.value

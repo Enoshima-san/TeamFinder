@@ -16,10 +16,14 @@ class ResponseORM(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
     announcement_id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("announcement.announcement_id"), nullable=False
+        UUID(as_uuid=True),
+        ForeignKey("announcement.announcement_id", ondelete="CASCADE"),
+        nullable=False,
     )
     user_id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("user.user_id"), nullable=False
+        UUID(as_uuid=True),
+        ForeignKey("user.user_id", ondelete="CASCADE"),
+        nullable=False,
     )
     status: Mapped[str] = mapped_column(
         String(20), nullable=False, default=ResponseStatus.PENDING.value
@@ -31,6 +35,16 @@ class ResponseORM(Base):
         DateTime, nullable=False, default=datetime.now, onupdate=datetime.now
     )
     announcement = relationship("AnnouncementORM", back_populates="response")
-    complaints = relationship("ComplaintsORM", back_populates="response")
+    complaints = relationship(
+        "ComplaintsORM",
+        back_populates="response",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
     user = relationship("UserORM", back_populates="response")
-    player_rating = relationship("PlayerRatingORM", back_populates="response")
+    player_rating = relationship(
+        "PlayerRatingORM",
+        back_populates="response",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )

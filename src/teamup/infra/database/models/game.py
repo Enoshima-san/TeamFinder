@@ -15,7 +15,26 @@ class GameORM(Base):
     game_name: Mapped[str] = mapped_column(String(100), nullable=False)
     game_icon: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
 
-    user_games = relationship("UserGamesORM", back_populates="game")
-    announcement = relationship("AnnouncementORM", back_populates="game")
-    rank = relationship("RankORM", back_populates="game")
-    player_rating = relationship("PlayerRatingORM")
+    user_games = relationship(
+        "UserGamesORM",
+        back_populates="game",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    announcement = relationship(
+        "AnnouncementORM",
+        back_populates="game",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    rank = relationship(
+        "RankORM",
+        back_populates="game",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    player_rating = relationship(
+        "PlayerRatingORM",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )

@@ -22,7 +22,6 @@ from teamup.schemas import (
 from ..di import (
     get_announcement_listing_service,
     get_current_user,
-    get_responses_service,
     get_user_games_use_case,
 )
 from .responses import responses_router
@@ -116,11 +115,9 @@ async def delete_announcement(
     db: AsyncSession = Depends(get_async_session),
 ):
     ann_s = await get_announcement_listing_service(db)
-    res_s = await get_responses_service(db)
 
     await check_ownership_or_admin(db, announcement_id, token_data.user_id)
 
-    await res_s.delete_with_announcement(announcement_id)
     await ann_s.delete_announcement(announcement_id, token_data.user_id)
     await db.commit()
     return Response(status_code=204)

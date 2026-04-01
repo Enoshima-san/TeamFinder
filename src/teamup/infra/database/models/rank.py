@@ -13,7 +13,9 @@ class RankORM(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
     game_id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("game.game_id"), nullable=False
+        UUID(as_uuid=True),
+        ForeignKey("game.game_id", ondelete="CASCADE"),
+        nullable=False,
     )
     rank_level: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     rank_name: Mapped[str] = mapped_column(String(100), nullable=False)
