@@ -8,7 +8,7 @@ from ..exceptions import UserNotFoundError
 logger = get_logger()
 
 
-class FullUserInfoUseCase:
+class GetFullUserInfoUseCase:
     def __init__(self, user_r: IUserRepository):
         logger.info("Инициализация FullUserInfoUseCase")
         self._user_r = user_r
