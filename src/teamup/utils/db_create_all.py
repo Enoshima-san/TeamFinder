@@ -1,7 +1,7 @@
 import asyncio
 
-from src.teamup.core import get_logger
-from src.teamup.infra import Base, engine
+from teamup.core import get_logger
+from teamup.infra import Base, engine
 
 logger = get_logger()
 
