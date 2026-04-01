@@ -33,6 +33,8 @@ dependencies = [
 
 [project.scripts]
 start = "teamup.main:start"
+create_db = "teamup.utils.db_create_all:run_create_all"
+create_games = "teamup.utils.create_games:run"
 
 [tool.setuptools.packages.find]
 where = ["src"]
