@@ -4,8 +4,8 @@ from teamup.application import (
     AddGameUseCase,
     AnnouncementListingService,
     AuthService,
-    FullUserInfoUseCase,
     GamesService,
+    GetFullUserUseCase,
     GetUserGamesUseCase,
     ResponsesService,
 )
@@ -42,8 +42,8 @@ async def get_add_game_use_case(db: AsyncSession) -> AddGameUseCase:
     return AddGameUseCase(await get_user_games_repository(db))
 
 
-async def get_full_user_info_use_case(db: AsyncSession) -> FullUserInfoUseCase:
-    return FullUserInfoUseCase(await get_user_repository(db))
+async def get_full_user_info_use_case(db: AsyncSession) -> GetFullUserUseCase:
+    return GetFullUserUseCase(await get_user_repository(db))
 
 
 async def get_user_use_case(db: AsyncSession) -> GetUserUseCase:

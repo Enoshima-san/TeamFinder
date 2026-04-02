@@ -6,7 +6,7 @@ from .services import (
 )
 from .use_cases import (
     AddGameUseCase,
-    FullUserInfoUseCase,
+    GetFullUserUseCase,
     GetUserGamesUseCase,
     GetUserUseCase,
 )
@@ -17,7 +17,7 @@ __all__ = [
     "ResponsesService",
     "GamesService",
     "AddGameUseCase",
-    "FullUserInfoUseCase",
+    "GetFullUserUseCase",
     "GetUserGamesUseCase",
     "GetUserUseCase",
 ]
