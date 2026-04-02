@@ -12,9 +12,9 @@ from .response import Response
 class Announcement:
     user_id: UUID
     game_id: UUID
+    type: str
     announcement_id: UUID = field(default_factory=uuid4)
 
-    type: Optional[str] = None
     rank_min: Optional[int] = None
     rank_max: Optional[int] = None
     description: Optional[str] = None
@@ -22,7 +22,7 @@ class Announcement:
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
 
-    responses: List["Response"] = field(default_factory=list)
+    response: List["Response"] = field(default_factory=list)
     complaints: List["Complaints"] = field(default_factory=list)
 
     def start(self):
@@ -54,13 +54,6 @@ class Announcement:
         """Проверка активности анонса"""
         return self.status == AnnouncementStatus.ACTIVE.value
 
-    def set_description(self, description: str):
-        """Смена описания анонсу"""
-        if len(description) > 255:
-            raise ValueError("Описание анонса должно быть не более 255 символов!")
-        self.description = description
-        self.updated_at = datetime.now()
-
     def set_ranks(self, rank_min: int, rank_max: int):
         """Смена требуемых раногов анонса"""
         if rank_min < 0 or rank_max < 0:
@@ -76,13 +69,13 @@ class Announcement:
     def create(
         user_id: UUID,
         game_id: UUID,
-        type: Optional[str] = None,
+        type: str,
         rank_min: Optional[int] = None,
         rank_max: Optional[int] = None,
         description: Optional[str] = None,
         status: str = AnnouncementStatus.ACTIVE.value,
-        created_at: datetime = field(default_factory=datetime.now),
-        updated_at: datetime = field(default_factory=datetime.now),
+        created_at: datetime = datetime.now(),
+        updated_at: datetime = datetime.now(),
     ) -> "Announcement":
 
         if rank_min and rank_max:

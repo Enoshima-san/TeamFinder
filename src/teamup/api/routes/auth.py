@@ -1,63 +1,125 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import json
 
-from src.teamup.application import IAuthService
-from src.teamup.schemas import LoginRequest, RegisterRequest, TokenPair
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from teamup.core import get_logger
+from teamup.infra.database import get_async_session
+from teamup.schemas import LoginRequest, RegisterRequest, TokenPair, UserResponse
 
 from ..di import get_auth_service
 
-auth_router = APIRouter()
+logger = get_logger()
+
+auth_router = APIRouter(tags=["Auth"], prefix="/auth")
 
 
 @auth_router.post(
-    "/registration", response_model=TokenPair, status_code=status.HTTP_201_CREATED
+    "/registration", status_code=status.HTTP_201_CREATED, response_model=UserResponse
 )
-async def register(
-    req: RegisterRequest, auth_service: IAuthService = Depends(get_auth_service)
-):
+async def register(req: RegisterRequest, db: AsyncSession = Depends(get_async_session)):
     """
     Регистрация нового пользователя с автовходом
     и формированием JWT
     """
-    token = await auth_service.register(req)
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Ошибка регистрации: указаны существующие имя пользователя и/или адрес электронной почты",
-        )
-    return token
+    auth_s = await get_auth_service(db)
+    logger.info("Запрос на регистрацию.")
+    user = await auth_s.register(req)
+    res = UserResponse(
+        user_id=user.user_id,
+        username=user.username,
+        email=user.email,
+        registration_date=user.registration_date,
+        last_login=user.last_login,
+        is_active=user.is_active,
+        role=user.role,
+        age=user.age,
+        about_me=user.about_me,
+    )
+    await db.commit()
+    return res
 
 
 @auth_router.post("/login", response_model=TokenPair)
-async def login(
-    req: LoginRequest, auth_service: IAuthService = Depends(get_auth_service)
-):
+async def login(request: Request, db: AsyncSession = Depends(get_async_session)):
     """
-    Авторизация пользователя и формирование JWT
+    Принимает и JSON (фронтенд), и Form Data (Swagger).
     """
-    token = await auth_service.login(req)
-    if not token:
+    logger.info("Запрос на логин.")
+
+    content_type = request.headers.get("Content-Type", "")
+    body = await request.body()
+
+    login = None
+    password = None
+
+    if "application/json" in content_type:
+        data = json.loads(body)
+        login = None if data.get("login") == "" else data.get("login")
+        password = None if data.get("password") == "" else data.get("password")
+
+    elif "application/x-www-form-urlencoded" in content_type:
+        from urllib.parse import parse_qs
+
+        form_data = parse_qs(body.decode())
+        login = form_data.get("username", [None])[0]
+        password = form_data.get("password", [None])[0]
+
+    else:
+        logger.error("Неподдерживаемый тип содержимого.")
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Ошибка авторизации: неверный логин или пароль",
-            headers={"WWW-Authenticate": "Bearer"},
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="Неподдерживаемый тип содержимого",
         )
-    return token
+
+    if login is None or password is None:
+        logger.error("Не указаны логин или пароль")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Указаны не все поля",
+        )
+
+    auth_s = await get_auth_service(db)
+
+    req = LoginRequest(login=login, password=password)
+
+    access, refresh = await auth_s.login(req)
+    res = TokenPair(access_token=access, refresh_token=refresh)
+
+    logger.info("Успешная авторизация.")
+    return res
 
 
-@auth_router.post("/refresh", response_model=TokenPair)
-async def refresh(req: dict, auth_service: IAuthService = Depends(get_auth_service)):
+@auth_router.post("/refresh", status_code=status.HTTP_200_OK, response_model=TokenPair)
+async def refresh(req: dict, db: AsyncSession = Depends(get_async_session)):
     """Обновление пары токенов"""
-    token = req.get("refresh")
-    if not token:
+    auth_s = await get_auth_service(db)
+    token = req.get("refresh", None)
+    if token is None:
+        logger.error("Обновляющий токен не найден")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Ошибка обновления токена: не указан токен",
         )
-    token_pair = await auth_service.refresh_tokens(token)
-    if not token_pair:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Ошибка обновления токена: неверный токен",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return token_pair
+    access, refresh = await auth_s.refresh_tokens(token)
+    res = TokenPair(access_token=access, refresh_token=refresh)
+    return res
+
+
+# Основной метод логина на сервер, закомментирован, пока используется Swagger
+
+# @auth_router.post("/login", response_model=TokenPair)
+# async def login(
+#     req: LoginRequest, auth_service: IAuthService = Depends(get_auth_service)
+# ):
+#     """
+#     Авторизация пользователя и формирование JWT
+#     """
+#     token = await auth_service.login(req)
+#     if not token:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Ошибка авторизации: неверный логин или пароль",
+#             headers={"WWW-Authenticate": "Bearer"},
+#         )
+#     return token
