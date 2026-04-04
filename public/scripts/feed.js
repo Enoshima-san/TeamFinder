@@ -3,12 +3,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const addBtn = document.getElementById("addPostBtn");
     const filterBtn = document.getElementById("filterBtn");
     const logOutBtn = document.getElementById("logOutBtn");
-    const postsCont = document.querySelector('.posts')
-    const sideBar = document.querySelector('.sidebar')
+    const postsCont = document.querySelector('.posts');
+    const sideBar = document.querySelector('.sidebar');
+    const feedPage = document.getElementById('feed-page');
 
     // Ссылка на страницу фильтра
     filterBtn.addEventListener("click", () => {
-        window.location.assign("TEST.html");
+        window.location.assign("feedFilter.html");
+    });
+
+    // Ссылка на страницу ленты
+    feedPage.addEventListener("click", () => {
+        window.location.assign("feed.html");
     });
 
     // Ссылка на страницу добавления объявления
@@ -48,81 +54,73 @@ document.addEventListener("DOMContentLoaded", function () {
     // Функция создания карточки объявления
     function createCard(data) { // ! УКАЗАТЬ РЕАЛЬНЫЕ УЗЛЫ JSON !
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = 'card'
+        card.innerHTML = `
+        <div class="card-header">
+            <div class="avatar post">${data.userName[0].toUpperCase()}</div>
+            <span>${data.userName}</span>
+        </div>
 
-        // Шапка (Аватар и ник)
-        const header = document.createElement('div');
-        header.className = 'card-header';
+        <p>
+            ${data.description}
+        </p>
 
-        const avatar = document.createElement('div');
-        avatar.className = 'avatar post';
+        <div id="gameTags" class="tags">
+            ${data.games.map(game => `<span>${game}</span>`).join('')}
+        </div>
 
-        avatar.textContent = data.userName.charAt(0).toUpperCase();
-        const nameSpan = document.createElement('span');
+        <p class="requirements-title">Требования:</p>
 
-        nameSpan.textContent = data.userName;
+        <div class="tags">
+            <span id="ageFromTag">Возраст от ${data.ageFrom}</span>
+            <span id="ageToTag">Возраст до ${data.ageTo}</span>
+            <span id="microTag">Наличие микрофона : ${data.micro}</span>
+        </div>
 
-        header.append(avatar, nameSpan);
+        <div class="response-box hidden">
+            <p>Сообщите удобный способ связи с вами</p>
+            <textarea placeholder="Например: Discord, Telegram..."></textarea>
+            <button class="send-btn">Отправить</button>
+        </div>
 
-        // Основное описание
-        const desc = document.createElement('p');
-        const firstLine = document.createTextNode(data.description);
-        // Создаем элемент переноса строки
-        const br = document.createElement('br');
-        // Вторая строка текста
-        const roleValue = document.createTextNode(`Основная роль: ${data.role}`);
+        <button class="apply-btn">Откликнуться</button>
+    `;
 
-        // Собираем параграф из узлов
-        desc.append(firstLine, br, roleValue);
-
-        // Теги игр (вспомогательная функция для создания списка тегов)
-        const createTagBox = (items) => {
-            const box = document.createElement('div');
-            box.className = 'tags';
-            items.forEach(text => {
-                const span = document.createElement('span');
-                span.textContent = text;
-                box.appendChild(span);
-            });
-            return box;
-        };
-
-        const gameTags = createTagBox(data.games);
-
-        // Требования
-        const reqTitle = document.createElement('p');
-        reqTitle.className = 'requirements-title';
-        reqTitle.textContent = 'Требования:';
-
-        const reqTags = createTagBox(data.requirements);
-
-        // Блок ответа (Response Box)
-        const responseBox = document.createElement('div');
-        responseBox.className = 'response-box hidden';
-
-        const responseText = document.createElement('p');
-        responseText.textContent = 'Сообщите удобный способ связи с вами';
-
-        const textarea = document.createElement('textarea');
-        textarea.placeholder = 'Например: Discord, Telegram...';
-
-        const sendBtn = document.createElement('button');
-        sendBtn.className = 'send-btn';
-        sendBtn.textContent = 'Отправить';
-
-        responseBox.append(responseText, textarea, sendBtn);
-
-        // Кнопка "Откликнуться"
-        const applyBtn = document.createElement('button');
-        applyBtn.className = 'apply-btn';
-        applyBtn.textContent = 'Откликнуться';
-
-        // Сборка всей карточки
-        card.append(header, desc, gameTags, reqTitle, reqTags, responseBox, applyBtn);
 
         return card;
     }
-    
+
+    // Функция фильтрации
+    function filterPosts(filter) {
+        const cards = document.querySelectorAll('.card');
+
+        cards.forEach(card => {
+            // Получение текстовых данных
+            const gameTagsElements = card.querySelectorAll('#gameTags span');
+            const gamesArray = Array.from(gameTagsElements).map(span => span.innerText.trim());
+            // Извлечение возраста из тегов
+            const ageFromText = card.querySelector('#ageFromTag').innerText;
+            const ageFromValue = parseInt(ageFromText.replace(/\D/g, '')) || 0;
+
+            const ageToText = card.querySelector('#ageToTag').innerText;
+            const ageToValue = parseInt(ageToText.replace(/\D/g, '')) || 0;
+            // Проверерка наличия микрофона по тексту тега
+            const microText = card.querySelector('#microTag').innerText.toLowerCase();
+            const hasMicro = microText.includes('обязательно')
+
+            // Логика фильтрации:
+            const matchesGame =  filter.games.length === 0 || gamesArray.some(game => filter.games.includes(game));
+            const matchesAgeFrom = !filter.ageFrom || ageFromValue >= parseInt(filter.ageFrom);
+            const matchesAgeTo = !filter.ageTo || ageToValue <= parseInt(filter.ageTo);
+            const matchesMicro =  hasMicro;
+            // Показать или скрыть
+            if (matchesGame && matchesAgeFrom && matchesAgeTo && matchesMicro) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
     // Асинхронная функция запроса объявлений к серверу 
     async function loadAdvertisement(){
         try {
@@ -157,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const userData = await response.json();
                 
                 if(document.querySelector('.user')) {
-                    document.getElementById('userAvatar').textContent = userData.username.charAt(0).toUpperCase(); // ! УКАЗАТЬ РЕАЛЬНЫЙ УЗЕЛ JSON !
+                    document.getElementById('userAvatar').textContent = userData.username.charAt(0).toUpperCase();
                     document.getElementById('userNickName').textContent = userData.username;
                 }
                 console.log('Данные пользователя загружены:', userData);
@@ -187,12 +185,23 @@ document.addEventListener("DOMContentLoaded", function () {
         const adData = {
             userName: "GamerPro",
             description: "Ищем тиммейта в команду, время с 20:00 до 24:00",
-            role: "саппорт",
             games: ["Dota 2", "CS2"],
-            requirements: ["18+", "Микрофон"]
+            ageFrom: '10',
+            ageTo: '30',
+            micro: 'обязательно'
+        };
+        // Пример фильтра (ВРЕМЕННО)
+        const filterExample = {
+            games: ["Dota 2"],
+            ageFrom: '10',
+            ageTo: '35',
+            micro: 'обязательно'
         };
         postsCont.appendChild(createCard(adData));
-        // Добавлений через запрос к серверу
+        const retrievedFilter = JSON.parse(sessionStorage.getItem("filterTags"));
+        // Проверка фильтра
+        if (retrievedFilter){filterPosts(retrievedFilter)}
+        else{filterPosts(filterExample)}
         loadAdvertisement();
     }
 
