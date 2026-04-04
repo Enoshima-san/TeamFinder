@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>TeamUp - Лента</title>
+<link rel="stylesheet" href="../styles/feed.css">
+</head>
+<body>
+
+   <div class="container">
+        <!-- Плавающие меню -->
+       <aside class="sidebar">
+       
+           <h1 class="logo">TeamUP</h1>
+           <button id="feed-page" class="menu-btn feed active" type="submit">
+               <img src="../images/feedImage.png" alt="Лента">
+               <span>Лента</span>
+           </button>
+            <button class="menu-btn">
+                <img src="../images/achievements.png" alt="Достижения">
+                <span>Мои достижения</span>
+            </button>
+            <button class="menu-btn">
+                <img src="../images/rating.png" alt="Рейтинг">
+                <span>Рейтинг игроков</span>
+            </button>
+            <button class="menu-btn">
+                <img src="../images/response.png" alt="Отклики">
+                <span>Отклики</span>
+            </button>
+            <button class="menu-btn">
+                <img src="../images/profile.png" alt="Профиль">
+                <span>Профиль</span>
+            </button>
+
+            <!-- Скрытое меню аккаунта -->
+            <div class="account-box hidden">
+                <button class="account-btn">Настройки</button>
+                <hr class="separator-line">
+                <button class="account-btn" id="logOutBtn">Выход из аккаунта</button>
+            </div>
+            
+            <!-- Раздел аккаунта -->
+            <div class="user">
+                <div class="avatar" id="userAvatar">H</div>
+                <span id="userNickName">Ник пользователя</span>
+                <button class="open-settings-btn"></button>
+            </div>
+       
+       </aside>
+       
+
+       <!-- Контейнер основного контента -->
+       <main class="main">
+            <div class="top-bar">
+                <button id="addPostBtn">
+                    <img src="../images/addAdvert.png" alt="Объявление">
+                    <span>Добавить объявление</span>
+                </button>
+                <button id="filterBtn">
+                    <img src="../images/filter.png" alt="Фильтр">
+                    <span>Фильтр</span>
+                </button>
+            </div>
+            <!-- Раздел объявлений -->
+            <div class="posts">
+
+                <div class="card">
+                    <div class="card-header">
+                      <div class="avatar post">H</div>
+                      <span>Ник пользователя</span>
+                    </div>
+
+                    <p>
+                      Ищем тиммейта в команду, время с 20:00 до 24:00<br>
+                      Основная роль: саппорт
+                    </p>
+
+                    <div id="gameTags" class="tags">
+                      <span>Игра 1</span>
+                      <span>Игра 2</span>
+                      <span>Игра 3</span>
+                    </div>
+
+                    <p class="requirements-title">Требования:</p>
+
+                    <div class="tags">
+                      <span id="ageFromTag">Возраст 16+</span>
+                      <span id="ageToTag">Возраст До 30</span>
+                      <span id="microTag">Наличие микрофона</span>
+                    </div>
+                    <!-- Скрытое меню контактов -->
+                    <div class="response-box hidden">
+                        <p>Сообщите удобный способ связи с вами</p>
+                        <textarea placeholder="Например: Discord, Telegram..."></textarea>
+                        <button class="send-btn">Отправить</button>
+                    </div>
+
+                    <button class="apply-btn">Откликнуться</button>
+
+        
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                      <div class="avatar post">H</div>
+                      <span>Ник пользователя</span>
+                    </div>
+
+                    <p>
+                      Ищем тиммейта в команду, время с 20:00 до 24:00<br>
+                      Основная роль: саппорт
+                    </p>
+
+                    <div class="tags">
+                      <span>Игра 1</span>
+                      <span>Игра 2</span>
+                      <span>Игра 3</span>
+                    </div>
+
+                    <p class="requirements-title">Требования:</p>
+
+                    <div class="tags">
+                      <span>Возраст 16+</span>
+                      <span>Наличие микрофона</span>
+                    </div>
+
+                    <div class="response-box hidden">
+                        <p>Сообщите удобный способ связи с вами</p>
+                        <textarea placeholder="Например: Discord, Telegram..."></textarea>
+                        <button class="send-btn">Отправить</button>
+                    </div>
+
+                    <button class="apply-btn">Откликнуться</button>
+
+        
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                      <div class="avatar post">H</div>
+                      <span>Ник пользователя</span>
+                    </div>
+
+                    <p>
+                      Ищем тиммейта в команду, время с 20:00 до 24:00<br>
+                      Основная роль: саппорт
+                    </p>
+
+                    <div class="tags">
+                      <span>Игра 1</span>
+                      <span>Игра 2</span>
+                      <span>Игра 3</span>
+                    </div>
+
+                    <p class="requirements-title">Требования:</p>
+
+                    <div class="tags">
+                      <span>Возраст 16+</span>
+                      <span>Наличие микрофона</span>
+                    </div>
+
+                    <div class="response-box hidden">
+                        <p>Сообщите удобный способ связи с вами</p>
+                        <textarea placeholder="Например: Discord, Telegram..."></textarea>
+                        <button class="send-btn">Отправить</button>
+                    </div>
+
+                    <button class="apply-btn">Откликнуться</button>
+
+        
+                </div>
+
+            </div>
+        
+       </main>
+       
+    </div>
+
+<script src="../scripts/feed.js"></script>
+
+</body>
+</html>

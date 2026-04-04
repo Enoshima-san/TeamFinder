@@ -31,10 +31,10 @@ document
       // Проверка ответа от сервера
       if (response.ok) {
         // Сохранение токена на текущею сессию
-        sessionStorage.setItem("token", result.token);
+        sessionStorage.setItem("token", result.access_token);
         alert("Авторизация завершена");
         // Переход на новую страницу
-        window.location.assign("TEST.html");
+        window.location.assign("feed.html");
       } else {
         alert("Ошибка авторизации");
       }
