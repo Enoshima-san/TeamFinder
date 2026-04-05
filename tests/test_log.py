@@ -1,6 +1,8 @@
 import logging
 
-from src.teamup.core import logger
+from src.teamup.core import get_logger
+
+logger = get_logger()
 
 
 def test_logger_outputs():
