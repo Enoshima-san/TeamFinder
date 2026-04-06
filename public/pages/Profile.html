@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>TeamUp - Профиль</title>
+<link rel="stylesheet" href="../styles/ProfileStyle.css">
+</head>
+<body>
+
+   <div class="container">
+        <!-- Плавающие меню -->
+       <aside class="sidebar">
+       
+           <h1 class="logo">TeamUP</h1>
+           <button class="../images/menu-btn" type="submit">
+               <img src="Feed.png" alt="Лента" class="icon">
+               <span>Лента</span>
+           </button>
+            <button class="menu-btn">
+                <img src="../images/Achievement.png" alt="Достижения" class="icon">
+                <span>Мои достижения</span>
+            </button>
+            <button class="menu-btn">
+                <img src="../images/Rating.png" alt="Рейтинг" class="icon">
+                <span>Рейтинг игроков</span>
+            </button>
+            <button class="menu-btn">
+                <img src="../images/Response.png" alt="Отклики" class="icon">
+                <span>Отклики</span>
+            </button>
+            <button class="menu-btn feed active">
+                <img src="../images/Profile.png" alt="Профиль" class="icon">
+                <span>Профиль</span>
+            </button>
+
+            <!-- Скрытое меню аккаунта -->
+            <div class="account-box hidden">
+                <button class="account-btn">Настройки</button>
+                <hr class="separator-line">
+                <button class="account-btn" id="logOutBtn">Выход из аккаунта</button>
+            </div>
+            
+            <!-- Раздел аккаунта -->
+            <div class="user">
+                <div class="avatar" id="userAvatar">H</div>
+                <span id="userNickName">Ник пользователя</span>
+                <button class="open-settings-btn"></button>
+            </div>
+       
+       </aside>
+       
+
+       <!-- Основная часть -->
+            <div class="main">
+		<form>
+                <div class="profile">
+                
+                </div id ="ProfileForm">
+                <div class="userProfile">
+                    <div class="big-avatar" id="userAvatarS">H</div>
+                    <div id="userNickNameS" class="nick-main">Ник пользователя</div>
+                    <button class="red-btn" type="submit">
+                        <span>Редактировать</span>
+                        <img src="../images/Redactor.png" alt="Редактировать" class="icon-red">
+                    </button>
+                    <div id="description" class="description">
+                        <span>Описание:</span>
+                        <span id="userDescription">.......</span>
+                    </div>
+                    <div id="dateReg" class="dateReg">
+                        <img src="../images/DateReg.png" alt="Календарь" class="icon-date">
+                        <span>Регистрация: </span>
+                        <span id="userDateRegistrate">26 февраля 2026</span>
+                    </div>
+		</form>
+                </div>
+            </div> 
+    </div>
+
+<script src="../scripts/ProfileScript.js"></script>
+
+</body>
+</html>
