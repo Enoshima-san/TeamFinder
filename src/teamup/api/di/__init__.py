@@ -8,7 +8,7 @@ from .repositories import (
 )
 from .services import (
     get_add_game_use_case,
-    get_announcement_listing_service,
+    get_announcement_service,
     get_auth_service,
     get_full_user_info_use_case,
     get_games_service,
@@ -26,7 +26,7 @@ __all__ = [
     "get_auth_service",
     "get_full_user_info_use_case",
     "get_current_user",
-    "get_announcement_listing_service",
+    "get_announcement_service",
     "get_responses_service",
     "get_games_service",
     "get_add_game_use_case",

@@ -12,15 +12,13 @@ from teamup.core import get_logger
 from teamup.infra.database import get_async_session
 from teamup.schemas import (
     AnnouncementCreateIn,
-    AnnouncementOut,
+    AnnouncementSummaryOut,
     AnnouncementUpdateIn,
-    GameBriefDto,
     TokenData,
-    UserBriefDto,
 )
 
 from ..di import (
-    get_announcement_listing_service,
+    get_announcement_service,
     get_current_user,
     get_user_games_use_case,
 )
@@ -34,31 +32,17 @@ feed_router = APIRouter(tags=["Feed/Announcements"], prefix="/a")
 feed_router.include_router(responses_router)
 
 
-@feed_router.get("/", response_model=list[AnnouncementOut])
+@feed_router.get("/", response_model=list[AnnouncementSummaryOut])
 async def get_all_announcememnt(
     token_data: TokenData = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     logger.info("Запрос на вывод всех активных объявлений.")
-    ann_s = await get_announcement_listing_service(db)
+    ann_s = await get_announcement_service(db)
 
     await get_user_or_fail(db, token_data.user_id)
-    announcements = await ann_s.get_active_announcements(token_data.user_id)
+    res = await ann_s.get_active_announcements(token_data.user_id)
 
-    res = [
-        AnnouncementOut(
-            announcement_id=a.announcement_id,
-            type=a.type,
-            rank_max=a.rank_max,
-            rank_min=a.rank_min,
-            status=a.status,
-            updated_at=a.updated_at,
-            description=a.description,
-            user=UserBriefDto.from_user(u),
-            game=GameBriefDto.from_game(g),
-        )
-        for a, u, g in announcements
-    ]
     return res
 
 
@@ -78,13 +62,13 @@ async def create_announcement(
             detail="Пользователь не может создать объявление с игрой, которой нет в его библиотеке.",
         )
 
-    ann_s = await get_announcement_listing_service(db)
+    ann_s = await get_announcement_service(db)
 
     announcement = await ann_s.create_announcement(req, token_data.user_id)
     user = await get_user_or_fail(db, token_data.user_id)
     game = await get_game_or_fail(db, announcement.game_id)
 
-    res = AnnouncementOut.create(announcement, user, game)
+    res = AnnouncementSummaryOut.create(announcement, user, game)
     logger.info(
         f"Объявление {announcement.announcement_id} успешно создано пользователем {user.user_id}."
     )
@@ -93,18 +77,15 @@ async def create_announcement(
     return res
 
 
-@feed_router.get("/{announcement_id}", response_model=AnnouncementOut)
+@feed_router.get("/{announcement_id}", response_model=AnnouncementSummaryOut)
 async def get_announcement(
     announcement_id: UUID,
     token_data: TokenData = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
-    ann_s = await get_announcement_listing_service(db)
+    ann_s = await get_announcement_service(db)
     await get_user_or_fail(db, token_data.user_id)
-    announcement, user, game = await ann_s.get_announcement_by_id(
-        announcement_id, token_data.user_id
-    )
-    res = AnnouncementOut.create(announcement, user, game)
+    res = await ann_s.get_announcement_by_id(announcement_id, token_data.user_id)
     return res
 
 
@@ -114,7 +95,7 @@ async def delete_announcement(
     token_data: TokenData = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
-    ann_s = await get_announcement_listing_service(db)
+    ann_s = await get_announcement_service(db)
 
     await check_ownership_or_admin(db, announcement_id, token_data.user_id)
 
@@ -123,18 +104,17 @@ async def delete_announcement(
     return Response(status_code=204)
 
 
-@feed_router.patch("/{announcement_id}", response_model=AnnouncementOut)
+@feed_router.patch("/{announcement_id}", response_model=AnnouncementSummaryOut)
 async def update_announcement(
     announcement_id: UUID,
     req: AnnouncementUpdateIn,
     token_data: TokenData = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
-    ann_s = await get_announcement_listing_service(db)
+    ann_s = await get_announcement_service(db)
 
     await check_ownership_or_admin(db, token_data.user_id, announcement_id)
 
-    ann, user, game = await ann_s.update_announcement(req, token_data.user_id)
-    res = AnnouncementOut.create(ann, user, game)
+    res = await ann_s.update_announcement(req, token_data.user_id)
     await db.commit()
     return res

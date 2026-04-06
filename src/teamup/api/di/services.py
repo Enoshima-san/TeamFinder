@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from teamup.application import (
     AddGameUseCase,
-    AnnouncementListingService,
+    AnnouncementService,
     AuthService,
     GamesService,
     GetFullUserUseCase,
@@ -24,10 +24,10 @@ async def get_auth_service(db: AsyncSession) -> AuthService:
     return AuthService(await get_user_repository(db))
 
 
-async def get_announcement_listing_service(
+async def get_announcement_service(
     db: AsyncSession,
-) -> AnnouncementListingService:
-    return AnnouncementListingService(await get_announcement_repository(db))
+) -> AnnouncementService:
+    return AnnouncementService(await get_announcement_repository(db))
 
 
 async def get_responses_service(db: AsyncSession) -> ResponsesService:

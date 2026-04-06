@@ -106,20 +106,13 @@ async def refresh(req: dict, db: AsyncSession = Depends(get_async_session)):
     return res
 
 
-# Основной метод логина на сервер, закомментирован, пока используется Swagger
-
 # @auth_router.post("/login", response_model=TokenPair)
-# async def login(
-#     req: LoginRequest, auth_service: IAuthService = Depends(get_auth_service)
-# ):
+# async def login(req: LoginRequest, db: AsyncSession = Depends(get_async_session)):
 #     """
 #     Авторизация пользователя и формирование JWT
 #     """
-#     token = await auth_service.login(req)
-#     if not token:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Ошибка авторизации: неверный логин или пароль",
-#             headers={"WWW-Authenticate": "Bearer"},
-#         )
-#     return token
+#     auth_s = await get_auth_service(db)
+#     access, refresh = await auth_s.login(req)
+#     res = TokenPair(access_token=access, refresh_token=refresh)
+
+#     return res

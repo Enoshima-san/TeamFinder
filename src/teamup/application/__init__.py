@@ -1,5 +1,5 @@
 from .services import (
-    AnnouncementListingService,
+    AnnouncementService,
     AuthService,
     GamesService,
     ResponsesService,
@@ -13,7 +13,7 @@ from .use_cases import (
 
 __all__ = [
     "AuthService",
-    "AnnouncementListingService",
+    "AnnouncementService",
     "ResponsesService",
     "GamesService",
     "AddGameUseCase",
