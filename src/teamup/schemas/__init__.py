@@ -14,7 +14,7 @@ from .brief_dto import (
 )
 from .feed import (
     AnnouncementCreateIn,
-    AnnouncementOut,
+    AnnouncementSummaryOut,
     AnnouncementUpdateIn,
 )
 from .use_cases import FullUserInfoResponse
@@ -27,7 +27,7 @@ __all__ = [
     "TokenPair",
     "TokenData",
     "AnnouncementCreateIn",
-    "AnnouncementOut",
+    "AnnouncementSummaryOut",
     "AnnouncementUpdateIn",
     "GameBriefDto",
     "JwtPayload",
@@ -37,4 +37,5 @@ __all__ = [
     "GameResponse",
     "AnnouncementBriefDto",
     "ResponseBriefDto",
+    "AnnouncementSummaryOut",
 ]

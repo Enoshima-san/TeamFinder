@@ -65,6 +65,27 @@ class Announcement:
         self.rank_max = rank_max
         self.updated_at = datetime.now()
 
+    def update(
+        self,
+        announcement_id: UUID,
+        type: Optional[str] = None,
+        description: Optional[str] = None,
+        rank_min: Optional[int] = None,
+        rank_max: Optional[int] = None,
+        status: Optional[str] = None,
+    ):
+        if announcement_id != self.announcement_id:
+            raise ValueError("Неверный идентификатор анонса!")
+        """Обновление анонса"""
+        if self.status == AnnouncementStatus.COMPLETED.value:
+            raise ValueError("Анонс уже завершён!")
+        self.type = type if type is not None else self.type
+        self.description = description
+        self.rank_min = rank_min
+        self.rank_max = rank_max
+        self.status = status if status is not None else self.status
+        self.updated_at = datetime.now()
+
     @staticmethod
     def create(
         user_id: UUID,

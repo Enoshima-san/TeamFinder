@@ -30,10 +30,17 @@ class AnnouncementUpdateIn(BaseModel):
     rank_min: Optional[int]
     rank_max: Optional[int]
     status: str
-    updated_at: datetime
+
+    def update_entity(self, announcement: Announcement) -> Announcement:
+        announcement.type = self.type
+        announcement.description = self.description
+        announcement.rank_min = self.rank_min
+        announcement.rank_max = self.rank_max
+        announcement.status = self.status
+        return announcement
 
 
-class AnnouncementOut(BaseModel):
+class AnnouncementSummaryOut(BaseModel):
     announcement_id: UUID
     type: str
     description: Optional[str]
@@ -46,15 +53,25 @@ class AnnouncementOut(BaseModel):
     game: GameBriefDto
 
     @staticmethod
-    def create(model: Announcement, user: User, game: Game) -> "AnnouncementOut":
-        return AnnouncementOut(
-            announcement_id=model.announcement_id,
-            type=model.type,
-            description=model.description,
-            rank_min=model.rank_min,
-            rank_max=model.rank_max,
-            status=model.status,
-            updated_at=model.updated_at,
+    def create(
+        announcement: Announcement, user: User, game: Game
+    ) -> "AnnouncementSummaryOut":
+        return AnnouncementSummaryOut(
+            announcement_id=announcement.announcement_id,
+            type=announcement.type,
+            description=announcement.description,
+            rank_min=announcement.rank_min,
+            rank_max=announcement.rank_max,
+            status=announcement.status,
+            updated_at=announcement.updated_at,
             user=UserBriefDto.from_user(user),
             game=GameBriefDto.from_game(game),
         )
+
+    def update(self, u_ann: "AnnouncementUpdateIn"):
+        self.type = u_ann.type
+        self.description = u_ann.description
+        self.rank_min = u_ann.rank_min
+        self.rank_max = u_ann.rank_max
+        self.status = u_ann.status
+        self.updated_at = datetime.now()
