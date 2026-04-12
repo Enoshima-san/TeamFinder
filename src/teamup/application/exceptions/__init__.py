@@ -18,6 +18,7 @@ from .auth_service import (
     UserAlreadyExistsError,
     UserCreationError,
 )
+from .external import ExternalApiError, ExternalApiException
 from .responses_service import (
     ResponseCreationError,
     ResponseDeletionError,
@@ -51,4 +52,6 @@ __all__ = [
     "AuthException",
     "UseCasesException",
     "ResponseDeletionError",
+    "ExternalApiError",
+    "ExternalApiException",
 ]
