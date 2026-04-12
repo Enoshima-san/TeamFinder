@@ -63,9 +63,9 @@ class CybersportRuScraper:
         red_s = soup.find("div", class_=re.compile(r"^percentItem_\S+\s+red_"))
 
         return {
-            "wins": int(self._get_safe_text(green_s).split(" ")[0])
+            "wins": int(self._get_safe_text(green_s).split(" ")[0])  # pyright: ignore[reportOptionalMemberAccess]
             if green_s
             else None,
-            "losses": int(self._get_safe_text(red_s).split(" ")[0]) if red_s else None,
-            "draws": int(self._get_safe_text(gray_s).split(" ")[1]) if gray_s else None,
+            "losses": int(self._get_safe_text(red_s).split(" ")[0]) if red_s else None,  # pyright: ignore[reportOptionalMemberAccess]
+            "draws": int(self._get_safe_text(gray_s).split(" ")[1]) if gray_s else None,  # pyright: ignore[reportOptionalMemberAccess]
         }
