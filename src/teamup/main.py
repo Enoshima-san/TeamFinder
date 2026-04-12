@@ -40,7 +40,6 @@ app.include_router(games_router)
 app.include_router(external_router)
 app.include_router(user_router)
 
-
 app.add_exception_handler(AnnouncementException, exception_handler)
 app.add_exception_handler(AuthException, exception_handler)
 app.add_exception_handler(UseCasesException, exception_handler)
