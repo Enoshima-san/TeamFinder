@@ -3,7 +3,7 @@ from uuid import UUID
 from teamup.core import get_logger
 from teamup.domain import IUserRepository, User
 
-from ..exceptions import UserNotFoundError
+from ...exceptions import UserNotFoundError
 
 logger = get_logger()
 
