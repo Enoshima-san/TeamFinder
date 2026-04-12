@@ -6,6 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 from .api import (
     auth_router,
     exception_handler,
+    external_router,
     feed_router,
     games_router,
     get_current_user,
@@ -36,7 +37,7 @@ app = FastAPI()
 app.include_router(auth_router)
 app.include_router(feed_router)
 app.include_router(games_router)
-# app.include_router(responses_router)
+app.include_router(external_router)
 app.include_router(user_router)
 
 

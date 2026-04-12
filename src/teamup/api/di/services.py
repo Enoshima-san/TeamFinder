@@ -5,11 +5,14 @@ from teamup.application import (
     AnnouncementService,
     AuthService,
     GamesService,
-    GetFullUserUseCase,
-    GetUserGamesUseCase,
     ResponsesService,
 )
-from teamup.application.use_cases import GetUserUseCase
+from teamup.application.use_cases import (
+    GetFullUserUseCase,
+    GetTopPlayersUseCase,
+    GetUserGamesUseCase,
+    GetUserUseCase,
+)
 
 from .repositories import (
     get_announcement_repository,
@@ -54,3 +57,7 @@ async def get_user_games_use_case(db: AsyncSession) -> GetUserGamesUseCase:
     return GetUserGamesUseCase(
         await get_user_games_repository(db), await get_game_repository(db)
     )
+
+
+async def get_top_players_use_case(game_name: str) -> GetTopPlayersUseCase:
+    return GetTopPlayersUseCase(game_name)

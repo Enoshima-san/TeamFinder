@@ -6,6 +6,7 @@ from teamup.application.exceptions import (
     AnnouncementDeleteError,
     AnnouncementNotFoundError,
     AnnouncementUpdateError,
+    ExternalApiError,
     ForbiddenError,
     GameNotFoundError,
     InvalidCredentialsError,
@@ -52,6 +53,8 @@ async def exception_handler(request: Request, exc: Exception):
         UserGameCreationError: 500,
         ResponseCreationError: 500,
         ResponseDeletionError: 500,
+        # External API
+        ExternalApiError: 400,
     }
 
     status_code = status_code_map.get(type(exc), 500)
