@@ -5,6 +5,7 @@ from pydantic_settings import BaseSettings
 
 from .config.application import ApplicationSettings
 from .config.database import DatabaseSettings
+from .config.external import ExternalApiSettings
 from .config.redis import RedisSettings
 from .config.security import SecuritySettings
 
@@ -18,6 +19,7 @@ class Settings(BaseSettings):
     redis: RedisSettings = Field(default_factory=RedisSettings)  # type: ignore[reportArgumentType]
     application: ApplicationSettings = Field(default_factory=ApplicationSettings)  # type: ignore[reportArgumentType]
     security: SecuritySettings = Field(default_factory=SecuritySettings)  # type: ignore[reportArgumentType]
+    external_api: ExternalApiSettings = Field(default_factory=ExternalApiSettings)  # type: ignore[reportArgumentType]
 
 
 @lru_cache()
