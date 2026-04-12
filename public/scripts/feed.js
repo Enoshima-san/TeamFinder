@@ -6,10 +6,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const postsCont = document.querySelector('.posts');
     const sideBar = document.querySelector('.sidebar');
     const feedPage = document.getElementById('feed-page');
+    const respPage = document.getElementById('resp-page');
+    const ratingPage = document.getElementById('rating-page');
 
     // Ссылка на страницу фильтра
     filterBtn.addEventListener("click", () => {
         window.location.assign("feedFilter.html");
+    });
+
+    // Ссылка на страницу откликов
+    respPage.addEventListener("click", () => {
+        window.location.assign("myResponces.html");
+    });
+
+    // Ссылка на страницу рейтинга
+    ratingPage.addEventListener("click", () => {
+        window.location.assign("rating.html");
     });
 
     // Ссылка на страницу ленты
@@ -51,12 +63,30 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    async function apiRequestPost(url, options = {}, data) {
+        const token = sessionStorage.getItem('token');
+        console.log(token);
+        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
+        options.method = 'POST';
+        options.body = {...options.body, body: JSON.stringify(data)};
+        console.log(options)
+        try{
+            const response = await fetch(url, options);
+            return response;
+        }
+        catch (error) {
+            console.error('Ошибка авторизации:', error);
+            return;
+        }
+    }
+
     // Функция создания карточки объявления
     function createCard(data) { // ! УКАЗАТЬ РЕАЛЬНЫЕ УЗЛЫ JSON !
         const card = document.createElement('div');
         card.className = 'card'
         card.innerHTML = `
         <div class="card-header">
+            <div class="postId hidden">${data.postId}</div>
             <div class="avatar post">${data.userName[0].toUpperCase()}</div>
             <span>${data.userName}</span>
         </div>
@@ -84,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
 
         <button class="apply-btn">Откликнуться</button>
-    `;
+        `;
 
 
         return card;
@@ -134,7 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (keys != null)
                 {   // Добавление объявлений по каждой штуке из массива
                     for (const key of keys) {
-                        container.appendChild(createCard(adData.dbResults[key]));
+                        postsCont.appendChild(createCard(adData.dbResults[key]));
                     }
                 }
                 console.log('Результаты из БД:', adData.dbResults);
@@ -183,6 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
         removeAllChildren(postsCont); 
         // Пример объявлений (ВРЕМЕННО)
         const adData = {
+            postId: "sdaw23",
             userName: "GamerPro",
             description: "Ищем тиммейта в команду, время с 20:00 до 24:00",
             games: ["Dota 2", "CS2"],
@@ -205,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
         loadAdvertisement();
     }
 
-    document.addEventListener("click", (e) => {
+    document.addEventListener("click", async (e) => {
 
         // Открыть форму контактов
         if (e.target.classList.contains("apply-btn")) {
@@ -225,18 +256,36 @@ document.addEventListener("DOMContentLoaded", function () {
             const card = e.target.closest(".card");
             const textarea = card.querySelector("textarea");
             const applyBtn = card.querySelector(".apply-btn");
+            const sendBtn = card.querySelector(".send-btn");
+            const postId = card.querySelector(".postId");
 
             // Проверка на заполнение формы
             if (textarea.value.trim() === "") {
               alert("Введите контакт!");
               return;
             }
-
-            applyBtn.textContent = "Отклик отправлен";
-            applyBtn.disabled = true;
-
-            // Закрыть текущею форму контактов
-            card.querySelector(".response-box").classList.add("hidden");
+            sendBtn.disabled = true;
+            // Данные об отклике
+            data = {
+                userName: document.getElementById('userNickName').textContent,
+                postId: postId.textContent,
+                connection: textarea.value 
+            }
+            console.log(data);
+            try {
+            const response = await apiRequestPost('http://localhost:8000/resp-to-post', {}, data); // ! СМЕНИТЬ ЭНДПОИНТ !
+            if (response.ok) {
+                card.querySelector(".response-box").classList.add("hidden");
+                applyBtn.textContent = "Отклик отправлен";
+                applyBtn.disabled = true;
+            } else {
+                sendBtn.disabled = false;
+                console.error('Ошибка при отправке отклика');
+            }
+            } catch (error) {
+                sendBtn.disabled = false;
+                console.error('Ошибка при отправке отклика:', error);
+            }
         }
 
             // Открыть меню аккаунта

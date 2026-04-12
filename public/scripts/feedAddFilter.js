@@ -5,11 +5,21 @@ document.addEventListener("DOMContentLoaded", function () {
   const feedPage = document.getElementById('feed-page');
   const filterBtn = document.getElementById('filter-btn')
   const sideBar = document.querySelector('.sidebar');
-
+  const respPage = document.getElementById('resp-page');
+  const ratingPage = document.getElementById('rating-page');
+  
   // Ссылка на страницу ленты
   feedPage.addEventListener("click", () => {
       window.location.assign("feed.html");
   });
+
+    respPage.addEventListener("click", () => {
+        window.location.assign("myResponces.html");
+    });
+    
+    ratingPage.addEventListener("click", () => {
+        window.location.assign("rating.html");
+    });
 
   // Асинхронная функция запроса данных пользователя к серверу 
   async function loadUserData() {
