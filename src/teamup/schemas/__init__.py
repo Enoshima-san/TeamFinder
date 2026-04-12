@@ -12,6 +12,7 @@ from .brief_dto import (
     ResponseBriefDto,
     UserBriefDto,
 )
+from .external import Player
 from .feed import (
     AnnouncementCreateIn,
     AnnouncementSummaryOut,
@@ -38,4 +39,5 @@ __all__ = [
     "AnnouncementBriefDto",
     "ResponseBriefDto",
     "AnnouncementSummaryOut",
+    "Player",
 ]
