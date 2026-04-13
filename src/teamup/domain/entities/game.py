@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import List
 from uuid import UUID, uuid4
 
 from .announcement import Announcement
@@ -12,12 +11,13 @@ from .user_games import UserGames
 class Game:
     game_name: str
     game_icon: bytes
+
     game_id: UUID = field(default_factory=uuid4)
 
-    announcement: List["Announcement"] = field(default_factory=list)
-    rank: List["Rank"] = field(default_factory=list)
-    user_games: List["UserGames"] = field(default_factory=list)
-    player_rating: List["PlayerRating"] = field(default_factory=list)
+    game_announcement: list["Announcement"] = field(default_factory=list)
+    game_rank: list["Rank"] = field(default_factory=list)
+    game_user_games: list["UserGames"] = field(default_factory=list)
+    game_player_rating: list["PlayerRating"] = field(default_factory=list)
 
     def set_game_name(self, game_name: str):
         """Устанавливает название игры"""

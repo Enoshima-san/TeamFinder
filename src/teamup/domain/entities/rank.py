@@ -6,7 +6,8 @@ from uuid import UUID, uuid4
 class Rank:
     game_id: UUID
     rank_name: str
-    rank_level: int  # полагаю кол-во ММР
+    rank_level: int
+
     rank_id: UUID = field(default_factory=uuid4)
 
     def set_rank_level(self, new_level: int):
