@@ -18,7 +18,6 @@ from ..exceptions import (
     AnnouncementUpdateError,
     GameNotFoundError,
     InvalidRankRangeError,
-    PermissionDeniedError,
 )
 
 logger = get_logger()
@@ -72,7 +71,7 @@ class AnnouncementService:
         return announcement
 
     async def get_active_announcements(
-        self, user_id: UUID
+        self,
     ) -> list[AnnouncementSummaryOut]:
         """
         Получить все активные объявления.
@@ -85,13 +84,11 @@ class AnnouncementService:
         """
 
         result = await self._ann_r.get_all_active_with_relations()
-        logger.info(
-            f"Получено {len(result)} активных объявлений для пользователя {user_id}."
-        )
+
         return [AnnouncementSummaryOut.create(*it) for it in result]
 
     async def get_announcement_by_id(
-        self, announcement_id: UUID, user_id: UUID
+        self, announcement_id: UUID
     ) -> AnnouncementSummaryOut:
         """Получить объявление по ID.
 
@@ -113,10 +110,6 @@ class AnnouncementService:
 
         res = AnnouncementSummaryOut.create(*row)
 
-        if res.user is None:
-            raise PermissionDeniedError(
-                f"Пользователь {user_id} не имеет доступа к объявлению"
-            )
         if res.game is None:
             raise GameNotFoundError(f"Игра с названием {res.game.game_name} не найдена")
 

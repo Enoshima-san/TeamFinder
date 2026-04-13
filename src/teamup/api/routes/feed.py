@@ -34,14 +34,12 @@ feed_router.include_router(responses_router)
 
 @feed_router.get("/", response_model=list[AnnouncementSummaryOut])
 async def get_all_announcememnt(
-    token_data: TokenData = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     logger.info("Запрос на вывод всех активных объявлений.")
     ann_s = await get_announcement_service(db)
 
-    await get_user_or_fail(db, token_data.user_id)
-    res = await ann_s.get_active_announcements(token_data.user_id)
+    res = await ann_s.get_active_announcements()
 
     return res
 
@@ -85,7 +83,7 @@ async def get_announcement(
 ):
     ann_s = await get_announcement_service(db)
     await get_user_or_fail(db, token_data.user_id)
-    res = await ann_s.get_announcement_by_id(announcement_id, token_data.user_id)
+    res = await ann_s.get_announcement_by_id(announcement_id)
     return res
 
 
