@@ -1,4 +1,7 @@
-from src.teamup.domain import UserGames
+from typing import cast
+from uuid import UUID
+
+from teamup.domain import UserGames
 
 from ..models import UserGamesORM
 
@@ -10,9 +13,9 @@ class UserGamesMapper:
             raise ValueError("ORM object is None")
 
         return UserGames(
-            user_id=orm.user_id,  # type: ignore[reportArgumentType]
-            game_id=orm.game_id,  # type: ignore[reportArgumentType]
-            preferred=orm.preferred,  # type: ignore[reportArgumentType]
+            user_id=cast(UUID, orm.user_id),
+            game_id=cast(UUID, orm.game_id),
+            preferred=cast(bool, orm.preferred),
         )
 
     @staticmethod
