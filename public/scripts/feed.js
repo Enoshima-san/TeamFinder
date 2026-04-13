@@ -8,12 +8,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const feedPage = document.getElementById('feed-page');
     const respPage = document.getElementById('resp-page');
     const ratingPage = document.getElementById('rating-page');
+    const chatsPage = document.getElementById("chats-page");
 
     // Ссылка на страницу фильтра
     filterBtn.addEventListener("click", () => {
         window.location.assign("feedFilter.html");
     });
 
+    // Ссылка на страницу чата
+    chatsPage.addEventListener("click", () => {
+        window.location.assign("chat.html");
+    });
+    
     // Ссылка на страницу откликов
     respPage.addEventListener("click", () => {
         window.location.assign("myResponces.html");
@@ -63,12 +69,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Функция для запросов с методом GET с токеном авторизации
     async function apiRequestPost(url, options = {}, data) {
         const token = sessionStorage.getItem('token');
         console.log(token);
         if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
         options.method = 'POST';
-        options.body = {...options.body, body: JSON.stringify(data)};
+        options.body = JSON.stringify(data);
         console.log(options)
         try{
             const response = await fetch(url, options);

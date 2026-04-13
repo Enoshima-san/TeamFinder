@@ -2,21 +2,21 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>TeamUp - Добавить объявление</title>
+<title>TeamUp - Чат</title>
 <link rel="stylesheet" href="../styles/feed.css">
 </head>
-<body class="feed-add">
+<body>
 
    <div class="container">
         <!-- Плавающие меню -->
        <aside class="sidebar">
        
            <h1 class="logo">TeamUP</h1>
-           <button id="feed-page" class="menu-btn feed active" type="submit">
+           <button id="feed-page" class="menu-btn feed" type="submit">
                <img src="../images/feedImage.png" alt="Лента">
                <span>Лента</span>
            </button>
-            <button id="chats-page" class="menu-btn">
+            <button id="chats-page" class="menu-btn active">
                 <img src="../images/achievements.png" alt="Чаты">
                 <span>Мои чаты</span>
             </button>
@@ -52,48 +52,28 @@
 
        <!-- Контейнер основного контента -->
        <main class="main">
-        <h2>Выберите игру</h2>
-        
-        <div class="games">
-          <button class="chip">Игра 1</button>
-          <button class="chip">Игра 2</button>
-          <button class="chip">Игра 3</button>
-          <button class="chip">Игра 4</button>
-        </div>
+          <div class="chat-tabs" id="chatTabs"></div>
+          <div class="chat-container">
 
-        <div class="filters">
-          <select id="ageFrom">
-            <option value="" disabled selected>Возраст от</option>
-          </select>
-        
-          <select id="ageTo">
-            <option value="" disabled selected>Возраст до</option>
-          </select>
-        </div>
-
-        <div class="microphone">
-          <label>Микрофон</label>
-          <select id="micSelect">
-            <option value="1">Обязательно</option>
-            <option value="0">Не обязательно</option>
-          </select>
-        </div>
-
-        <div class="description">
-          <label>Введите описание</label>
-          <textarea id="description" maxlength="300"></textarea>
-        </div>
-
-        <button class="publish">
-          <img src="../images/publish.png" alt="Публикация">
-          <span>Опубликовать</span>
-        </button>
+                 <div class="chat-header" id="chatHeader"></div>
+               
+                 <div class="messages" id="messages">
+                     <div class="message left">Привет! Ты еще ищешь тиммейта?</div>
+                     <div class="message right">Да, актуально 👍</div>
+                 </div>
+               
+                 <div class="input-area">
+                     <input type="text" id="messageInput" placeholder="Введите сообщение...">
+                     <button id="sendMsg-btn">Отправить</button>
+                 </div>
+               
+          </div>
         
        </main>
        
     </div>
 
-<script src="../scripts/feedAddFilter.js"></script>
+<script src="../scripts/chat.js"></script>
 
 </body>
 </html>

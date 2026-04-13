@@ -9,12 +9,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const respPage = document.getElementById('resp-page');
     const ratingList = document.getElementById("players-list");
     const ratingPage = document.getElementById('rating-page');
+    const chatsPage = document.getElementById("chats-page");
+    const logOutBtn = document.getElementById("logOutBtn");
 
 
     // Ссылка на страницу ленты
     feedPage.addEventListener("click", () => {
         window.location.assign("feed.html");
     });
+
+    // Ссылка на страницу чата
+    chatsPage.addEventListener("click", () => {
+        window.location.assign("chat.html");
+    });
+    
     // Ссылка на страницу откликов
     respPage.addEventListener("click", () => {
         window.location.assign("myResponces.html");
@@ -22,6 +30,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // Ссылка на страницу рейтинга
     ratingPage.addEventListener("click", () => {
         window.location.assign("rating.html");
+    });
+
+    // Выход из аккаунта
+    logOutBtn.addEventListener("click", () => {
+        // Удаление токена пользователя из текущей сессии
+        sessionStorage.removeItem('token');
+        window.location.assign("login.html");
     });
 
     // Функция удаления всех подузлов указанного узла

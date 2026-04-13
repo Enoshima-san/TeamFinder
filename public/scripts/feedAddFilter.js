@@ -7,11 +7,19 @@ document.addEventListener("DOMContentLoaded", function () {
   const sideBar = document.querySelector('.sidebar');
   const respPage = document.getElementById('resp-page');
   const ratingPage = document.getElementById('rating-page');
-  
+  const chatsPage = document.getElementById("chats-page");
+  const logOutBtn = document.getElementById("logOutBtn");
+
+
   // Ссылка на страницу ленты
   feedPage.addEventListener("click", () => {
       window.location.assign("feed.html");
   });
+
+    // Ссылка на страницу чата
+    chatsPage.addEventListener("click", () => {
+        window.location.assign("chat.html");
+    });
 
     respPage.addEventListener("click", () => {
         window.location.assign("myResponces.html");
@@ -21,6 +29,13 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.assign("rating.html");
     });
 
+    // Выход из аккаунта
+    logOutBtn.addEventListener("click", () => {
+        // Удаление токена пользователя из текущей сессии
+        sessionStorage.removeItem('token');
+        window.location.assign("login.html");
+    });
+    
   // Асинхронная функция запроса данных пользователя к серверу 
   async function loadUserData() {
     try {
@@ -98,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(token);
         if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
         options.method = 'POST';
-        options.body = {...options.body, body: JSON.stringify(data)};
+        options.body = JSON.stringify(data);
         console.log(options)
         try{
             const response = await fetch(url, options);

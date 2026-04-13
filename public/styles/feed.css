@@ -505,3 +505,93 @@ select {
   justify-content: center;
   color: black;
 }
+
+/* Чат */
+.chat-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    overflow-x: auto;
+    font-family: "Inter";
+    font-size: 17px;
+}
+
+.chat-tab {
+    padding: 10px 15px;
+    background: #9F9C9C;
+    border-radius: 20px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.chat-tab.active {
+    background: white;
+    font-weight: bold;
+}
+
+.chat-container {
+    background: #B8B6B6;
+    border-radius: 20px;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    padding: 15px 20px;
+    font-family: "Inter";
+    font-size: 17px;
+}
+
+.messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    font-family: "Inter";
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    max-width: 60%;
+    padding: 12px;
+    border-radius: 20px;
+}
+
+.message.left {
+    background: #9F9C9C;
+    align-self: flex-start;
+}
+
+.message.right {
+    background: #706464;
+    align-self: flex-end;
+    color: white;
+}
+
+.input-area {
+    display: flex;
+    padding: 15px;
+    gap: 10px;
+}
+
+.input-area input {
+    flex: 1;
+    padding: 10px;
+    background: #D9D9D9;
+    font-family: "Inter";
+    border-radius: 20px;
+    border: none;
+}
+
+.input-area button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 15px;
+    background: #FFFFFF;
+    font-family: "Inter";
+    color: black;
+    cursor: pointer;
+}
