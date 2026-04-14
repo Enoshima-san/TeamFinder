@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>TeamUp - Чат</title>
+<link rel="stylesheet" href="../styles/feed.css">
+</head>
+<body>
+
+   <div class="container">
+        <!-- Плавающие меню -->
+       <aside class="sidebar">
+       
+           <h1 class="logo">TeamUP</h1>
+           <button id="feed-page" class="menu-btn feed" type="submit">
+               <img src="../images/feedImage.png" alt="Лента">
+               <span>Лента</span>
+           </button>
+            <button id="chats-page" class="menu-btn active">
+                <img src="../images/achievements.png" alt="Чаты">
+                <span>Мои чаты</span>
+            </button>
+            <button id="rating-page" class="menu-btn">
+                <img src="../images/rating.png" alt="Рейтинг">
+                <span>Рейтинг игроков</span>
+            </button>
+            <button id="resp-page" class="menu-btn">
+                <img src="../images/response.png" alt="Отклики">
+                <span>Отклики</span>
+            </button>
+            <button class="menu-btn">
+                <img src="../images/profile.png" alt="Профиль">
+                <span>Профиль</span>
+            </button>
+
+            <!-- Скрытое меню аккаунта -->
+            <div class="account-box hidden">
+                <button class="account-btn">Настройки</button>
+                <hr class="separator-line">
+                <button class="account-btn" id="logOutBtn">Выход из аккаунта</button>
+            </div>
+            
+            <!-- Раздел аккаунта -->
+            <div class="user">
+                <div class="avatar" id="userAvatar">H</div>
+                <span id="userNickName">Ник пользователя</span>
+                <button class="open-settings-btn"></button>
+            </div>
+       
+       </aside>
+       
+
+       <!-- Контейнер основного контента -->
+       <main class="main">
+          <div class="chat-tabs" id="chatTabs"></div>
+          <div class="chat-container">
+
+                 <div class="chat-header" id="chatHeader"></div>
+               
+                 <div class="messages" id="messages">
+                     <div class="message left">Привет! Ты еще ищешь тиммейта?</div>
+                     <div class="message right">Да, актуально 👍</div>
+                 </div>
+               
+                 <div class="input-area">
+                     <input type="text" id="messageInput" placeholder="Введите сообщение...">
+                     <button id="sendMsg-btn">Отправить</button>
+                 </div>
+               
+          </div>
+        
+       </main>
+       
+    </div>
+
+<script src="../scripts/chat.js"></script>
+
+</body>
+</html>
