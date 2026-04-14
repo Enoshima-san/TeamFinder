@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Optional, cast
 from uuid import UUID
 
 from teamup.domain import Rank
@@ -8,19 +8,19 @@ from ..models import RankORM
 
 class RankMapper:
     @staticmethod
-    def to_domain(orm: RankORM | None) -> "Rank":
+    def to_domain(orm: Optional[RankORM]) -> Rank:
         if not orm:
             raise ValueError("RankORM is None")
 
         return Rank(
             rank_id=cast(UUID, orm.rank_id),
             game_id=cast(UUID, orm.game_id),
-            rank_name=cast(str, orm.rank_name),
-            rank_level=cast(int, orm.rank_level),
+            rank_name=orm.rank_name,
+            rank_level=orm.rank_level,
         )
 
     @staticmethod
-    def to_orm(entity: Rank | None) -> "RankORM":
+    def to_orm(entity: Optional[Rank]) -> RankORM:
         if not entity:
             raise ValueError("Rank is None")
 

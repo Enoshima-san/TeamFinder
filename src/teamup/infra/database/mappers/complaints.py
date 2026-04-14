@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import cast
+from typing import Optional, cast
 from uuid import UUID
 
 from teamup.domain import Complaints
@@ -9,7 +9,7 @@ from ..models import ComplaintsORM
 
 class ComplaintsMapper:
     @staticmethod
-    def to_domain(orm: ComplaintsORM | None) -> Complaints:
+    def to_domain(orm: Optional[ComplaintsORM]) -> Complaints:
         if not orm:
             raise ValueError("ORM object is None")
 
@@ -24,7 +24,7 @@ class ComplaintsMapper:
         )
 
     @staticmethod
-    def to_orm(entity: Complaints | None) -> ComplaintsORM:
+    def to_orm(entity: Optional[Complaints]) -> ComplaintsORM:
         if not entity:
             raise ValueError("Entity is None")
 

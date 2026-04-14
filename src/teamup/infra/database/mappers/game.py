@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Optional, cast
 from uuid import UUID
 
 from teamup.domain import Game
@@ -13,7 +13,7 @@ from .user_games import UserGamesMapper
 
 class GameMapper:
     @staticmethod
-    def to_domain(orm: GameORM | None) -> "Game":
+    def to_domain(orm: Optional[GameORM]) -> Game:
         if not orm:
             raise ValueError("ORM object is None")
 
@@ -26,16 +26,16 @@ class GameMapper:
 
         return Game(
             game_id=cast(UUID, orm.game_id),
-            game_name=cast(str, orm.game_name),
-            game_icon=cast(bytes, orm.game_icon),
-            user_games=user_games,
-            announcement=announcement,
-            rank=rank,
-            player_rating=player_rating,
+            game_name=orm.game_name,
+            game_icon=orm.game_icon,
+            game_user_games=user_games,
+            game_announcement=announcement,
+            game_rank=rank,
+            game_player_rating=player_rating,
         )
 
     @staticmethod
-    def to_orm(entity: Game | None) -> "GameORM":
+    def to_orm(entity: Optional[Game]) -> GameORM:
         if not entity:
             raise ValueError("Entity is None")
 

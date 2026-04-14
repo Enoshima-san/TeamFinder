@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import cast
+from typing import Optional, cast
 from uuid import UUID
 
 from teamup.domain import PlayerRating
@@ -9,7 +8,7 @@ from ..models import PlayerRatingORM
 
 class PlayerRatingMapper:
     @staticmethod
-    def to_domain(orm: PlayerRatingORM | None) -> PlayerRating:
+    def to_domain(orm: Optional[PlayerRatingORM]) -> PlayerRating:
         if not orm:
             raise ValueError("ORM object is None")
 
@@ -18,12 +17,12 @@ class PlayerRatingMapper:
             user_id=cast(UUID, orm.user_id),
             game_id=cast(UUID, orm.game_id),
             response_id=cast(UUID, orm.response_id),
-            rating_value=cast(int, orm.rating_value),
-            created_at=cast(datetime, orm.created_at),
+            rating_value=orm.rating_value,
+            created_at=orm.created_at,
         )
 
     @staticmethod
-    def to_orm(entity: PlayerRating | None) -> PlayerRatingORM:
+    def to_orm(entity: Optional[PlayerRating]) -> PlayerRatingORM:
         if not entity:
             raise ValueError("Entity is None")
 

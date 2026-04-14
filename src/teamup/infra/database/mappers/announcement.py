@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import Any, cast
+from typing import Optional, cast
 from uuid import UUID
 
 from teamup.domain import Announcement
@@ -12,8 +11,8 @@ from .response import ResponseMapper
 
 class AnnouncementMapper:
     @staticmethod
-    def to_domain(orm: AnnouncementORM | None) -> Announcement:
-        if not orm:
+    def to_domain(orm: Optional[AnnouncementORM]) -> Announcement:
+        if orm is None:
             raise ValueError("ORM object is None")
 
         complaints = _map_relation(orm, "complaints", ComplaintsMapper.to_domain)
@@ -35,7 +34,7 @@ class AnnouncementMapper:
         )
 
     @staticmethod
-    def to_orm(entity: Announcement | None) -> AnnouncementORM:
+    def to_orm(entity: Optional[Announcement]) -> AnnouncementORM:
         if not entity:
             raise ValueError("Entity is None")
 
