@@ -17,5 +17,4 @@ def _map_relation(orm: Any, relation_name: str, mapper: Callable[[Any], T]) -> l
         data = getattr(orm, relation_name)
         return [mapper(item) for item in (data or [])]
     except Exception:
-        # Любая ошибка (например, доступ к незагруженному отношению) → пустой список
         return []
