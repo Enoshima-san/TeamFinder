@@ -333,3 +333,216 @@ function scrollToBottom() {
 renderTabs();
 renderChat();
  */
+
+// !!!! СКРИПТ ЧЕРЕЗ WEB SOCKET !!!!
+/*
+document.addEventListener("DOMContentLoaded", function () {
+    const chatTabs = document.getElementById('chatTabs');
+    const messagesContainer = document.getElementById('messages');
+    const chatHeader = document.getElementById('chatHeader');
+    const messageInput = document.getElementById('messageInput');
+    const sideBar = document.querySelector('.sidebar');
+    const feedPage = document.getElementById('feed-page');
+    const respPage = document.getElementById('resp-page');
+    const ratingPage = document.getElementById('rating-page');
+    const logOutBtn = document.getElementById("logOutBtn");
+    const chatsPage = document.getElementById("chats-page");
+    const sendMsgBtn = document.getElementById("sendMsg-btn");
+
+    let chats = [];
+    let activeChatId = null;
+    let socket = null;
+
+    chatsPage?.addEventListener("click", () => window.location.assign("chat.html"));
+    respPage?.addEventListener("click", () => window.location.assign("myResponces.html"));
+    ratingPage?.addEventListener("click", () => window.location.assign("rating.html"));
+    feedPage?.addEventListener("click", () => window.location.assign("feed.html"));
+
+    logOutBtn?.addEventListener("click", () => {
+        sessionStorage.removeItem('token');
+        if (socket) socket.close();
+        window.location.assign("login.html");
+    });
+
+    async function apiRequest(url, options = {}) {
+        const token = sessionStorage.getItem('token');
+        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
+
+        try {
+            return await fetch(url, options);
+        } catch (error) {
+            console.error('Ошибка запроса:', error);
+        }
+    }
+
+    //  WEBSOCKET 
+    function connectWebSocket() {
+        const token = sessionStorage.getItem('token');
+
+        socket = new WebSocket(`ws://localhost:8000/ws?token=${token}`);
+
+        socket.onopen = () => {
+            console.log('WebSocket подключен');
+        };
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            // Новое сообщение
+            if (data.type === 'message') {
+                if (data.chatId === activeChatId) {
+                    addMessage(data.message);
+                }
+            }
+
+            // История чата
+            if (data.type === 'history') {
+                renderMessages(data.messages);
+            }
+
+            // Обновление чатов
+            if (data.type === 'chats') {
+                chats = data.chats;
+                renderChatTabs();
+            }
+        };
+
+        socket.onclose = () => {
+            console.log('WebSocket закрыт');
+        };
+
+        socket.onerror = (error) => {
+            console.error('WebSocket ошибка:', error);
+        };
+    }
+
+    function renderChatTabs() {
+        chatTabs.innerHTML = '';
+
+        chats.forEach(chat => {
+            const tab = document.createElement('div');
+            tab.className = 'chat-tab';
+            tab.textContent = '@' + chat.name;
+
+            if (chat.id === activeChatId) {
+                tab.classList.add('active');
+            }
+
+            tab.onclick = () => openChat(chat.id);
+
+            chatTabs.appendChild(tab);
+        });
+    }
+
+    function renderMessages(messages) {
+        messagesContainer.innerHTML = '';
+
+        messages.forEach(msg => addMessage(msg));
+    }
+
+    function addMessage(msg) {
+        const div = document.createElement('div');
+        div.className = 'message ' + (msg.isMine ? 'right' : 'left');
+        div.textContent = msg.text;
+
+        messagesContainer.appendChild(div);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function openChat(chatId) {
+        activeChatId = chatId;
+        renderChatTabs();
+        messagesContainer.innerHTML = '';
+
+        // подписка на чат
+        socket.send(JSON.stringify({
+            type: 'join',
+            chatId: chatId
+        }));
+
+        const chat = chats.find(c => c.id === chatId);
+        chatHeader.textContent = 'Чат с @' + chat.name;
+    }
+
+    async function loadChats() {
+        try {
+            const response = await apiRequest('http://localhost:8000/users/me/chats');
+
+            if (response.ok) {
+                const data = await response.json();
+                chats = data.chats;
+
+                renderChatTabs();
+
+                if (chats.length > 0) {
+                    openChat(chats[0].id);
+                }
+            }
+        } catch (e) {
+            console.error('Ошибка загрузки чатов:', e);
+        }
+    }
+
+    function sendMessage() {
+        const text = messageInput.value.trim();
+        if (!text || !activeChatId || !socket) return;
+
+        socket.send(JSON.stringify({
+            type: 'message',
+            chatId: activeChatId,
+            text: text
+        }));
+
+        messageInput.value = '';
+    }
+
+    messageInput?.addEventListener('keypress', e => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    sendMsgBtn?.addEventListener("click", () => {
+        sendMessage();
+    });
+
+    document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("open-settings-btn")) {
+            const sidebar = e.target.closest(".sidebar");
+            const box = sidebar.querySelector(".account-box");
+            box.classList.toggle("hidden");
+        }
+    });
+
+    async function loadUserData() {
+        try {
+            const response = await apiRequest('http://localhost:8000/users/me');
+
+            if (response.ok) {
+                const userData = await response.json();
+
+                if (document.querySelector('.user')) {
+                    document.getElementById('userAvatar').textContent =
+                        userData.username.charAt(0).toUpperCase();
+
+                    document.getElementById('userNickName').textContent =
+                        userData.username;
+                }
+            }
+        } catch (error) {
+            console.error('Ошибка пользователя:', error);
+        }
+    }
+
+    if (sideBar) {
+        loadUserData();
+    }
+
+    if (chatTabs) {
+        connectWebSocket();
+        loadChats();       
+    }
+});
+*/
