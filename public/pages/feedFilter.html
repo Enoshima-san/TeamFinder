@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>TeamUp - Фильтр</title>
+<link rel="stylesheet" href="../styles/feed.css">
+</head>
+<body class="feed-add">
+
+   <div class="container">
+        <!-- Плавающие меню -->
+       <aside class="sidebar">
+       
+           <h1 class="logo">TeamUP</h1>
+           <button id="feed-page" class="menu-btn feed active" type="submit">
+               <img src="../images/feedImage.png" alt="Лента">
+               <span>Лента</span>
+           </button>
+            <button id="chats-page" class="menu-btn">
+                <img src="../images/achievements.png" alt="Чаты">
+                <span>Мои чаты</span>
+            </button>
+            <button id="rating-page" class="menu-btn">
+                <img src="../images/rating.png" alt="Рейтинг">
+                <span>Рейтинг игроков</span>
+            </button>
+            <button id="resp-page" class="menu-btn">
+                <img src="../images/response.png" alt="Отклики">
+                <span>Отклики</span>
+            </button>
+            <button id="profile-page" class="menu-btn">
+                <img src="../images/profile.png" alt="Профиль">
+                <span>Профиль</span>
+            </button>
+
+            <!-- Скрытое меню аккаунта -->
+            <div class="account-box hidden">
+                <button class="account-btn" id="hiddenEdit">Настройки</button>
+                <hr class="separator-line">
+                <button class="account-btn" id="logOutBtn">Выход из аккаунта</button>
+            </div>
+            
+            <!-- Раздел аккаунта -->
+            <div class="user">
+                <div class="avatar" id="userAvatar">H</div>
+                <span id="userNickName">Ник пользователя</span>
+                <button class="open-settings-btn"></button>
+            </div>
+       
+       </aside>
+       
+
+       <!-- Контейнер основного контента -->
+       <main class="main">
+        <h2>Выберите игру</h2>
+        
+        <div class="games">
+          <button class="chip">Игра 1</button>
+          <button class="chip">Игра 2</button>
+          <button class="chip">Игра 3</button>
+          <button class="chip">Игра 4</button>
+        </div>
+
+        <div class="filters">
+          <select id="ageFrom">
+            <option value="" disabled selected>Возраст от</option>
+          </select>
+        
+          <select id="ageTo">
+            <option value="" disabled selected>Возраст до</option>
+          </select>
+        </div>
+
+        <div class="microphone">
+          <label>Микрофон</label>
+          <select id="micSelect">
+            <option value="1">Обязательно</option>
+            <option value="0">Не обязательно</option>
+          </select>
+        </div>
+
+        <button id="filter-btn" class="filter-btn">
+          <span>Применить</span>
+        </button>
+        
+       </main>
+       
+    </div>
+
+<script src="../scripts/feedAddFilter.js"></script>
+
+</body>
+</html>
