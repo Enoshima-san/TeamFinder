@@ -1,7 +1,5 @@
 // Страница входа пользователя
-document
-  .getElementById("loginForm")
-  ?.addEventListener("submit", async function (e) {
+document.getElementById("loginForm")?.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const login = document.getElementById("email").value;
@@ -47,9 +45,7 @@ document
     }
   });
 // Страница регистрации пользователя
-document
-  .getElementById("registerForm")
-  ?.addEventListener("submit", async function (e) {
+document.getElementById("registerForm")?.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const email = document.getElementById("email").value;

@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const ratingPage = document.getElementById('rating-page');
   const chatsPage = document.getElementById("chats-page");
   const logOutBtn = document.getElementById("logOutBtn");
-
+  const profilePage = document.getElementById("profile-page");
+  const hiddEditBtn = document.getElementById("hiddenEdit");
 
   // Ссылка на страницу ленты
   feedPage.addEventListener("click", () => {
@@ -36,6 +37,16 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.assign("login.html");
     });
     
+    // Ссылка на страницу профиля
+    profilePage.addEventListener("click", () => {
+        window.location.assign("profile.html");
+    });
+
+    // Ссылка на страницу настроек
+    hiddEditBtn.addEventListener("click", () => {
+        window.location.assign("settings.html");
+    });
+
   // Асинхронная функция запроса данных пользователя к серверу 
   async function loadUserData() {
     try {

@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const respPage = document.getElementById('resp-page');
     const ratingPage = document.getElementById('rating-page');
     const chatsPage = document.getElementById("chats-page");
+    const profilePage = document.getElementById("profile-page");
+    const hiddEditBtn = document.getElementById("hiddenEdit");
 
     // Ссылка на страницу фильтра
     filterBtn.addEventListener("click", () => {
@@ -40,6 +42,11 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.assign("feedAdd.html");
     });
 
+    // Ссылка на страницу профиля
+    profilePage.addEventListener("click", () => {
+        window.location.assign("profile.html");
+    });
+
     // Выход из аккаунта
     logOutBtn.addEventListener("click", () => {
         // Удаление токена пользователя из текущей сессии
@@ -47,6 +54,11 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.assign("login.html");
     });
 
+    // Ссылка на страницу настроек
+    hiddEditBtn.addEventListener("click", () => {
+        window.location.assign("settings.html");
+    });
+    
     // Функция удаления всех подузлов указанного узла
     function removeAllChildren(parentElement) {
         while (parentElement.firstChild) {
@@ -273,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             sendBtn.disabled = true;
             // Данные об отклике
-            data = {
+            const data = {
                 userName: document.getElementById('userNickName').textContent,
                 postId: postId.textContent,
                 connection: textarea.value 

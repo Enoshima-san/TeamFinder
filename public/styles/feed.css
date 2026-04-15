@@ -112,7 +112,7 @@ body {
 /* Раздел аккаунта пользователя */
 
 .user {
-    margin-top: 100%;
+    margin-top: 95%;
     width: fit-content;
     align-items: center;
     justify-content: center;
@@ -154,7 +154,7 @@ body {
 .main {
     padding: 20px;
     background:#D9D9D9;
-    border-radius:12px;
+    border-radius:20px;
     margin-left: 400px;
     margin-top: 40px;
     margin-right: 50px;
@@ -594,4 +594,132 @@ select {
     font-family: "Inter";
     color: black;
     cursor: pointer;
+}
+
+/* Страница профиля пользователя */
+
+.profile-card {
+    background: #B8B6B6;
+    border-radius: 20px;
+    overflow: hidden;
+    font-family: "Inter";
+}
+
+.cover {
+    height: 290px;
+    background: #A09797;
+}
+
+.profile-info {
+    position: relative;
+    padding: 25px 30px 30px;
+}
+
+.profile-avatar {
+    position: absolute;
+    top: -15px;
+    left: 30px;
+
+    width: 70px;
+    height: 70px;
+
+    border-radius: 50%;
+    background: #706464;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: black;
+    font-size: 28px;
+}
+
+.nick-main {
+    margin-left: 100px;
+    font-size: 22px;
+    margin-top: -1%;
+}
+
+.edit-btn {
+    position: absolute;
+    right: 30px;
+    top: 10px;
+    display: flex;
+    align-items: center;
+    font-size: 17px;
+    gap: 10px;
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 2px solid #000;
+    background: transparent;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.edit-btn:hover {
+    background: #cfcccc;
+}
+
+.description {
+    margin-top: 3%;
+    font-size: 20px;
+}
+
+.date-reg {
+    margin-top: 1%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+}
+
+.profile-body main {
+    height:93vh;
+}
+
+/* Страница настроек профиля */
+
+.edit-body main {
+    height:93vh;
+}
+
+.edit-header {
+    margin-top: 0;
+    font-size: 32px;
+}
+
+.edit-text {
+    display: block;
+    margin-top: 2%;
+    margin-left: 0.5%;
+    margin-bottom: 1%;
+    font-family: "Inter";
+    font-size: 18px;
+}
+
+.edit-name, .edit-desc {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #B8B6B6;
+  height: 7%;
+}
+
+.profile-save {
+  margin-top: 20px;
+  padding: 7px 20px;
+  border: none;
+  border-radius: 20px;
+  display: flex;
+  gap: 10%;
+  align-items: center;
+  justify-content: center;
+  background: #FFF9F9;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+.profile-save:hover {
+  background: #eee;
 }

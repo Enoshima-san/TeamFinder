@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const logOutBtn = document.getElementById("logOutBtn");
     const chatsPage = document.getElementById("chats-page");
     const sendMsgBtn = document.getElementById("sendMsg-btn");
+    const profilePage = document.getElementById("profile-page");
+    const hiddEditBtn = document.getElementById("hiddenEdit");
+
 
     let chats = []; // Массив чатов пользователя
     let activeChatId = null; // Текущий чат
@@ -34,11 +37,21 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.assign("feed.html");
     });
 
+    // Ссылка на страницу профиля
+    profilePage.addEventListener("click", () => {
+        window.location.assign("profile.html");
+    });
+
     // Выход из аккаунта
     logOutBtn.addEventListener("click", () => {
         // Удаление токена пользователя из текущей сессии
         sessionStorage.removeItem('token');
         window.location.assign("login.html");
+    });
+
+    // Ссылка на страницу настроек
+    hiddEditBtn.addEventListener("click", () => {
+        window.location.assign("settings.html");
     });
     
     // Асинхронная функция запроса данных пользователя к серверу 

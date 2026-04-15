@@ -2,10 +2,10 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>TeamUp - Чат</title>
+<title>TeamUp - Настройки</title>
 <link rel="stylesheet" href="../styles/feed.css">
 </head>
-<body>
+<body class="edit-body">
 
    <div class="container">
         <!-- Плавающие меню -->
@@ -16,7 +16,7 @@
                <img src="../images/feedImage.png" alt="Лента">
                <span>Лента</span>
            </button>
-            <button id="chats-page" class="menu-btn active">
+            <button id="chats-page" class="menu-btn">
                 <img src="../images/achievements.png" alt="Чаты">
                 <span>Мои чаты</span>
             </button>
@@ -28,11 +28,10 @@
                 <img src="../images/response.png" alt="Отклики">
                 <span>Отклики</span>
             </button>
-            <button id="profile-page" class="menu-btn">
+            <button id="profile-page" class="menu-btn active">
                 <img src="../images/profile.png" alt="Профиль">
                 <span>Профиль</span>
             </button>
-
 
             <!-- Скрытое меню аккаунта -->
             <div class="account-box hidden">
@@ -53,28 +52,20 @@
 
        <!-- Контейнер основного контента -->
        <main class="main">
-          <div class="chat-tabs" id="chatTabs"></div>
-          <div class="chat-container">
-
-                 <div class="chat-header" id="chatHeader"></div>
-               
-                 <div class="messages" id="messages">
-                     <div class="message left">Привет! Ты еще ищешь тиммейта?</div>
-                     <div class="message right">Да, актуально 👍</div>
-                 </div>
-               
-                 <div class="input-area">
-                     <input type="text" id="messageInput" placeholder="Введите сообщение...">
-                     <button id="sendMsg-btn">Отправить</button>
-                 </div>
-               
-          </div>
-        
+          <h2 class="edit-header">Настройки профиля</h2>
+          <label class="edit-text">Ник пользователя</label>
+          <input class="edit-name" type="text" id="newUserName" placeholder="Введите ник">
+          <label class="edit-text">Описание</label>
+          <textarea class="edit-desc" id="newBio" placeholder="О себе" maxlength="150"></textarea>
+          <button class="profile-save" id="editSave">
+              <img src="../images/save.png" alt="Сохранить">
+              <span>Сохранить</span>
+          </button>
        </main>
        
     </div>
 
-<script src="../scripts/chat.js"></script>
+<script src="../scripts/profileEdit.js"></script>
 
 </body>
 </html>

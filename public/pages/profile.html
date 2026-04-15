@@ -2,10 +2,10 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>TeamUp - Чат</title>
+<title>TeamUp - Профиль</title>
 <link rel="stylesheet" href="../styles/feed.css">
 </head>
-<body>
+<body class="profile-body">
 
    <div class="container">
         <!-- Плавающие меню -->
@@ -16,7 +16,7 @@
                <img src="../images/feedImage.png" alt="Лента">
                <span>Лента</span>
            </button>
-            <button id="chats-page" class="menu-btn active">
+            <button id="chats-page" class="menu-btn">
                 <img src="../images/achievements.png" alt="Чаты">
                 <span>Мои чаты</span>
             </button>
@@ -28,11 +28,10 @@
                 <img src="../images/response.png" alt="Отклики">
                 <span>Отклики</span>
             </button>
-            <button id="profile-page" class="menu-btn">
+            <button id="profile-page" class="menu-btn active">
                 <img src="../images/profile.png" alt="Профиль">
                 <span>Профиль</span>
             </button>
-
 
             <!-- Скрытое меню аккаунта -->
             <div class="account-box hidden">
@@ -53,28 +52,33 @@
 
        <!-- Контейнер основного контента -->
        <main class="main">
-          <div class="chat-tabs" id="chatTabs"></div>
-          <div class="chat-container">
+            <div class="profile-card">
+                <div class="cover"></div>
 
-                 <div class="chat-header" id="chatHeader"></div>
-               
-                 <div class="messages" id="messages">
-                     <div class="message left">Привет! Ты еще ищешь тиммейта?</div>
-                     <div class="message right">Да, актуально 👍</div>
-                 </div>
-               
-                 <div class="input-area">
-                     <input type="text" id="messageInput" placeholder="Введите сообщение...">
-                     <button id="sendMsg-btn">Отправить</button>
-                 </div>
-               
-          </div>
+                <div class="profile-info">
+                    <div class="profile-avatar" id="profileAvatar">H</div>
+                    <div class="nick-main" id="profileName">Ник пользователя</div>
+                    <button class="edit-btn" id="editBtn" type="submit">
+                        <span>Редактировать</span>
+                        <img src="../images/settings.png" alt="Редактировать" class="icon">
+                    </button>
+                    <div class="description">
+                        <span>Описание:</span>
+                        <span id="userDesc">.......</span>
+                    </div>
+                    <div class="date-reg">
+                        <img src="../images/calendar.png" alt="Календарь" class="icon">
+                        <span>Регистрация: </span>
+                        <span id="userDate"></span>
+                    </div>
+                </div>
+            </div>
         
        </main>
        
     </div>
 
-<script src="../scripts/chat.js"></script>
+<script src="../scripts/profileEdit.js"></script>
 
 </body>
 </html>

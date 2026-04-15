@@ -11,7 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const ratingPage = document.getElementById('rating-page');
     const chatsPage = document.getElementById("chats-page");
     const logOutBtn = document.getElementById("logOutBtn");
-
+    const profilePage = document.getElementById("profile-page");
+    const hiddEditBtn = document.getElementById("hiddenEdit");
 
     // Ссылка на страницу ленты
     feedPage.addEventListener("click", () => {
@@ -32,11 +33,21 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.assign("rating.html");
     });
 
+    // Ссылка на страницу профиля
+    profilePage.addEventListener("click", () => {
+        window.location.assign("profile.html");
+    });
+
     // Выход из аккаунта
     logOutBtn.addEventListener("click", () => {
         // Удаление токена пользователя из текущей сессии
         sessionStorage.removeItem('token');
         window.location.assign("login.html");
+    });
+
+    // Ссылка на страницу настроек
+    hiddEditBtn.addEventListener("click", () => {
+        window.location.assign("settings.html");
     });
 
     // Функция удаления всех подузлов указанного узла
