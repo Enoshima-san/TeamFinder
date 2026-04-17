@@ -130,14 +130,11 @@ class AnnouncementService:
             AnnouncementNotFoundError: Если объявление не найдено.
             AnnouncementDeleteError: Если произошла ошибка при удалении объявления.
         """
-        ann = await self._ann_r.get_by_id(announcement_id)
-        if ann is None:
+        if not await self._ann_r.delete(announcement_id):
             logger.warning(f"Объявление с ID {announcement_id} не найдено.")
             raise AnnouncementNotFoundError(
                 f"Объявление с ID {announcement_id} не найдено"
             )
-        if not await self._ann_r.delete(ann):
-            raise AnnouncementDeleteError("Некорректный запрос на удаление")
         logger.info(f"Объявление {announcement_id} удалено пользователем {user_id}.")
 
     async def update_announcement(
