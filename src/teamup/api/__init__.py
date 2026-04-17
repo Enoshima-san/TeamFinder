@@ -3,6 +3,7 @@ from .exception_handlers import exception_handler
 from .external import external_router
 from .routes import (
     auth_router,
+    chat_router,
     feed_router,
     games_router,
     responses_router,
@@ -18,4 +19,5 @@ __all__ = [
     "user_router",
     "chat_ws_router",
     "external_router",
+    "chat_router",
 ]

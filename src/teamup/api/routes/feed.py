@@ -80,7 +80,7 @@ async def get_announcement(
     return res
 
 
-@feed_router.delete("/{announcement_id}")
+@feed_router.delete("/{announcement_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_announcement(
     announcement_id: UUID,
     ann_s: AnnouncementService = Depends(get_announcement_service),

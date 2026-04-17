@@ -1,4 +1,5 @@
 from .auth import auth_router
+from .chat import chat_router
 from .feed import feed_router
 from .games import games_router
 from .responses import responses_router
@@ -10,4 +11,5 @@ __all__ = [
     "games_router",
     "responses_router",
     "user_router",
+    "chat_router",
 ]
