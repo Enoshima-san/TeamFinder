@@ -11,6 +11,7 @@ from teamup.application.use_cases import (
     AddGameUseCase,
     CheckConversationAccessUseCase,
     CreateConversationWithMessageUseCase,
+    GetConversationsByUserIdUseCase,
     GetConversationWithMessagesUseCase,
     GetFullUserUseCase,
     GetTopPlayersUseCase,
@@ -107,11 +108,12 @@ async def get_send_message_use_case(
 
 
 async def get_create_conversation_use_case(
-    db: AsyncSession = Depends(get_async_session),
+    conv_r: IConversationRepository = Depends(get_conversation_repository),
+    sm_uc: SendMessageUseCase = Depends(get_send_message_use_case),
 ) -> CreateConversationWithMessageUseCase:
     return CreateConversationWithMessageUseCase(
-        await get_conversation_repository(db),
-        await get_send_message_use_case(await get_message_repository(db)),
+        conv_r=conv_r,
+        sm_us=sm_uc,
     )
 
 
@@ -135,5 +137,18 @@ async def get_check_conversation_access_use_case(
 
 async def get_conversation_with_messages_use_case(
     mess_r: IMessageRepository = Depends(get_message_repository),
+    user_r: IUserRepository = Depends(get_user_repository),
+    conv_r: IConversationRepository = Depends(get_conversation_repository),
 ) -> GetConversationWithMessagesUseCase:
-    return GetConversationWithMessagesUseCase(mess_r)
+    return GetConversationWithMessagesUseCase(
+        mess_r=mess_r,
+        user_r=user_r,
+        conv_r=conv_r,
+    )
+
+
+async def get_conversation_by_user_id_use_case(
+    conv_r: IConversationRepository = Depends(get_conversation_repository),
+    user_r: IUserRepository = Depends(get_user_repository),
+) -> GetConversationsByUserIdUseCase:
+    return GetConversationsByUserIdUseCase(conv_r=conv_r, user_r=user_r)
