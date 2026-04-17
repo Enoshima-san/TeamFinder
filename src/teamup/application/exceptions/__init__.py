@@ -25,7 +25,14 @@ from .responses_service import (
     ResponseException,
     ResponseNotFoundError,
 )
-from .use_cases import UseCasesException, UserGameCreationError, UserNotFoundError
+from .use_cases import (
+    ConversationCreationError,
+    ConversationNotFoundError,
+    MessageCreationError,
+    UseCasesException,
+    UserGameCreationError,
+    UserNotFoundError,
+)
 
 __all__ = [
     "AnnouncementCreationError",
@@ -44,6 +51,9 @@ __all__ = [
     "InvalidCredentialsError",
     "InvalidTokenError",
     "PasswordMismatchError",
+    "ConversationCreationError",
+    "MessageCreationError",
+    "ConversationNotFoundError",
     "AnnouncementDeleteError",
     "ResponseCreationError",
     "ResponseException",
