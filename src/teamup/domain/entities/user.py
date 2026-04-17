@@ -48,6 +48,10 @@ class User:
             raise ValueError("Имя пользователя слишком длинное")
         self.username = username
 
+    def set_last_login(self):
+        """Время последнего входа"""
+        self.last_login = datetime.now()
+
     def set_about(self, about: str):
         """Установка описания пользователя"""
         if len(about) > 255:
