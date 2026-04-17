@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional, cast
 from uuid import UUID
 
@@ -18,9 +17,9 @@ class ComplaintsMapper:
             user_id=cast(UUID, orm.user_id),
             announcement_id=cast(UUID, orm.announcement_id),
             response_id=cast(UUID, orm.response_id),
-            status=cast(str, orm.status),
-            created_at=cast(datetime, orm.created_at),
-            resolved_at=cast(datetime, orm.resolved_at),
+            status=orm.status,
+            created_at=orm.created_at,
+            resolved_at=orm.resolved_at,
         )
 
     @staticmethod

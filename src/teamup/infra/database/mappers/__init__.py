@@ -1,6 +1,9 @@
 from .announcement import AnnouncementMapper
 from .complaints import ComplaintsMapper
+from .conversation import ConversationMapper
 from .game import GameMapper
+from .message import MessageMapper
+from .notification import NotificationMapper
 from .player_rating import PlayerRatingMapper
 from .rank import RankMapper
 from .response import ResponseMapper
@@ -16,4 +19,7 @@ __all__ = [
     "GameMapper",
     "ComplaintsMapper",
     "ResponseMapper",
+    "NotificationMapper",
+    "ConversationMapper",
+    "MessageMapper",
 ]

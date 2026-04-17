@@ -6,6 +6,8 @@ from teamup.domain import Announcement
 from ..models import AnnouncementORM
 from ._map_relation import _map_relation
 from .complaints import ComplaintsMapper
+from .conversation import ConversationMapper
+from .notification import NotificationMapper
 from .response import ResponseMapper
 
 
@@ -17,20 +19,24 @@ class AnnouncementMapper:
 
         complaints = _map_relation(orm, "complaints", ComplaintsMapper.to_domain)
         responses = _map_relation(orm, "response", ResponseMapper.to_domain)
+        conversations = _map_relation(orm, "conversation", ConversationMapper.to_domain)
+        notifications = _map_relation(orm, "notification", NotificationMapper.to_domain)
 
         return Announcement(
             announcement_id=cast(UUID, orm.announcement_id),
             user_id=cast(UUID, orm.user_id),
             game_id=cast(UUID, orm.game_id),
-            type=cast(Any, orm.type),
-            rank_min=cast(None, orm.rank_min),
-            rank_max=cast(None, orm.rank_max),
-            description=cast(Any, orm.description),
-            status=cast(Any, orm.status),
-            created_at=cast(datetime, orm.created_at),
-            updated_at=cast(datetime, orm.updated_at),
-            response=responses,
-            complaints=complaints,
+            type=orm.type,
+            rank_min=orm.rank_min,
+            rank_max=orm.rank_max,
+            description=orm.description,
+            status=orm.status,
+            created_at=orm.created_at,
+            updated_at=orm.updated_at,
+            announcement_responses=responses,
+            announcement_complaints=complaints,
+            announcement_conversations=conversations,
+            announcement_notifications=notifications,
         )
 
     @staticmethod
