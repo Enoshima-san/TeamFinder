@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from sqlalchemy.exc import OperationalError
@@ -36,3 +37,16 @@ async def check_database_connection(max_retries=10, delay=2):
                 f"База данных не готова ({attempt}/{max_retries} попыток), начинаем заново через {delay}сек..."
             )
             await asyncio.sleep(delay)
+
+
+@asynccontextmanager
+async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
+    session = async_session_maker()
+    try:
+        yield session
+        await session.commit()
+    except Exception:
+        await session.rollback()
+        raise
+    finally:
+        await session.close()
