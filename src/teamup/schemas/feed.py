@@ -42,6 +42,7 @@ class AnnouncementUpdateIn(BaseModel):
 
 class AnnouncementSummaryOut(BaseModel):
     announcement_id: UUID
+    user_id: UUID
     type: str
     description: Optional[str]
     rank_min: Optional[int]
@@ -58,6 +59,7 @@ class AnnouncementSummaryOut(BaseModel):
     ) -> "AnnouncementSummaryOut":
         return AnnouncementSummaryOut(
             announcement_id=announcement.announcement_id,
+            user_id=user.user_id,
             type=announcement.type,
             description=announcement.description,
             rank_min=announcement.rank_min,
