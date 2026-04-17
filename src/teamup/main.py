@@ -5,11 +5,11 @@ from starlette.middleware.cors import CORSMiddleware
 
 from .api import (
     auth_router,
+    chat_ws_router,
     exception_handler,
     external_router,
     feed_router,
     games_router,
-    get_current_user,
     user_router,
 )
 from .application.exceptions import (
@@ -18,6 +18,7 @@ from .application.exceptions import (
     UseCasesException,
 )
 from .core import get_logger
+from .core.di import get_current_user
 from .infra import check_database_connection
 from .schemas import TokenData
 
@@ -39,6 +40,7 @@ app.include_router(feed_router)
 app.include_router(games_router)
 app.include_router(external_router)
 app.include_router(user_router)
+app.include_router(chat_ws_router)
 
 app.add_exception_handler(AnnouncementException, exception_handler)
 app.add_exception_handler(AuthException, exception_handler)
