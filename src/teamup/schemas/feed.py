@@ -13,6 +13,7 @@ class AnnouncementCreateIn(BaseModel):
     type: str
     game_id: UUID
     description: Optional[str] = None
+    has_micropphone: bool = False
     rank_min: Optional[int] = None
     rank_max: Optional[int] = None
 
@@ -65,6 +66,7 @@ class AnnouncementSummaryOut(BaseModel):
             rank_min=announcement.rank_min,
             rank_max=announcement.rank_max,
             status=announcement.status,
+            has_microphone=user.has_microphone,
             updated_at=announcement.updated_at,
             user=UserBriefDto.from_user(user),
             game=GameBriefDto.from_game(game),

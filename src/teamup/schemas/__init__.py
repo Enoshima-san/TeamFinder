@@ -14,7 +14,7 @@ from .brief_dto import (
     ResponseBriefDto,
     UserBriefDto,
 )
-from .chat import ConversationWithMessages
+from .chat import ConversationResponse, ConversationWithMessages
 from .external import Player
 from .feed import (
     AnnouncementCreateIn,
@@ -56,4 +56,5 @@ __all__ = [
     "WebSocketMessageIn",
     "WebSocketErrorOut",
     "ConversationWithMessages",
+    "ConversationResponse",
 ]
