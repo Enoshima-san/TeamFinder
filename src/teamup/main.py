@@ -5,6 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from .api import (
     auth_router,
+    chat_router,
     chat_ws_router,
     exception_handler,
     external_router,
@@ -42,6 +43,7 @@ app.include_router(feed_router)
 app.include_router(games_router)
 app.include_router(external_router)
 app.include_router(user_router)
+app.include_router(chat_router)
 app.include_router(chat_ws_router)
 
 app.add_exception_handler(AnnouncementException, exception_handler)
@@ -52,10 +54,14 @@ app.add_exception_handler(ResponseException, exception_handler)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://ff08xs96-8000.euw.devtunnels.ms",
+    ],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["*"],
 )
 
 

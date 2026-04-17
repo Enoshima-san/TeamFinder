@@ -1,28 +1,41 @@
-from teamup.domain import Announcement, Conversation, User
+from uuid import UUID
+
+from teamup.domain import (
+    IConversationRepository,
+    IUserRepository,
+)
 from teamup.domain.repositories import IMessageRepository
 from teamup.schemas import ConversationWithMessages
 
-from ....exceptions import ConversationBadRequestError, ForbiddenError
+from ....base_rules import BaseRules
+from ....exceptions import ForbiddenError
 
 
 class GetConversationWithMessagesUseCase:
-    def __init__(self, m_r: IMessageRepository):
-        self.m_r = m_r
+    def __init__(
+        self,
+        mess_r: IMessageRepository,
+        user_r: IUserRepository,
+        conv_r: IConversationRepository,
+    ):
+        self._m_r = mess_r
+        self._user_r = user_r
+        self._conv_r = conv_r
 
     async def __call__(
-        self, conversation: Conversation, user: User, announcement: Announcement
+        self,
+        conversation_id: UUID,
+        user_id: UUID,
     ) -> ConversationWithMessages:
-        if not conversation.is_participant(
-            user.user_id
-        ) or not conversation.is_participant(announcement.user_id):
+        user = await BaseRules.get_user_or_fail(self._user_r, user_id)
+        conversation = await BaseRules.get_conversation_or_fail(
+            self._conv_r, conversation_id
+        )
+
+        if not conversation.is_participant(user.user_id):
             raise ForbiddenError("Пользователь не является участником чата")
 
-        if user.user_id == announcement.user_id:
-            raise ConversationBadRequestError(
-                "Пользователь не может просматривать чат с самим собой"
-            )
-
-        messages_list = await self.m_r.get_by_conversation_id(
+        messages_list = await self._m_r.get_by_conversation_id(
             conversation.conversation_id
         )
         return ConversationWithMessages(
