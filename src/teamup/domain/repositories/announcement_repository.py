@@ -9,7 +9,7 @@ class IAnnouncementRepository:
     @abstractmethod
     async def create(self, announcement: Announcement) -> Optional[Announcement]:
         """
-        Создаёт запись и возвращает объект анонса.
+        Создаёт объявление.
 
         Args:
             `announcement`: доменная сущность типа `Announcement` с заполненными полями для создания
@@ -21,7 +21,7 @@ class IAnnouncementRepository:
         ...
 
     @abstractmethod
-    async def delete(self, announcement: Announcement) -> bool:
+    async def delete(self, announcement_id: UUID) -> bool:
         """
         Удаляет запись об анонсе при найденном совпадении
 

@@ -21,7 +21,7 @@ class IUserRepository:
         ...
 
     @abstractmethod
-    async def delete(self, user: User) -> bool:
+    async def delete(self, user_id: UUID) -> bool:
         """
         Удалаяет запись о пользователе при найденном совпадении.
 

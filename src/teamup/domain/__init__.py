@@ -1,7 +1,10 @@
 from .entities import (
     Announcement,
     Complaints,
+    Conversation,
     Game,
+    Message,
+    Notification,
     PlayerRating,
     Rank,
     Response,
@@ -11,7 +14,10 @@ from .entities import (
 from .enums import AnnouncementStatus, ComplaintStatus, ResponseStatus, UserRole
 from .repositories import (
     IAnnouncementRepository,
+    IConversationRepository,
     IGameRepository,
+    IMessageRepository,
+    INotificationRepository,
     IResponseRepository,
     IUserGamesRepository,
     IUserRepository,
@@ -27,6 +33,9 @@ __all__ = [
     "Response",
     "User",
     "UserGames",
+    "Message",
+    "Conversation",
+    "Notification",
     # Enums
     "AnnouncementStatus",
     "ComplaintStatus",
@@ -41,4 +50,7 @@ __all__ = [
     "IResponseRepository",
     "IAnnouncementRepository",
     "IUserGamesRepository",
+    "IConversationRepository",
+    "IMessageRepository",
+    "INotificationRepository",
 ]

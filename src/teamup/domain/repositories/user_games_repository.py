@@ -49,19 +49,6 @@ class IUserGamesRepository:
         ...
 
     @abstractmethod
-    async def get_all(self, user_id: UUID) -> list[UserGames]:
-        """
-        Возвращает все игры пользователя, как связи.
-
-        Args:
-            - `user_id`: идентификатор пользователя
-
-        Returns:
-            - `list[UserGames]`: список сущностей хранящих связи (FK) `User` и `Game`
-        """
-        ...
-
-    @abstractmethod
     async def get_all_by_user(self, user_id: UUID) -> list[UserGames]:
         """
         Возвращает все игры пользователя.
