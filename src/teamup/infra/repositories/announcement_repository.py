@@ -24,13 +24,12 @@ from ..database import (
     UserORM,
 )
 
-logger = get_logger()
-
 
 class AnnouncementRepository(IAnnouncementRepository):
     def __init__(self, session: AsyncSession):
+        self.logger = get_logger()
         self.session = session
-        logger.info("Инициализация AnnouncementRepository")
+        self.logger.info("Инициализация AnnouncementRepository")
 
     async def create(self, announcement: Announcement) -> Optional[Announcement]:
         try:
@@ -38,52 +37,49 @@ class AnnouncementRepository(IAnnouncementRepository):
             self.session.add(orm)
             await self.session.flush()
             await self.session.refresh(orm)
+            self.logger.info("Объявление сохранено в сессии.")
             return AnnouncementMapper.to_domain(orm)
         except IntegrityError as e:
-            logger.error(f"Ошибка при создании объявления: {e}")
+            self.logger.error(f"Ошибка при создании объявления: {e}")
             await self.session.rollback()
             return None
 
-    async def delete(self, announcement: Announcement) -> bool:
-        delete_announcement = await self.session.get(
-            AnnouncementORM, announcement.announcement_id
-        )
-        if delete_announcement is None:
-            logger.error(f"Объявление с ID {announcement.announcement_id} не найдено")
+    async def delete(self, announcement_id: UUID) -> bool:
+        del_announcement = await self.session.get(AnnouncementORM, announcement_id)
+        if del_announcement is None:
+            self.logger.error(f"Объявление с ID:{announcement_id} не найдено.")
             return False
-
+        await self.session.delete(del_announcement)
         await self.session.flush()
-        await self.session.delete(delete_announcement)
-        logger.info(f"Объявление с ID {announcement.announcement_id} успешно удалено")
+        self.logger.info(f"Объявление с ID:{announcement_id} удалено из сессии.")
         return True
 
     async def get_all(self) -> list[Announcement]:
         stmt = select(AnnouncementORM)
         result = await self.session.execute(stmt)
         announcements = result.scalars().all()
-
+        self.logger.info("Запрос на все объявления.")
         return [AnnouncementMapper.to_domain(a) for a in announcements]
 
     async def get_by_id(self, announcement_id: UUID) -> Optional[Announcement]:
         announcement = await self.session.get(AnnouncementORM, announcement_id)
         if announcement is None:
             return None
+        self.logger.info(f"Запрос на объявление с ID:{announcement_id}.")
         return AnnouncementMapper.to_domain(announcement)
 
     async def get_by_user(self, user: User) -> list[Announcement]:
         stmt = select(AnnouncementORM).where(AnnouncementORM.user_id == user.user_id)
-
         result = await self.session.execute(stmt)
         announcements = result.scalars().all()
-
+        self.logger.info(f"Запрос на объявления пользователя с ID:{user.user_id}.")
         return [AnnouncementMapper.to_domain(a) for a in announcements]
 
     async def get_by_game(self, game: Game) -> list[Announcement]:
         stmt = select(AnnouncementORM).where(AnnouncementORM.game_id == game.game_id)
-
         result = await self.session.execute(stmt)
         announcements = result.scalars().all()
-
+        self.logger.info(f"Запрос на объявления игры с ID:{game.game_id}.")
         return [AnnouncementMapper.to_domain(a) for a in announcements]
 
     async def get_all_active_with_relations(
@@ -95,10 +91,9 @@ class AnnouncementRepository(IAnnouncementRepository):
             .join(GameORM, AnnouncementORM.game_id == GameORM.game_id)
             .where(AnnouncementORM.status == AnnouncementStatus.ACTIVE.value)
         )
-
         result = await self.session.execute(stmt)
         announcements = result.all()
-
+        self.logger.info("Запрос на все активные объявления со связями.")
         return [
             (
                 AnnouncementMapper.to_domain(a),
@@ -119,8 +114,8 @@ class AnnouncementRepository(IAnnouncementRepository):
         row = result.one_or_none()
         if row is None:
             return None
-
         a, u, g = row
+        self.logger.info(f"Запрос на объявление с ID:{announcement_id} со связями.")
         return (
             AnnouncementMapper.to_domain(a),
             UserMapper.to_domain(u),
@@ -133,11 +128,11 @@ class AnnouncementRepository(IAnnouncementRepository):
         )
         result = await self.session.execute(stmt)
         orm = result.scalar()
-
         if orm is None:
-            logger.error(f"Объявление с id {announcement.announcement_id} не найдено")
+            self.logger.error(
+                f"Объявление с id {announcement.announcement_id} не найдено"
+            )
             return None
-
         orm.type = announcement.type
         orm.rank_min = announcement.rank_min
         orm.rank_max = announcement.rank_max
@@ -147,5 +142,7 @@ class AnnouncementRepository(IAnnouncementRepository):
 
         await self.session.flush()
         await self.session.refresh(orm)
-
+        self.logger.info(
+            f"Объявление с ID:{announcement.announcement_id} успешно обновлено в сессии."
+        )
         return AnnouncementMapper.to_domain(orm)

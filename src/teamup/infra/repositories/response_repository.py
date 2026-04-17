@@ -10,13 +10,12 @@ from teamup.domain import IResponseRepository, Response
 
 from ..database import ResponseMapper, ResponseORM
 
-logger = get_logger()
-
 
 class ResponseRepository(IResponseRepository):
     def __init__(self, session: AsyncSession):
+        self.logger = get_logger()
         self.session = session
-        logger.info("Инициализация ResponseRepository")
+        self.logger.info("Инициализация ResponseRepository")
 
     async def create(self, response: Response) -> Optional[Response]:
         try:
@@ -24,41 +23,44 @@ class ResponseRepository(IResponseRepository):
             self.session.add(orm)
             await self.session.flush()
             await self.session.refresh(orm)
+            self.logger.info("Ответ сохранен в сессии.")
             return ResponseMapper.to_domain(orm)
         except IntegrityError as e:
-            logger.error(f"Ошибка при создании ответа: {e}")
+            self.logger.error(f"Ошибка при создании ответа: {e}")
             await self.session.rollback()
             return None
 
     async def delete(self, response: Response) -> bool:
         del_response = await self.session.get(ResponseORM, response.response_id)
         if del_response is None:
-            logger.error(f"Ответ с ID {response.response_id} не найден")
+            self.logger.error(f"Ответ с ID:{response.response_id} не найден")
             return False
-
         await self.session.delete(del_response)
         await self.session.flush()
-        logger.info(f"Ответ с ID {response.response_id} успешно удален")
+        self.logger.info(f"Ответ с ID:{response.response_id} успешно удален из сессии.")
         return True
 
     async def update(self, response: Response) -> Optional[Response]:
         update_response = await self.session.get(ResponseORM, response.response_id)
         if update_response is None:
-            logger.error(f"Ответ с ID {response.response_id} не найден")
+            self.logger.error(f"Ответ с ID:{response.response_id} не найден")
             return None
-
         update_response.status = response.status
         await self.session.flush()
         await self.session.refresh(update_response)
-        logger.info(f"Ответ с ID {response.response_id} успешно обновлен")
+        self.logger.info(
+            f"Ответ с ID:{response.response_id} успешно обновлен в сессии."
+        )
         return ResponseMapper.to_domain(update_response)
 
     async def get_by_user(self, user_id: UUID) -> list[Response]:
         stmt = select(ResponseORM).where(ResponseORM.user_id == user_id)
         result = await self.session.execute(stmt)
+        self.logger.info(f"Запрошены ответы для пользователя с ID:{user_id}")
         return [ResponseMapper.to_domain(row) for row in result.scalars().all()]
 
     async def get_by_announcement(self, announcement_id: UUID) -> list[Response]:
         stmt = select(ResponseORM).where(ResponseORM.announcement_id == announcement_id)
         result = await self.session.execute(stmt)
+        self.logger.info(f"Запрошены ответы для объявления с ID:{announcement_id}")
         return [ResponseMapper.to_domain(row) for row in result.scalars().all()]

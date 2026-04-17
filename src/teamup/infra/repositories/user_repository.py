@@ -12,13 +12,12 @@ from teamup.domain import IUserRepository, User
 
 from ..database import UserMapper, UserORM
 
-logger = get_logger()
-
 
 class UserRepository(IUserRepository):
     def __init__(self, session: AsyncSession):
+        self.logger = get_logger()
         self.session = session
-        logger.info("Инициализация UserRepository")
+        self.logger.info("Инициализация UserRepository")
 
     async def create(self, user: User) -> Optional[User]:
         stmt = select(UserORM).where(
@@ -28,7 +27,7 @@ class UserRepository(IUserRepository):
 
         already_exists_user = result.scalar()
         if already_exists_user is not None:
-            logger.warning(
+            self.logger.warning(
                 (
                     f"Пользователь с почтой {user.email} и/или "
                     f"именем пользователя{user.username} уже существует"
@@ -40,22 +39,22 @@ class UserRepository(IUserRepository):
             self.session.add(orm)
             await self.session.flush()
             await self.session.refresh(orm)
-            logger.info(f"Пользователь с id {user.user_id} создан")
+            self.logger.info("Пользователь сохранен в сессии")
             return UserMapper.to_domain(orm)
-        except IntegrityError:
-            logger.error(f"Ошибка при создании пользователя с id {user.user_id}")
+        except IntegrityError as e:
+            self.logger.error(f"Ошибка при создании пользователя: {e}")
             await self.session.rollback()
             return None
 
-    async def delete(self, user: User) -> bool:
-        orm = await self.session.get(UserORM, user.user_id)
+    async def delete(self, user_id: UUID) -> bool:
+        orm = await self.session.get(UserORM, user_id)
         if orm is None:
-            logger.warning(f"Пользователь с id {user.user_id} не найден")
+            self.logger.warning(f"Пользователь с id {user_id} не найден.")
             return False
 
         await self.session.delete(orm)
         await self.session.flush()
-        logger.info(f"Пользователь с id {user.user_id} удален")
+        self.logger.info(f"Пользователь с id {user_id} удален из сессии.")
         return True
 
     async def get_by_id(self, user_id: UUID) -> Optional[User]:
@@ -72,17 +71,16 @@ class UserRepository(IUserRepository):
         )
         result = await self.session.execute(stmt)
         user = result.scalar()
-
         if user is None:
-            logger.warning(f"Пользователь с id {user_id} не найден")
+            self.logger.warning(f"Пользователь с id {user_id} не найден")
             return None
-
+        self.logger.info(f"Запрос на получение пользователя с ID:{user_id}")
         return UserMapper.to_domain(user)
 
     async def get_by_id_light(self, user_id: UUID) -> Optional[User]:
         user = await self.session.get(UserORM, user_id)
         if user is None:
-            logger.warning(f"Пользователь с id {user_id} не найден")
+            self.logger.warning(f"Пользователь с ID:{user_id} не найден")
             return None
         return UserMapper.to_domain(user)
 
@@ -98,11 +96,12 @@ class UserRepository(IUserRepository):
         result = await self.session.execute(stmt)
         user = result.scalar()
         if user is None:
-            logger.warning(f"Пользователь с email {email} не найден")
+            self.logger.warning(f"Пользователь с email {email} не найден.")
             return None
         user.last_login = datetime.now()
         await self.session.flush()
         await self.session.refresh(user)
+        self.logger.info(f"Запрос на получение пользователя с email {email}")
         return UserMapper.to_domain(user)
 
     async def get_by_username(self, username: str) -> Optional[User]:
@@ -110,17 +109,19 @@ class UserRepository(IUserRepository):
         result = await self.session.execute(stmt)
         user = result.scalar()
         if user is None:
-            logger.warning(f"Пользователь с username {username} не найден")
+            self.logger.warning(f"Пользователь с username {username} не найден")
             return None
         user.last_login = datetime.now()
         await self.session.flush()
         await self.session.refresh(user)
+        self.logger.info(f"Запрос на получение пользователя с username {username}")
         return UserMapper.to_domain(user)
 
     async def get_all(self) -> list[User]:
         stmt = select(UserORM)
         result = await self.session.execute(stmt)
         users = result.scalars().all()
+        self.logger.info("Запрос на получение всех пользователей.")
         return [UserMapper.to_domain(u) for u in users]
 
     async def update(self, user: User) -> Optional[User]:
@@ -128,9 +129,9 @@ class UserRepository(IUserRepository):
         result = await self.session.execute(stmt)
         orm_user = result.scalar()
         if orm_user is None:
-            logger.warning(f"Пользователь с id {user.user_id} не найден")
+            self.logger.warning(f"Пользователь с id {user.user_id} не найден")
             return None
-
+        # Обновление сущности делается таким способом, чтобы БД не подумала, что это новая запись
         orm_user.username = user.username
         orm_user.password_hash = user.password_hash
         orm_user.last_login = user.last_login
@@ -144,4 +145,5 @@ class UserRepository(IUserRepository):
 
         await self.session.flush()
         await self.session.refresh(orm_user)
+        self.logger.info(f"Пользователь с ID:{user.user_id} обновлен в сессии.")
         return UserMapper.to_domain(orm_user)
