@@ -1,9 +1,12 @@
 from .external import GetTopPlayersUseCase
 from .user_activity import (
     AddGameUseCase,
+    CheckConversationAccessUseCase,
+    CreateConversationWithMessageUseCase,
     GetFullUserUseCase,
     GetUserGamesUseCase,
     GetUserUseCase,
+    SendMessageUseCase,
 )
 
 __all__ = [
@@ -12,4 +15,7 @@ __all__ = [
     "GetTopPlayersUseCase",
     "GetUserUseCase",
     "GetUserGamesUseCase",
+    "CreateConversationWithMessageUseCase",
+    "SendMessageUseCase",
+    "CheckConversationAccessUseCase",
 ]
