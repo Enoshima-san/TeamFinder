@@ -2,16 +2,18 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from teamup.api.di.repositories import (
+from teamup.core import get_logger
+from teamup.core.di import (
     get_announcement_repository,
+    get_conversation_repository,
     get_game_repository,
     get_user_repository,
 )
-from teamup.core import get_logger
-from teamup.domain import Announcement, Game, User
+from teamup.domain import Announcement, Conversation, Game, User
 
 from .exceptions import (
     AnnouncementNotFoundError,
+    ConversationNotFoundError,
     GameNotFoundError,
     PermissionDeniedError,
     UnauthorizedError,
@@ -50,10 +52,20 @@ async def get_announcement_or_fail(session, announcement_id: UUID) -> Announceme
     return announcement
 
 
+async def get_conversation_or_fail(session, conversation_id: UUID) -> Conversation:
+    """Helper: получить диалог или выбросить исключение"""
+    conv_r = await get_conversation_repository(session)
+    conversation = await conv_r.get_by_id(conversation_id)
+    if conversation is None:
+        logger.warning(f"Диалог с ID {conversation_id} не найден.")
+        raise ConversationNotFoundError(f"Диалог с ID {conversation_id} не найден")
+    return conversation
+
+
 async def check_ownership_or_admin(session, announcement_id: UUID, user_id: UUID):
     """Helper: проверить, что пользователь владелец или админ"""
     user = await get_user_or_fail(session, user_id)
-    if user.is_admin:
+    if user.is_admin():
         return
     announcement = await get_announcement_or_fail(session, announcement_id)
     if announcement.user_id != user_id:
