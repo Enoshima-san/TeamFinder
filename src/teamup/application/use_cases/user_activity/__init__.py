@@ -2,6 +2,7 @@ from .add_game import AddGameUseCase
 from .chat import (
     CheckConversationAccessUseCase,
     CreateConversationWithMessageUseCase,
+    GetConversationWithMessagesUseCase,
     SendMessageUseCase,
 )
 from .get_full_user import GetFullUserUseCase
@@ -16,4 +17,5 @@ __all__ = [
     "CreateConversationWithMessageUseCase",
     "SendMessageUseCase",
     "CheckConversationAccessUseCase",
+    "GetConversationWithMessagesUseCase",
 ]

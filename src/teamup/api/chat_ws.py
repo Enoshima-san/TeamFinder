@@ -3,11 +3,18 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, status
 from pydantic import ValidationError
 
+from teamup.application.di import (
+    get_check_conversation_access_use_case,
+    get_send_message_use_case,
+)
 from teamup.application.exceptions import ForbiddenError
+from teamup.application.use_cases import (
+    CheckConversationAccessUseCase,
+    SendMessageUseCase,
+)
 from teamup.core import get_logger
 from teamup.core.di import get_current_user_ws
 from teamup.domain import Message, WebSocketErrorType
-from teamup.infra.database.db import get_db_session
 from teamup.infra.websocket import manager
 from teamup.schemas import (
     TokenData,
@@ -25,28 +32,20 @@ async def websocket_chat(
     websocket: WebSocket,
     conversation_id: UUID,
     announcement_id: UUID,
+    ca_uc: CheckConversationAccessUseCase = Depends(
+        get_check_conversation_access_use_case
+    ),
+    sm_uc: SendMessageUseCase = Depends(get_send_message_use_case),
     token_data: TokenData = Depends(get_current_user_ws),
 ):
     await websocket.accept()
     await manager.add_connection(websocket, conversation_id)
 
-    async with get_db_session() as db:
-        from teamup.application.use_cases import (
-            CheckConversationAccessUseCase,
-            SendMessageUseCase,
-        )
-        from teamup.infra.repositories import MessageRepository
-
-        message_repo = MessageRepository(db)
-
-        check_access_uc = CheckConversationAccessUseCase(db, token_data.user_id)
-        send_message_uc = SendMessageUseCase(message_repo)
-
-        conversation, announcement = await check_access_uc(
-            conversation_id=conversation_id,
-            announcement_id=announcement_id,
-            user_id=token_data.user_id,
-        )
+    conversation, announcement = await ca_uc(
+        conversation_id=conversation_id,
+        announcement_id=announcement_id,
+        user_id=token_data.user_id,
+    )
 
     try:
         while True:
@@ -74,7 +73,7 @@ async def websocket_chat(
                     recipient_id=recipient_id,
                     content=validated.content,
                 )
-                saved_message = await send_message_uc(message)
+                saved_message = await sm_uc(message)
                 payload = {
                     "type": "new_message",
                     "message_id": str(saved_message.message_id),

@@ -75,7 +75,7 @@ class AuthService:
             - `InvalidCredentialsError`: Если пароль неверный
 
         Returns:
-            `tuple[str, str`: пара access и refresh токенов
+            `tuple[str, str`]: пара access и refresh токенов
         """
         login_user = None
         if "@" in req.login:
@@ -94,6 +94,9 @@ class AuthService:
         token_data = JWTHandler.get_token_data(
             login_user.user_id, login_user.email, login_user.username, login_user.role
         )
+
+        login_user.set_last_login()
+        await self._user_r.update(login_user)
 
         logger.info(f"Пользователь {login_user.username} успешно вошёл в систему")
 

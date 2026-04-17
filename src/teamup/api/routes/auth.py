@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from teamup.application.di import get_auth_service
+from teamup.application.services import AuthService
 from teamup.core import get_logger
 from teamup.infra.database import get_async_session
 from teamup.schemas import LoginRequest, RegisterRequest, TokenPair, UserResponse
@@ -16,12 +17,13 @@ auth_router = APIRouter(tags=["Auth"], prefix="/auth")
 @auth_router.post(
     "/registration", status_code=status.HTTP_201_CREATED, response_model=UserResponse
 )
-async def register(req: RegisterRequest, db: AsyncSession = Depends(get_async_session)):
+async def register(
+    req: RegisterRequest, auth_s: AuthService = Depends(get_auth_service)
+):
     """
     Регистрация нового пользователя с автовходом
     и формированием JWT
     """
-    auth_s = await get_auth_service(db)
     logger.info("Запрос на регистрацию.")
     user = await auth_s.register(req)
     res = UserResponse(
@@ -35,12 +37,11 @@ async def register(req: RegisterRequest, db: AsyncSession = Depends(get_async_se
         age=user.age,
         about_me=user.about_me,
     )
-    await db.commit()
     return res
 
 
 @auth_router.post("/login", response_model=TokenPair)
-async def login(request: Request, db: AsyncSession = Depends(get_async_session)):
+async def login(request: Request, auth_s: AuthService = Depends(get_auth_service)):
     """
     Принимает и JSON (фронтенд), и Form Data (Swagger).
     """
@@ -77,11 +78,7 @@ async def login(request: Request, db: AsyncSession = Depends(get_async_session))
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Указаны не все поля",
         )
-
-    auth_s = await get_auth_service(db)
-
     req = LoginRequest(login=login, password=password)
-
     access, refresh = await auth_s.login(req)
     res = TokenPair(access_token=access, refresh_token=refresh)
 

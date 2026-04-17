@@ -32,3 +32,7 @@ class ConversationNotFoundError(UseCasesException):  # 404
     """Исключение, возникающее при попытке получить несуществующий диалог"""
 
     ...
+
+
+class ConversationBadRequestError(UseCasesException):  # 400
+    ...

@@ -11,6 +11,7 @@ from teamup.application.use_cases import (
     AddGameUseCase,
     CheckConversationAccessUseCase,
     CreateConversationWithMessageUseCase,
+    GetConversationWithMessagesUseCase,
     GetFullUserUseCase,
     GetTopPlayersUseCase,
     GetUserGamesUseCase,
@@ -27,54 +28,90 @@ from teamup.core.di import (
     get_user_games_repository,
     get_user_repository,
 )
+from teamup.domain import (
+    IAnnouncementRepository,
+    IConversationRepository,
+    IMessageRepository,
+    IUserRepository,
+)
 from teamup.infra.database import get_async_session
 from teamup.schemas import TokenData
 
 
-async def get_auth_service(db: AsyncSession) -> AuthService:
+async def get_auth_service(
+    db: AsyncSession = Depends(get_async_session),
+) -> AuthService:
     return AuthService(await get_user_repository(db))
 
 
-async def get_announcement_service(db: AsyncSession) -> AnnouncementService:
-    return AnnouncementService(await get_announcement_repository(db))
+async def get_announcement_service(
+    db: AsyncSession = Depends(get_async_session),
+) -> AnnouncementService:
+    return AnnouncementService(
+        await get_announcement_repository(db),
+        await get_user_repository(db),
+        await get_game_repository(db),
+    )
 
 
-async def get_responses_service(db: AsyncSession) -> ResponsesService:
-    return ResponsesService(await get_response_repository(db))
+async def get_responses_service(
+    db: AsyncSession = Depends(get_async_session),
+) -> ResponsesService:
+    return ResponsesService(
+        await get_response_repository(db),
+        await get_user_repository(db),
+        await get_announcement_repository(db),
+    )
 
 
-async def get_games_service(db: AsyncSession) -> GamesService:
+async def get_games_service(
+    db: AsyncSession = Depends(get_async_session),
+) -> GamesService:
     return GamesService(await get_game_repository(db))
 
 
-async def get_add_game_use_case(db: AsyncSession) -> AddGameUseCase:
-    return AddGameUseCase(await get_user_games_repository(db))
+async def get_add_game_use_case(
+    db: AsyncSession = Depends(get_async_session),
+) -> AddGameUseCase:
+    return AddGameUseCase(
+        await get_user_games_repository(db),
+        await get_user_repository(db),
+        await get_game_repository(db),
+    )
 
 
-async def get_full_user_info_use_case(db: AsyncSession) -> GetFullUserUseCase:
+async def get_full_user_info_use_case(
+    db: AsyncSession = Depends(get_async_session),
+) -> GetFullUserUseCase:
     return GetFullUserUseCase(await get_user_repository(db))
 
 
-async def get_user_use_case(db: AsyncSession) -> GetUserUseCase:
+async def get_user_use_case(
+    db: AsyncSession = Depends(get_async_session),
+) -> GetUserUseCase:
     return GetUserUseCase(await get_user_repository(db))
 
 
-async def get_user_games_use_case(db: AsyncSession) -> GetUserGamesUseCase:
+async def get_user_games_use_case(
+    db: AsyncSession = Depends(get_async_session),
+) -> GetUserGamesUseCase:
     return GetUserGamesUseCase(
         await get_user_games_repository(db), await get_game_repository(db)
     )
 
 
-async def get_send_message_use_case(db: AsyncSession) -> SendMessageUseCase:
-    return SendMessageUseCase(await get_message_repository(db))
+async def get_send_message_use_case(
+    mess_r: IMessageRepository = Depends(get_message_repository),
+) -> SendMessageUseCase:
+    return SendMessageUseCase(mess_r)
 
 
 async def get_create_conversation_use_case(
-    db: AsyncSession,
+    db: AsyncSession = Depends(get_async_session),
 ) -> CreateConversationWithMessageUseCase:
     return CreateConversationWithMessageUseCase(
         await get_conversation_repository(db),
-        await get_send_message_use_case(db),
+        await get_send_message_use_case(await get_message_repository(db)),
     )
 
 
@@ -84,6 +121,19 @@ async def get_top_players_use_case(game_name: str) -> GetTopPlayersUseCase:
 
 async def get_check_conversation_access_use_case(
     token_data: TokenData = Depends(get_current_user),
-    db: AsyncSession = Depends(get_async_session),
+    ann_r: IAnnouncementRepository = Depends(get_announcement_repository),
+    user_r: IUserRepository = Depends(get_user_repository),
+    conv_r: IConversationRepository = Depends(get_conversation_repository),
 ) -> CheckConversationAccessUseCase:
-    return CheckConversationAccessUseCase(db=db, user_id=token_data.user_id)
+    return CheckConversationAccessUseCase(
+        ann_r=ann_r,
+        user_r=user_r,
+        conv_r=conv_r,
+        user_id=token_data.user_id,
+    )
+
+
+async def get_conversation_with_messages_use_case(
+    mess_r: IMessageRepository = Depends(get_message_repository),
+) -> GetConversationWithMessagesUseCase:
+    return GetConversationWithMessagesUseCase(mess_r)

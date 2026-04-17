@@ -26,6 +26,7 @@ from .responses_service import (
     ResponseNotFoundError,
 )
 from .use_cases import (
+    ConversationBadRequestError,
     ConversationCreationError,
     ConversationNotFoundError,
     MessageCreationError,
@@ -54,7 +55,7 @@ __all__ = [
     "ConversationCreationError",
     "MessageCreationError",
     "ConversationNotFoundError",
-    "AnnouncementDeleteError",
+    "ConversationBadRequestError",
     "ResponseCreationError",
     "ResponseException",
     "ResponseNotFoundError",

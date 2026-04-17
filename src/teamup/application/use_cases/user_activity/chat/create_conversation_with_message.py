@@ -28,13 +28,13 @@ class CreateConversationWithMessageUseCase:
         announcement_id: UUID,
         message_content: str,
     ) -> tuple[Conversation, Message]:
-        conversation = Conversation.create(
+        new_conversation = Conversation.create(
             announcement_author_id=recipient_id,
             responder_id=sender_id,
             announcement_id=announcement_id,
         )
-        new_conversation = await self._conv_r.create(conversation)
-        if new_conversation is None:
+        conversation = await self._conv_r.create(new_conversation)
+        if conversation is None:
             raise ConversationCreationError("Не удалось создать диалог.")
         message = Message.create(
             conversation_id=conversation.conversation_id,

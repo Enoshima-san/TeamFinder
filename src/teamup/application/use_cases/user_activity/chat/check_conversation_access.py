@@ -1,21 +1,29 @@
-# teamup/application/chat/check_conversation_access.py
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from teamup.application.check_rules import (
-    get_announcement_or_fail,
-    get_conversation_or_fail,
+from teamup.domain import (
+    Announcement,
+    Conversation,
+    IAnnouncementRepository,
+    IConversationRepository,
+    IUserRepository,
 )
-from teamup.domain import Announcement, Conversation
 
+from ....base_rules import BaseRules
 from ....exceptions import ForbiddenError
 
 
 class CheckConversationAccessUseCase:
-    def __init__(self, db: AsyncSession, user_id: UUID):
-        self._db = db
+    def __init__(
+        self,
+        user_id: UUID,
+        ann_r: IAnnouncementRepository,
+        user_r: IUserRepository,
+        conv_r: IConversationRepository,
+    ):
         self._user_id = user_id
+        self._ann_r = ann_r
+        self._user_r = user_r
+        self._conv_r = conv_r
 
     async def __call__(
         self,
@@ -23,8 +31,12 @@ class CheckConversationAccessUseCase:
         announcement_id: UUID,
         user_id: UUID,
     ) -> tuple[Conversation, Announcement]:
-        announcement = await get_announcement_or_fail(self._db, announcement_id)
-        conversation = await get_conversation_or_fail(self._db, conversation_id)
+        announcement = await BaseRules.get_announcement_or_fail(
+            self._ann_r, announcement_id
+        )
+        conversation = await BaseRules.get_conversation_or_fail(
+            self._conv_r, conversation_id
+        )
         if announcement.user_id != conversation.announcement_author_id:
             raise ForbiddenError("Нет доступа к чату")
         if self._user_id != conversation.responder_id:

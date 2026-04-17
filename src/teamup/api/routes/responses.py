@@ -1,15 +1,15 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from teamup.application.check_rules import get_announcement_or_fail, get_user_or_fail
 from teamup.application.di import (
+    get_announcement_service,
     get_create_conversation_use_case,
     get_responses_service,
 )
+from teamup.application.services import AnnouncementService, ResponsesService
+from teamup.application.use_cases import CreateConversationWithMessageUseCase
 from teamup.core.di import get_current_user
-from teamup.infra.database import get_async_session
 from teamup.schemas import (
     ResponseCreationIn,
     ResponseCreationOut,
@@ -28,32 +28,31 @@ responses_router = APIRouter(tags=["Feed/Responses"])
 async def create_response(
     req: ResponseCreationIn,
     announcement_id: UUID,
+    res_s: ResponsesService = Depends(get_responses_service),
+    ann_s: AnnouncementService = Depends(get_announcement_service),
+    cm_us: CreateConversationWithMessageUseCase = Depends(
+        get_create_conversation_use_case
+    ),
     token_data: TokenData = Depends(get_current_user),
-    db: AsyncSession = Depends(get_async_session),
 ):
-    res_s = await get_responses_service(db)
-    cm_us = await get_create_conversation_use_case(db)
-
-    user = await get_user_or_fail(db, token_data.user_id)
-    announcement = await get_announcement_or_fail(db, announcement_id)
-    response = await res_s.create_response(announcement_id, user.user_id)
+    response = await res_s.create_response(announcement_id, token_data.user_id)
+    announcement = await ann_s.get_announcement_by_id(announcement_id)
     conversation, message = await cm_us(
-        user.user_id, announcement.user_id, announcement_id, req.message
+        sender_id=token_data.user_id,
+        recipient_id=announcement.user_id,
+        announcement_id=announcement_id,
+        message_content=req.message,
     )
     res = ResponseCreationOut.create(response, conversation, message)
-    await db.commit()
     return res
 
 
 @responses_router.get("/{announcement_id}/responses/", response_model=list[ResponseOut])
 async def get_responses_by_announcement(
     announcement_id: UUID,
+    res_s: ResponsesService = Depends(get_responses_service),
     token_data: TokenData = Depends(get_current_user),
-    db: AsyncSession = Depends(get_async_session),
 ):
-    await get_user_or_fail(db, token_data.user_id)
-    await get_announcement_or_fail(db, announcement_id)
-    res_s = await get_responses_service(db)
     res = await res_s.get_responses_by_announcement(announcement_id)
     return [
         ResponseOut(

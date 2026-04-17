@@ -4,6 +4,8 @@ from teamup.core import get_logger
 from teamup.domain import (
     Announcement,
     IAnnouncementRepository,
+    IGameRepository,
+    IUserRepository,
 )
 from teamup.schemas import (
     AnnouncementCreateIn,
@@ -11,9 +13,9 @@ from teamup.schemas import (
     AnnouncementUpdateIn,
 )
 
+from ..base_rules import BaseRules
 from ..exceptions import (
     AnnouncementCreationError,
-    AnnouncementDeleteError,
     AnnouncementNotFoundError,
     AnnouncementUpdateError,
     GameNotFoundError,
@@ -24,12 +26,21 @@ logger = get_logger()
 
 
 class AnnouncementService:
-    def __init__(self, ann_r: IAnnouncementRepository):
+    def __init__(
+        self,
+        ann_r: IAnnouncementRepository,
+        user_r: IUserRepository,
+        game_r: IGameRepository,
+    ):
         logger.info("Инициализация AnnouncementListingService")
         self._ann_r = ann_r
+        self._user_r = user_r
+        self._game_r = game_r
 
     async def create_announcement(
-        self, req: AnnouncementCreateIn, user_id: UUID
+        self,
+        req: AnnouncementCreateIn,
+        user_id: UUID,
     ) -> Announcement:
         """
         Создать объявление. Выбрасывает исключения при ошибке.
@@ -50,6 +61,9 @@ class AnnouncementService:
             logger.warning(f"Некорректный диапазон рангов в запросе от {user_id}.")
             raise InvalidRankRangeError("Некорректные значения требуемых рангов")
 
+        await BaseRules.get_user_or_fail(self._user_r, user_id)
+        await BaseRules.get_game_or_fail(self._game_r, req.game_id)
+
         logger.info(
             f"Пользователь {user_id} создаёт объявление для игры {req.game_id}."
         )
@@ -67,7 +81,7 @@ class AnnouncementService:
         if announcement is None:
             logger.error(f"Не удалось создать объявление для пользователя {user_id}.")
             raise AnnouncementCreationError("Не удалось создать объявление")
-
+        await self._ann_r.save_session()
         return announcement
 
     async def get_active_announcements(
@@ -130,6 +144,9 @@ class AnnouncementService:
             AnnouncementNotFoundError: Если объявление не найдено.
             AnnouncementDeleteError: Если произошла ошибка при удалении объявления.
         """
+        await BaseRules.check_ownership_or_admin(
+            self._user_r, self._ann_r, announcement_id, user_id
+        )
         if not await self._ann_r.delete(announcement_id):
             logger.warning(f"Объявление с ID {announcement_id} не найдено.")
             raise AnnouncementNotFoundError(
@@ -138,7 +155,7 @@ class AnnouncementService:
         logger.info(f"Объявление {announcement_id} удалено пользователем {user_id}.")
 
     async def update_announcement(
-        self, req: AnnouncementUpdateIn, user_id: UUID
+        self, req: AnnouncementUpdateIn, announcement_id: UUID, user_id: UUID
     ) -> AnnouncementSummaryOut:
         """
         Обновить объявление.
@@ -154,6 +171,13 @@ class AnnouncementService:
             `AnnouncementUpdateError`: Если произошла ошибка при обновлении объявления.
             `AnnouncementNotFoundError`: Если объявление не найдено.
         """
+        if announcement_id != req.announcement_id:
+            raise AnnouncementUpdateError(
+                "Запрос содержит неверный идентификатор объявления"
+            )
+        await BaseRules.check_ownership_or_admin(
+            self._user_r, self._ann_r, req.announcement_id, user_id
+        )
         result = await self._ann_r.get_by_id_with_relations(req.announcement_id)
         if result is None:
             logger.error(f"Объявление {req.announcement_id} не найдено.")
