@@ -1,4 +1,5 @@
 from .announcement_repository import AnnouncementRepository
+from .chat import ConversationRepository, MessageRepository, NotificationRepository
 from .game_repository import GameRepository
 from .response_repository import ResponseRepository
 from .user_games_repository import UserGamesRepository
@@ -10,4 +11,7 @@ __all__ = [
     "UserGamesRepository",
     "GameRepository",
     "ResponseRepository",
+    "ConversationRepository",
+    "MessageRepository",
+    "NotificationRepository",
 ]
