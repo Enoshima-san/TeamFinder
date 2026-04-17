@@ -22,7 +22,7 @@ class ConversationCreationError(UseCasesException):  # 400
     ...
 
 
-class MessageCreationError(UseCasesException):  # 403
+class MessageCreationError(UseCasesException):  # 400
     """Исключение, возникающее при попытке отправить сообщение пользователю"""
 
     ...

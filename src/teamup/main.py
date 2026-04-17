@@ -15,6 +15,8 @@ from .api import (
 from .application.exceptions import (
     AnnouncementException,
     AuthException,
+    ExternalApiException,
+    ResponseException,
     UseCasesException,
 )
 from .core import get_logger
@@ -45,6 +47,8 @@ app.include_router(chat_ws_router)
 app.add_exception_handler(AnnouncementException, exception_handler)
 app.add_exception_handler(AuthException, exception_handler)
 app.add_exception_handler(UseCasesException, exception_handler)
+app.add_exception_handler(ExternalApiException, exception_handler)
+app.add_exception_handler(ResponseException, exception_handler)
 
 app.add_middleware(
     CORSMiddleware,
