@@ -5,7 +5,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from teamup.domain import Announcement, Game, Response, User
+from teamup.domain import Announcement, Conversation, Game, Message, Response, User
 
 
 class UserBriefDto(BaseModel):
@@ -70,15 +70,50 @@ class AnnouncementBriefDto(BaseModel):
 
 class ResponseBriefDto(BaseModel):
     response_id: UUID
+    announcement_id: UUID
+    user_id: UUID
     status: str
     created_at: datetime
-    updated_at: datetime
 
     @staticmethod
     def from_response(response: Response):
         return ResponseBriefDto(
             response_id=response.response_id,
+            announcement_id=response.announcement_id,
+            user_id=response.user_id,
             status=response.status,
             created_at=response.created_at,
-            updated_at=response.updated_at,
+        )
+
+
+class ConversationBriefDto(BaseModel):
+    conversation_id: UUID
+    announcement_author_id: UUID
+    responder_id: UUID
+    created_at: datetime
+
+    welcome_message: "MessageBriefDto"
+
+    @staticmethod
+    def from_conversation(conversation: Conversation, message: Message):
+        return ConversationBriefDto(
+            conversation_id=conversation.conversation_id,
+            announcement_author_id=conversation.announcement_author_id,
+            responder_id=conversation.responder_id,
+            created_at=conversation.created_at,
+            welcome_message=MessageBriefDto.from_message(message),
+        )
+
+
+class MessageBriefDto(BaseModel):
+    message_id: UUID
+    content: str
+    created_at: datetime
+
+    @staticmethod
+    def from_message(message: Message):
+        return MessageBriefDto(
+            message_id=message.message_id,
+            content=message.content,
+            created_at=message.created_at,
         )

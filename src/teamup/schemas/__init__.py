@@ -8,10 +8,13 @@ from .auth import (
 )
 from .brief_dto import (
     AnnouncementBriefDto,
+    ConversationBriefDto,
     GameBriefDto,
+    MessageBriefDto,
     ResponseBriefDto,
     UserBriefDto,
 )
+from .chat import ConversationWithMessages
 from .external import Player
 from .feed import (
     AnnouncementCreateIn,
@@ -19,7 +22,13 @@ from .feed import (
     AnnouncementUpdateIn,
 )
 from .use_cases import FullUserInfoResponse
-from .user_activity import GameResponse, ResponseOut
+from .user_activity import (
+    GameResponse,
+    ResponseCreationIn,
+    ResponseCreationOut,
+    ResponseOut,
+)
+from .websocket import WebSocketErrorOut, WebSocketMessageIn
 
 __all__ = [
     "UserResponse",
@@ -40,4 +49,11 @@ __all__ = [
     "ResponseBriefDto",
     "AnnouncementSummaryOut",
     "Player",
+    "ResponseCreationOut",
+    "ConversationBriefDto",
+    "MessageBriefDto",
+    "ResponseCreationIn",
+    "WebSocketMessageIn",
+    "WebSocketErrorOut",
+    "ConversationWithMessages",
 ]
