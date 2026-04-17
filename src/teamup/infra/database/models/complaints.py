@@ -26,9 +26,7 @@ class ComplaintsORM(Base):
     )
     response_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey(
-            "response.response_id", ondelete="CASCADE"
-        ),  # Так как БД "недоработана" жалоба пока что удаляется вместе с ответом
+        ForeignKey("response.response_id", ondelete="CASCADE"),
         nullable=False,
     )
     status: Mapped[str] = mapped_column(

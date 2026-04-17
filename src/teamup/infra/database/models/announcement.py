@@ -20,7 +20,7 @@ class AnnouncementORM(Base):
     game_id: Mapped[Optional[UUID]] = mapped_column(
         UUID(as_uuid=True), ForeignKey("game.game_id"), nullable=False
     )
-    type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    type: Mapped[str] = mapped_column(String(100), nullable=False)
     rank_min: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     rank_max: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     description: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
@@ -42,6 +42,18 @@ class AnnouncementORM(Base):
     )
     complaints = relationship(
         "ComplaintsORM",
+        back_populates="announcement",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    conversation = relationship(
+        "ConversationORM",
+        back_populates="announcement",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    notification = relationship(
+        "NotificationORM",
         back_populates="announcement",
         cascade="all, delete-orphan",
         passive_deletes=True,

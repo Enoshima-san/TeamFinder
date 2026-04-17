@@ -63,3 +63,23 @@ class UserORM(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
+    authored_conversations = relationship(
+        "ConversationORM",
+        foreign_keys="ConversationORM.announcement_author_id",
+        back_populates="author",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    responded_conversations = relationship(
+        "ConversationORM",
+        foreign_keys="ConversationORM.responder_id",
+        back_populates="responder",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    notification = relationship(
+        "NotificationORM",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
