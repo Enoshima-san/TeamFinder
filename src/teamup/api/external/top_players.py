@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from ..di import get_top_players_use_case
+from teamup.application.di import get_top_players_use_case
 
 external_router = APIRouter(tags=["External"], prefix="/api/external")
 

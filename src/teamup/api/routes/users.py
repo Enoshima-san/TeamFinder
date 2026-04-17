@@ -3,6 +3,12 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from teamup.application.di import (
+    get_full_user_info_use_case,
+    get_user_games_use_case,
+    get_user_use_case,
+)
+from teamup.core.di import get_current_user
 from teamup.infra.database import get_async_session
 from teamup.schemas import (
     AnnouncementBriefDto,
@@ -11,13 +17,6 @@ from teamup.schemas import (
     ResponseBriefDto,
     TokenData,
     UserResponse,
-)
-
-from ..di import (
-    get_current_user,
-    get_full_user_info_use_case,
-    get_user_games_use_case,
-    get_user_use_case,
 )
 
 user_router = APIRouter(tags=["Users"], prefix="/users")

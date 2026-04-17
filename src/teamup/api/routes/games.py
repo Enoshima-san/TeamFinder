@@ -4,10 +4,10 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from teamup.application.check_rules import get_game_or_fail, get_user_or_fail
+from teamup.application.di import get_add_game_use_case, get_games_service
+from teamup.core.di import get_current_user
 from teamup.infra.database import get_async_session
 from teamup.schemas import GameResponse, TokenData
-
-from ..di import get_add_game_use_case, get_current_user, get_games_service
 
 games_router = APIRouter(tags=["Games"], prefix="/games")
 

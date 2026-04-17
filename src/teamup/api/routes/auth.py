@@ -3,11 +3,10 @@ import json
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from teamup.application.di import get_auth_service
 from teamup.core import get_logger
 from teamup.infra.database import get_async_session
 from teamup.schemas import LoginRequest, RegisterRequest, TokenPair, UserResponse
-
-from ..di import get_auth_service
 
 logger = get_logger()
 

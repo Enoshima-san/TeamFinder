@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from teamup.application.check_rules import (
@@ -8,7 +8,12 @@ from teamup.application.check_rules import (
     get_game_or_fail,
     get_user_or_fail,
 )
+from teamup.application.di import (
+    get_announcement_service,
+    get_user_games_use_case,
+)
 from teamup.core import get_logger
+from teamup.core.di import get_current_user
 from teamup.infra.database import get_async_session
 from teamup.schemas import (
     AnnouncementCreateIn,
@@ -17,11 +22,6 @@ from teamup.schemas import (
     TokenData,
 )
 
-from ..di import (
-    get_announcement_service,
-    get_current_user,
-    get_user_games_use_case,
-)
 from .responses import responses_router
 
 logger = get_logger()
@@ -44,7 +44,9 @@ async def get_all_announcememnt(
     return res
 
 
-@feed_router.post("/new")
+@feed_router.post(
+    "/new", response_model=AnnouncementSummaryOut, status_code=status.HTTP_201_CREATED
+)
 async def create_announcement(
     req: AnnouncementCreateIn,
     token_data: TokenData = Depends(get_current_user),
@@ -62,9 +64,9 @@ async def create_announcement(
 
     ann_s = await get_announcement_service(db)
 
-    announcement = await ann_s.create_announcement(req, token_data.user_id)
     user = await get_user_or_fail(db, token_data.user_id)
-    game = await get_game_or_fail(db, announcement.game_id)
+    game = await get_game_or_fail(db, req.game_id)
+    announcement = await ann_s.create_announcement(req, token_data.user_id)
 
     res = AnnouncementSummaryOut.create(announcement, user, game)
     logger.info(

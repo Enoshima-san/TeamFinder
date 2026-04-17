@@ -14,7 +14,10 @@ from .database import (
 )
 from .repositories import (
     AnnouncementRepository,
+    ConversationRepository,
     GameRepository,
+    MessageRepository,
+    NotificationRepository,
     ResponseRepository,
     UserGamesRepository,
     UserRepository,
@@ -38,6 +41,9 @@ __all__ = [
     "GameRepository",
     "UserGamesRepository",
     "ResponseRepository",
+    "MessageRepository",
+    "ConversationRepository",
+    "NotificationRepository",
     "get_async_session",
     "check_database_connection",
     "engine",
