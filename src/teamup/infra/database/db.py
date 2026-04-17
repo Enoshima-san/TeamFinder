@@ -1,5 +1,4 @@
 import asyncio
-from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from sqlalchemy.exc import OperationalError
@@ -18,11 +17,6 @@ async_session_maker = async_sessionmaker(
 )
 
 
-async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    async with async_session_maker() as session:
-        yield session
-
-
 async def check_database_connection(max_retries=10, delay=2):
     for attempt in range(1, max_retries + 1):
         try:
@@ -39,14 +33,16 @@ async def check_database_connection(max_retries=10, delay=2):
             await asyncio.sleep(delay)
 
 
-@asynccontextmanager
-async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
-    session = async_session_maker()
-    try:
-        yield session
-        await session.commit()
-    except Exception:
-        await session.rollback()
-        raise
-    finally:
-        await session.close()
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    async with async_session_maker() as session:
+        try:
+            yield session
+            await session.commit()
+            logger.info("Транзакция успешно зафиксирована")
+        except Exception:
+            await session.rollback()
+            logger.error("Транзакция откатана")
+            raise
+        finally:
+            await session.close()
+            logger.info("Сессия закрыта")
