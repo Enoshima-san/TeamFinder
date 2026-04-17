@@ -11,7 +11,13 @@ from .entities import (
     User,
     UserGames,
 )
-from .enums import AnnouncementStatus, ComplaintStatus, ResponseStatus, UserRole
+from .enums import (
+    AnnouncementStatus,
+    ComplaintStatus,
+    ResponseStatus,
+    UserRole,
+    WebSocketErrorType,
+)
 from .repositories import (
     IAnnouncementRepository,
     IConversationRepository,
@@ -41,12 +47,10 @@ __all__ = [
     "ComplaintStatus",
     "ResponseStatus",
     "UserRole",
+    "WebSocketErrorType",
     # Repositories
     "IUserRepository",
-    "IComplaintsRepository",
     "IGameRepository",
-    "IPlayerRatingRepository",
-    "IRankRepository",
     "IResponseRepository",
     "IAnnouncementRepository",
     "IUserGamesRepository",
