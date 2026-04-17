@@ -4,7 +4,6 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from teamup.core import get_logger
 from teamup.domain import Game, IGameRepository
 
 from ..database import GameMapper, GameORM
@@ -12,8 +11,7 @@ from ..database import GameMapper, GameORM
 
 class GameRepository(IGameRepository):
     def __init__(self, session: AsyncSession):
-        self.logger = get_logger()
-        self.session = session
+        super().__init__(session)
         self.logger.info("Инициализация GameRepository")
 
     async def create(self, game: Game) -> Optional[Game]:

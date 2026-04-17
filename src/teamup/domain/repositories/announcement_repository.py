@@ -4,8 +4,10 @@ from uuid import UUID
 
 from teamup.domain import Announcement, Game, User
 
+from .base import BaseRepository
 
-class IAnnouncementRepository:
+
+class IAnnouncementRepository(BaseRepository):
     @abstractmethod
     async def create(self, announcement: Announcement) -> Optional[Announcement]:
         """

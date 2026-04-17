@@ -5,7 +5,6 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from teamup.core import get_logger
 from teamup.domain import INotificationRepository, Notification
 
 from ...database.mappers import NotificationMapper
@@ -14,8 +13,7 @@ from ...database.models.chat import NotificationORM
 
 class NotificationRepository(INotificationRepository):
     def __init__(self, session: AsyncSession):
-        self.logger = get_logger()
-        self.session = session
+        super().__init__(session)
         self.logger.info("Инициализация NotificationRepository")
 
     async def create(self, notification: Notification) -> Optional[Notification]:

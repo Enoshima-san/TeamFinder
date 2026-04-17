@@ -5,7 +5,6 @@ from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from teamup.core import get_logger
 from teamup.domain import Conversation, IConversationRepository
 
 from ...database.mappers import ConversationMapper
@@ -14,8 +13,7 @@ from ...database.models.chat import ConversationORM
 
 class ConversationRepository(IConversationRepository):
     def __init__(self, session: AsyncSession):
-        self.logger = get_logger()
-        self.session = session
+        super().__init__(session)
         self.logger.info("Инициализация ConversationRepository")
 
     async def create(self, conversation: Conversation) -> Optional[Conversation]:

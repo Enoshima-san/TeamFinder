@@ -5,7 +5,6 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from teamup.core import get_logger
 from teamup.domain import IUserGamesRepository, UserGames
 
 from ..database import UserGamesMapper, UserGamesORM
@@ -13,8 +12,7 @@ from ..database import UserGamesMapper, UserGamesORM
 
 class UserGamesRepository(IUserGamesRepository):
     def __init__(self, session: AsyncSession):
-        self.logger = get_logger()
-        self.session = session
+        super().__init__(session)
         self.logger.info("Инициализация UserGamesRepository")
 
     async def create(self, user_game: UserGames) -> Optional[UserGames]:

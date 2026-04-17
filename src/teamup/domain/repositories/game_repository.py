@@ -4,8 +4,10 @@ from uuid import UUID
 
 from teamup.domain import Game
 
+from .base import BaseRepository
 
-class IGameRepository:
+
+class IGameRepository(BaseRepository):
     """
     Работа с "каталогом" игр\n\n
     `Admin only`

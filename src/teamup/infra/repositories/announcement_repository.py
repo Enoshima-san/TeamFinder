@@ -6,7 +6,6 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from teamup.core import get_logger
 from teamup.domain import (
     Announcement,
     AnnouncementStatus,
@@ -27,8 +26,7 @@ from ..database import (
 
 class AnnouncementRepository(IAnnouncementRepository):
     def __init__(self, session: AsyncSession):
-        self.logger = get_logger()
-        self.session = session
+        super().__init__(session)
         self.logger.info("Инициализация AnnouncementRepository")
 
     async def create(self, announcement: Announcement) -> Optional[Announcement]:

@@ -1,11 +1,12 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Optional
 from uuid import UUID
 
 from ...entities import Conversation
+from ..base import BaseRepository
 
 
-class IConversationRepository(ABC):
+class IConversationRepository(BaseRepository):
     @abstractmethod
     async def create(self, conversation: Conversation) -> Optional[Conversation]:
         """

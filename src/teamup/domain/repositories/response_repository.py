@@ -4,8 +4,10 @@ from uuid import UUID
 
 from teamup.domain import Response
 
+from .base import BaseRepository
 
-class IResponseRepository:
+
+class IResponseRepository(BaseRepository):
     @abstractmethod
     async def create(self, response: Response) -> Optional[Response]:
         """

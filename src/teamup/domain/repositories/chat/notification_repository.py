@@ -1,11 +1,12 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Optional
 from uuid import UUID
 
 from ...entities import Notification
+from ..base import BaseRepository
 
 
-class INotificationRepository(ABC):
+class INotificationRepository(BaseRepository):
     @abstractmethod
     async def create(self, notification: Notification) -> Optional[Notification]:
         """
