@@ -1,4 +1,5 @@
 from .announcement import Announcement
+from .chat import Conversation, Message, Notification
 from .complaints import Complaints
 from .game import Game
 from .player_rating import PlayerRating
@@ -16,4 +17,7 @@ __all__ = [
     "Response",
     "User",
     "UserGames",
+    "Conversation",
+    "Message",
+    "Notification",
 ]

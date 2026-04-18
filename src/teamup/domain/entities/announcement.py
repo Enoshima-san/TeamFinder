@@ -1,9 +1,10 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID, uuid4
 
 from ..enums import AnnouncementStatus
+from .chat import Conversation, Notification
 from .complaints import Complaints
 from .response import Response
 
@@ -12,9 +13,7 @@ from .response import Response
 class Announcement:
     user_id: UUID
     game_id: UUID
-    announcement_id: UUID = field(default_factory=uuid4)
-
-    type: Optional[str] = None
+    type: str
     rank_min: Optional[int] = None
     rank_max: Optional[int] = None
     description: Optional[str] = None
@@ -22,8 +21,12 @@ class Announcement:
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
 
-    responses: List["Response"] = field(default_factory=list)
-    complaints: List["Complaints"] = field(default_factory=list)
+    announcement_id: UUID = field(default_factory=uuid4)
+
+    announcement_responses: list["Response"] = field(default_factory=list)
+    announcement_complaints: list["Complaints"] = field(default_factory=list)
+    announcement_conversations: list["Conversation"] = field(default_factory=list)
+    announcement_notifications: list["Notification"] = field(default_factory=list)
 
     def start(self):
         """Запуск ананонса"""
@@ -54,13 +57,6 @@ class Announcement:
         """Проверка активности анонса"""
         return self.status == AnnouncementStatus.ACTIVE.value
 
-    def set_description(self, description: str):
-        """Смена описания анонсу"""
-        if len(description) > 255:
-            raise ValueError("Описание анонса должно быть не более 255 символов!")
-        self.description = description
-        self.updated_at = datetime.now()
-
     def set_ranks(self, rank_min: int, rank_max: int):
         """Смена требуемых раногов анонса"""
         if rank_min < 0 or rank_max < 0:
@@ -72,17 +68,38 @@ class Announcement:
         self.rank_max = rank_max
         self.updated_at = datetime.now()
 
+    def update(
+        self,
+        announcement_id: UUID,
+        type: Optional[str] = None,
+        description: Optional[str] = None,
+        rank_min: Optional[int] = None,
+        rank_max: Optional[int] = None,
+        status: Optional[str] = None,
+    ):
+        if announcement_id != self.announcement_id:
+            raise ValueError("Неверный идентификатор анонса!")
+        """Обновление анонса"""
+        if self.status == AnnouncementStatus.COMPLETED.value:
+            raise ValueError("Анонс уже завершён!")
+        self.type = type if type is not None else self.type
+        self.description = description
+        self.rank_min = rank_min
+        self.rank_max = rank_max
+        self.status = status if status is not None else self.status
+        self.updated_at = datetime.now()
+
     @staticmethod
     def create(
         user_id: UUID,
         game_id: UUID,
-        type: Optional[str] = None,
+        type: str,
         rank_min: Optional[int] = None,
         rank_max: Optional[int] = None,
         description: Optional[str] = None,
         status: str = AnnouncementStatus.ACTIVE.value,
-        created_at: datetime = field(default_factory=datetime.now),
-        updated_at: datetime = field(default_factory=datetime.now),
+        created_at: datetime = datetime.now(),
+        updated_at: datetime = datetime.now(),
     ) -> "Announcement":
 
         if rank_min and rank_max:

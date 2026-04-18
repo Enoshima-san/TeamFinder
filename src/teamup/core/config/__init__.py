@@ -1,9 +1,9 @@
 from .application import ApplicationSettings
 from .database import DatabaseSettings
-from .redis import RedisSettings
+from .external import ExternalApiSettings
 
 __all__ = [
     "ApplicationSettings",
     "DatabaseSettings",
-    "RedisSettings",
+    "ExternalApiSettings",
 ]
