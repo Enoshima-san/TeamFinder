@@ -37,7 +37,7 @@ class ColorFormatter(logging.Formatter):
         return result
 
 
-def setup_logging(level=logging.INFO):
+def setup_logging(level=logging.DEBUG):
     """
     Единая настройка форматирования и хендлеров с поддержкой цветов.
     Вызывается один раз при старте приложения.
