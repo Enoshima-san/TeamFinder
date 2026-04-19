@@ -46,6 +46,7 @@ async def exception_handler(request: Request, exc: Exception):
         InvalidRankRangeError: 400,
         # Conflict
         UserAlreadyExistsError: 409,
+        UserGameCreationError: 400,
         ConversationBadRequestError: 400,
         ConversationCreationError: 400,
         MessageCreationError: 403,
@@ -58,7 +59,6 @@ async def exception_handler(request: Request, exc: Exception):
         AnnouncementCreationError: 500,
         AnnouncementUpdateError: 500,
         UserCreationError: 500,
-        UserGameCreationError: 500,
         ResponseCreationError: 500,
         ResponseDeletionError: 500,
         # External API
