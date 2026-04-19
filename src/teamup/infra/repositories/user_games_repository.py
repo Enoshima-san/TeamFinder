@@ -55,7 +55,7 @@ class UserGamesRepository(IUserGamesRepository):
         result = await self.session.execute(stmt)
         user_game = result.scalar()
         if user_game is None:
-            self.logger.warning(f"Связь не найдена: user={user_id} <=> game={game_id}")
+            self.logger.debug(f"Связь не найдена: user={user_id} <=> game={game_id}")
             return None
         self.logger.info(f"Запрос на получение связи user={user_id} <=> game={game_id}")
         return UserGamesMapper.to_domain(user_game)

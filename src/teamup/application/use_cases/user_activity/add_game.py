@@ -29,7 +29,7 @@ class AddGameUseCase:
     async def __call__(self, user_id: UUID, game_id: UUID) -> UserGames:
         await BaseRules.get_user_or_fail(self._user_r, user_id)
         await BaseRules.get_game_or_fail(self._game_r, game_id)
-        if self._check_owning(user_id, game_id):
+        if await self._check_owning(user_id, game_id):
             raise UserGameCreationError("Игра уже в библиотетеке пользователя.")
         ug = UserGames(user_id=user_id, game_id=game_id)
         user_game = await self._ug_r.create(ug)
@@ -38,7 +38,7 @@ class AddGameUseCase:
         return user_game
 
     async def _check_owning(self, user_id: UUID, game_id: UUID) -> bool:
-        exist_user_game = self._ug_r.get_by_fk(user_id, game_id)
+        exist_user_game = await self._ug_r.get_by_fk(user_id, game_id)
         if exist_user_game:
             return True
         return False
