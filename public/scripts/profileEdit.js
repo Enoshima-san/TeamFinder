@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function apiRequest(url, options = {}) {
         const token = sessionStorage.getItem('token');
         console.log(token);
-        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
+        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}`};
         try{
             const response = await fetch(url, options);
             return response;
@@ -65,11 +65,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Функция для запросов с методом GET с токеном авторизации
-    async function apiRequestPost(url, options = {}, data) {
+    async function apiRequestPatch(url, options = {}, data) {
         const token = sessionStorage.getItem('token');
         console.log(token);
-        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
-        options.method = 'POST';
+        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}`, "Content-Type": "application/json;charset=utf-8"};
+        options.method = 'PATCH';
         options.body = JSON.stringify(data);
         console.log(options)
         try{
@@ -89,13 +89,15 @@ document.addEventListener("DOMContentLoaded", function () {
     editSaveBtn?.addEventListener("click", async () => {
         const newUserName = document.getElementById('newUserName').value;
         const newBio = document.getElementById('newBio').value;
+        const user_id = sessionStorage.getItem('user_id');
         const data = {
-            newUsername: newUserName,
-            newBio: newBio
+            user_id: user_id,
+            username: newUserName,
+            about_me: newBio
         };
         console.log(data);
         try {
-        const response = await apiRequestPost('http://localhost:8000/profile-save', {}, data); // ! СМЕНИТЬ ЭНДПОИНТ !
+        const response = await apiRequestPatch(`http://localhost:8000/users/${user_id}`, {}, data);
         if (response.ok) {
             alert("Настройки сохранены!");
         } else {
@@ -116,6 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
               if(document.querySelector('.user')) {
                   document.getElementById('userAvatar').textContent = userData.username.charAt(0).toUpperCase();
                   document.getElementById('userNickName').textContent = userData.username;
+                  sessionStorage.setItem("user_id", userData.user_id);
               }
               console.log('Данные пользователя загружены:', userData);
           } else {

@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function apiRequestPost(url, options = {}, data) {
         const token = sessionStorage.getItem('token');
         console.log(token);
-        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
+        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}`, "Content-Type": "application/json;charset=utf-8"};
         options.method = 'POST';
         options.body = JSON.stringify(data);
         console.log(options)
