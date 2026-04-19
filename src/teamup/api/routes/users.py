@@ -5,9 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from teamup.application.di import (
     get_full_user_info_use_case,
+    get_update_user_use_case,
     get_user_games_use_case,
     get_user_use_case,
 )
+from teamup.application.use_cases import UpdateUserUseCase
 from teamup.core.di import get_current_user
 from teamup.infra.database import get_async_session
 from teamup.schemas import (
@@ -17,6 +19,8 @@ from teamup.schemas import (
     ResponseBriefDto,
     TokenData,
     UserResponse,
+    UserUpdateRequest,
+    UserUpdateResponse,
 )
 
 user_router = APIRouter(tags=["Users"], prefix="/users")
@@ -74,3 +78,16 @@ async def get_full_user_info(
         ],
         responses=[ResponseBriefDto.from_response(r) for r in user.user_response],
     )
+
+
+@user_router.patch("/{user_id}", response_model=UserUpdateResponse)
+async def update_user(
+    req: UserUpdateRequest,
+    uu_uc: UpdateUserUseCase = Depends(get_update_user_use_case),
+    token_data: TokenData = Depends(get_current_user),
+):
+    """
+    Обновляет информацию о пользователе
+    """
+    res = await uu_uc(req, token_data.user_id)
+    return res
