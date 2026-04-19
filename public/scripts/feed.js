@@ -100,30 +100,41 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Функция создания карточки объявления
-    function createCard(data) { // ! УКАЗАТЬ РЕАЛЬНЫЕ УЗЛЫ JSON !
+    function createCard(data) {
         const card = document.createElement('div');
-        card.className = 'card'
+        card.className = 'card';
+        const respondedPosts = JSON.parse(sessionStorage.getItem('respondedPosts')) || [];
+        const respondedMyPosts = JSON.parse(sessionStorage.getItem('respondedMyPosts')) || [];
+        const hasResponded = respondedPosts.includes(data.announcement_id);
+        const hasCreated = respondedMyPosts.includes(data.announcement_id);
+
+        let applyBtnClass = hasResponded ? 'apply-btn hidden' : 'apply-btn';
+        applyBtnClass = hasCreated ? 'apply-btn hidden' : 'apply-btn';
+
+        // Берем данные из вложенных объектов user и game
+        const username = data.user.username;
+        const gameName = data.game.game_name;
+        const micStatus = data.user.has_microphone ? "Есть" : "Нет";
+
         card.innerHTML = `
         <div class="card-header">
-            <div class="postId hidden">${data.postId}</div>
-            <div class="avatar post">${data.userName[0].toUpperCase()}</div>
-            <span>${data.userName}</span>
+            <div class="postId hidden">${data.announcement_id}</div>
+            <div class="avatar post">${username[0].toUpperCase()}</div>
+            <span>${username}</span>
         </div>
 
-        <p>
-            ${data.description}
-        </p>
+        <p>${data.description || "Нет описания"}</p>
 
         <div id="gameTags" class="tags">
-            ${data.games.map(game => `<span>${game}</span>`).join('')}
+            <span>${gameName}</span>
         </div>
 
         <p class="requirements-title">Требования:</p>
 
         <div class="tags">
-            <span id="ageFromTag">Возраст от ${data.ageFrom}</span>
-            <span id="ageToTag">Возраст до ${data.ageTo}</span>
-            <span id="microTag">Наличие микрофона : ${data.micro}</span>
+            <span id="ageFromTag">Возраст от ${data.rank_min}</span>
+            <span id="ageToTag">Возраст до ${data.rank_max}</span>
+            <span id="microTag">Микрофон: ${micStatus}</span>
         </div>
 
         <div class="response-box hidden">
@@ -132,44 +143,42 @@ document.addEventListener("DOMContentLoaded", function () {
             <button class="send-btn">Отправить</button>
         </div>
 
-        <button class="apply-btn">Откликнуться</button>
+        <button class="${applyBtnClass}">Откликнуться</button>
         `;
-
-
         return card;
     }
-
     // Функция фильтрации
     function filterPosts(filter) {
-        const cards = document.querySelectorAll('.card');
+     const cards = document.querySelectorAll('.card');
+     const filterGamesLower = filter.games.map(g => g.toLowerCase());
 
-        cards.forEach(card => {
-            // Получение текстовых данных
-            const gameTagsElements = card.querySelectorAll('#gameTags span');
-            const gamesArray = Array.from(gameTagsElements).map(span => span.innerText.trim());
-            // Извлечение возраста из тегов
-            const ageFromText = card.querySelector('#ageFromTag').innerText;
-            const ageFromValue = parseInt(ageFromText.replace(/\D/g, '')) || 0;
+     cards.forEach(card => {
+         const gameTagsElements = card.querySelectorAll('#gameTags span');
+         const gamesArray = Array.from(gameTagsElements).map(span => span.innerText.trim().toLowerCase());
 
-            const ageToText = card.querySelector('#ageToTag').innerText;
-            const ageToValue = parseInt(ageToText.replace(/\D/g, '')) || 0;
-            // Проверерка наличия микрофона по тексту тега
-            const microText = card.querySelector('#microTag').innerText.toLowerCase();
-            const hasMicro = microText.includes('обязательно')
+         const ageFromValue = parseInt(card.querySelector('#ageFromTag').innerText.replace(/\D/g, '')) || 0;
+         const ageToValue = parseInt(card.querySelector('#ageToTag').innerText.replace(/\D/g, '')) || 0;
 
-            // Логика фильтрации:
-            const matchesGame =  filter.games.length === 0 || gamesArray.some(game => filter.games.includes(game));
-            const matchesAgeFrom = !filter.ageFrom || ageFromValue >= parseInt(filter.ageFrom);
-            const matchesAgeTo = !filter.ageTo || ageToValue <= parseInt(filter.ageTo);
-            const matchesMicro =  hasMicro;
-            // Показать или скрыть
-            if (matchesGame && matchesAgeFrom && matchesAgeTo && matchesMicro) {
-                card.style.display = "block";
-            } else {
-                card.style.display = "none";
-            }
-        });
-    }
+         const microText = card.querySelector('#microTag').innerText.toLowerCase();
+         const hasMicroInCard = microText.includes('есть') || microText.includes('да');
+
+         const matchesGame = filterGamesLower.length === 0 || 
+                             gamesArray.some(game => filterGamesLower.includes(game));
+
+         const matchesAgeFrom = !filter.ageFrom || ageFromValue >= parseInt(filter.ageFrom);
+         const matchesAgeTo = !filter.ageTo || ageToValue <= parseInt(filter.ageTo);
+        
+         const filterMicroRequired = filter.micro === 'Обязательно';
+         const matchesMicro = !filterMicroRequired || hasMicroInCard;
+
+         if (matchesGame && matchesAgeFrom && matchesAgeTo && matchesMicro) {
+             card.style.display = "block";
+         } else {
+             card.style.display = "none";
+         }
+     });
+     }
+
     // Асинхронная функция запроса объявлений к серверу 
     async function loadAdvertisement(){
         try {
@@ -177,15 +186,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const response = await apiRequest('http://localhost:8000/a');
             if (response.ok) {
                 const adData = await response.json();
-                const keys = Object.keys(adData.dbResults); // ! УКАЗАТЬ РЕАЛЬНЫЙ УЗЕЛ JSON !
-                    
-                if (keys != null)
-                {   // Добавление объявлений по каждой штуке из массива
-                    for (const key of keys) {
-                        postsCont.appendChild(createCard(adData.dbResults[key]));
-                    }
-                }
-                console.log('Результаты из БД:', adData.dbResults);
+                postsCont.innerHTML = '';
+                adData.forEach(ad => {
+                    postsCont.appendChild(createCard(ad));
+                });
+                const retrievedFilter = JSON.parse(sessionStorage.getItem("filterTags"));
+                // Проверка фильтра
+                if (retrievedFilter){filterPosts(retrievedFilter)}
+                console.log('Объявления загружены:', adData);
                 
             } else {
                 console.error('Ошибка при загрузке объявлений');
@@ -216,12 +224,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (sideBar){
-        // Пример изменения аватара и ника (ВРЕМЕННО)
-        const userData = {
-            username: "Krasawa"
-        }
-        document.getElementById('userAvatar').textContent = userData.username.charAt(0).toUpperCase();
-        document.getElementById('userNickName').textContent = userData.username;
         // Загрузка реальных данных пользователя с сервера
         loadUserData();
     }
@@ -229,28 +231,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Добавление объявлений при загрузке страницы ленты
     if (postsCont){
         removeAllChildren(postsCont); 
-        // Пример объявлений (ВРЕМЕННО)
-        const adData = {
-            postId: "sdaw23",
-            userName: "GamerPro",
-            description: "Ищем тиммейта в команду, время с 20:00 до 24:00",
-            games: ["Dota 2", "CS2"],
-            ageFrom: '10',
-            ageTo: '30',
-            micro: 'обязательно'
-        };
-        // Пример фильтра (ВРЕМЕННО)
-        const filterExample = {
-            games: ["Dota 2"],
-            ageFrom: '10',
-            ageTo: '35',
-            micro: 'обязательно'
-        };
-        postsCont.appendChild(createCard(adData));
-        const retrievedFilter = JSON.parse(sessionStorage.getItem("filterTags"));
-        // Проверка фильтра
-        if (retrievedFilter){filterPosts(retrievedFilter)}
-        else{filterPosts(filterExample)}
         loadAdvertisement();
     }
 
@@ -275,38 +255,48 @@ document.addEventListener("DOMContentLoaded", function () {
             const textarea = card.querySelector("textarea");
             const applyBtn = card.querySelector(".apply-btn");
             const sendBtn = card.querySelector(".send-btn");
-            const postId = card.querySelector(".postId");
-
+            const postIdElement = card.querySelector(".postId");
+            const postId = postIdElement.textContent; // Получаем ID поста
+        
             // Проверка на заполнение формы
             if (textarea.value.trim() === "") {
-              alert("Введите контакт!");
-              return;
+                alert("Введите контакт!");
+                return;
             }
             sendBtn.disabled = true;
             // Данные об отклике
             const data = {
-                userName: document.getElementById('userNickName').textContent,
-                postId: postId.textContent,
-                connection: textarea.value 
-            }
-            console.log(data);
+                message: textarea.value 
+            };
+        
             try {
-            const response = await apiRequestPost('http://localhost:8000/resp-to-post', {}, data); // ! СМЕНИТЬ ЭНДПОИНТ !
-            if (response.ok) {
-                card.querySelector(".response-box").classList.add("hidden");
-                applyBtn.textContent = "Отклик отправлен";
-                applyBtn.disabled = true;
-            } else {
-                sendBtn.disabled = false;
-                console.error('Ошибка при отправке отклика');
-            }
+                const response = await apiRequestPost(`http://localhost:8000/a/${postId}/responses/new`, {}, data);
+
+                if (response.ok) {
+                    // Получаем текущий список из хранилища или создаем новый
+                    let respondedPosts = JSON.parse(sessionStorage.getItem('respondedPosts')) || [];
+
+                    // Добавляем ID, если его там еще нет
+                    if (!respondedPosts.includes(postId)) {
+                        respondedPosts.push(postId);
+                        // Сохраняем обратно в sessionStorage
+                        sessionStorage.setItem('respondedPosts', JSON.stringify(respondedPosts));
+                    }                
+                    card.querySelector(".response-box").classList.add("hidden");
+                    applyBtn.textContent = "Отклик отправлен";
+                    applyBtn.disabled = true;
+                    applyBtn.classList.remove("hidden");
+                } else {
+                    sendBtn.disabled = false;
+                    console.error('Ошибка при отправке отклика');
+                }
             } catch (error) {
                 sendBtn.disabled = false;
                 console.error('Ошибка при отправке отклика:', error);
             }
         }
 
-            // Открыть меню аккаунта
+        // Открыть меню аккаунта
         if (e.target.classList.contains("open-settings-btn")) {
             const sidebar = e.target.closest(".sidebar");
             const box = sidebar.querySelector(".account-box");

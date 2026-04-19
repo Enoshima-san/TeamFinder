@@ -75,24 +75,32 @@ document.addEventListener("DOMContentLoaded", function () {
     // Создание карточек откликов
     function createCard(data) {
         const card = document.createElement('div');
-        card.className = 'cardResp'
+        card.className = 'cardResp';
+        const userId = data.user_id;
+        const status = data.status || "Ожидает";
+
         card.innerHTML = `
-        <p class="cardText">
-            Пользователь ${data.userName} откликнулся на вашу заявку
+          <p class="cardText">
+            Отклик на объявление: <strong>${data.announcement_id}</strong>
           </p>
-          <p class="contact">Способ связи: ${data.contact}</p>
+          <p class="contact">Статус: ${status}</p>
+          <p class="contact">ID пользователя: ${userId}</p>
         `;
         return card;
     }
 
     function createMyCard(data) {
         const card = document.createElement('div');
-        card.className = 'cardResp'
+        card.className = 'cardResp';
+        const userId = data.user_id;
+        const status = data.status || "Ожидает";
+
         card.innerHTML = `
-        <p class="cardText">
-            Вы откликнулись на заявку пользователя ${data.userName}
+          <p class="cardText">
+            Вы откликнулись на объявление: <strong>${data.announcement_id}</strong>
           </p>
-          <p class="contact">Способ связи: ${data.contact}</p>
+          <p class="contact">Статус: ${status}</p>
+          <p class="contact">ID пользователя: ${userId}</p>
         `;
         return card;
     }
@@ -121,68 +129,71 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Асинхронная функция запроса откликов к серверу 
-    async function loadResponces(){
-        try {
-            respBtn.disabled = true;
-            myRespBtn.disabled = true;
-            const response = await apiRequest('http://localhost:8000/resp-to-me'); // ! ЭНДПОИНТЫ !
-            if (response.ok) {
-                const adData = await response.json();
+    async function loadResponces() {
+        const storedIds = JSON.parse(sessionStorage.getItem('respondedMyPosts')) || [];
+        console.log("ID в хранилище:", storedIds);
 
-                const keys = Object.keys(adData.dbResults); // ! УКАЗАТЬ РЕАЛЬНЫЙ УЗЕЛ JSON !
-                    
-                if (keys != null)
-                {   // Добавление объявлений по каждой штуке из массива
-                    for (const key of keys) {
-                        postsCont.appendChild(createCard(adData.dbResults[key]));
+        if (storedIds.length === 0) {
+            console.warn("Хранилище пустое");
+            return;
+        }
+
+        try {
+            postsCont.innerHTML = '';
+            for (const annId of storedIds) {
+                console.log(`Запрос для ID: ${annId}`);
+                const response = await apiRequest(`http://localhost:8000/a/${annId}/responses/`);
+
+                if (response.ok) {
+                    const responses = await response.json();
+                    console.log(`Ответ сервера для ${annId}:`, responses);
+
+                    if (Array.isArray(responses) && responses.length > 0) {
+                        responses.forEach(item => {
+                            postsCont.appendChild(createCard(item));
+                        });
+                    } else {
+                        console.log(`Для ID ${annId} откликов не найдено (массив пуст)`);
                     }
+                } else {
+                    console.error(`Сервер вернул ошибку ${response.status} для ID ${annId}`);
                 }
-                console.log('Результаты из БД:', adData.dbResults);
-                
-                respBtn.disabled = false;
-                myRespBtn.disabled = false;
-            } else {
-                console.error('Ошибка при загрузке откликов');
-                respBtn.disabled = false;
-                myRespBtn.disabled = false;
             }
         } catch (error) {
-            console.error('Ошибка при загрузке откликов:', error);
-            respBtn.disabled = false;
-            myRespBtn.disabled = false;
+            console.error('Критическая ошибка:', error);
         }
     }
 
+
     // Загрузка откликов
     async function loadMyResponces(){
-        try {
-            respBtn.disabled = true;
-            myRespBtn.disabled = true;
-            const response = await apiRequest('http://localhost:8000/my-resp'); // ! ЭНДПОИНТЫ !
-            if (response.ok) {
-                const adData = await response.json();
+        const storedIds = JSON.parse(sessionStorage.getItem('respondedPosts')) || [];
 
-                const keys = Object.keys(adData.dbResults); // ! УКАЗАТЬ РЕАЛЬНЫЙ УЗЕЛ JSON !
-                    
-                if (keys != null)
-                {   // Добавление отлков по каждой штуке из массива
-                    for (const key of keys) {
-                        postsCont.appendChild(createMyCard(adData.dbResults[key]));
+        if (storedIds.length === 0) {
+            postsCont.innerHTML = '<p>Вы еще не взаимодействовали с объявлениями.</p>';
+            return;
+        }
+
+        try {
+            postsCont.innerHTML = '';
+
+            for (const annId of storedIds) {
+                const response = await apiRequest(`http://localhost:8000/a/${annId}/responses/`);
+
+                if (response.ok) {
+                    const responses = await response.json();
+                    console.log(responses);
+
+                    if (Array.isArray(responses)) {
+                        responses.forEach(item => {
+                            console.log(item);
+                            postsCont.appendChild(createMyCard(item));
+                        });
                     }
                 }
-                console.log('Результаты из БД:', adData.dbResults);
-                respBtn.disabled = false;
-                myRespBtn.disabled = false;
-                
-            } else {
-                console.error('Ошибка при загрузке откликов');
-                respBtn.disabled = false;
-                myRespBtn.disabled = false;
             }
         } catch (error) {
-            console.error('Ошибка при загрузке откликов:', error);
-            respBtn.disabled = false;
-            myRespBtn.disabled = false;
+            console.error('Ошибка при загрузке откликов из хранилища:', error);
         }
     } 
     // Загрузка рейтинга игроков
@@ -232,14 +243,6 @@ document.addEventListener("DOMContentLoaded", function () {
         loadUserData();
     }
     if (postsCont){
-        removeAllChildren(postsCont); 
-        // Пример откликов (ВРЕМЕННО)
-        const adData = {
-            userName: "RealChel",
-            contact: "Max"
-        };
-
-        postsCont.appendChild(createCard(adData));
         loadResponces();
     }
     if (ratingList){
@@ -251,13 +254,6 @@ document.addEventListener("DOMContentLoaded", function () {
       tabResponses.classList.add("active");
       tabMyResponses.classList.remove("active");
       removeAllChildren(postsCont); 
-        // Пример откликов (ВРЕМЕННО)
-        const adData = {
-            userName: "RealChel",
-            contact: "Max"
-        };
-
-        postsCont.appendChild(createCard(adData));
         loadResponces();
     });
 
@@ -266,13 +262,6 @@ document.addEventListener("DOMContentLoaded", function () {
       tabMyResponses.classList.add("active");
       tabResponses.classList.remove("active");
       removeAllChildren(postsCont); 
-        // Пример откликов (ВРЕМЕННО)
-        const adData = {
-            userName: "RealChel",
-            contact: "Max"
-        };
-
-        postsCont.appendChild(createMyCard(adData));
         loadMyResponces();
     });
 

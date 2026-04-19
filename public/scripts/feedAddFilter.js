@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const dropdownAgeTo = document.getElementById("ageTo");
     const selectedOptionAgeTo = dropdownAgeTo.options[dropdownAgeTo.selectedIndex];
 
-    const mic = selectedOptionMic.text;
+    const mic = selectedOptionMic.value;
     const ageFrom = selectedOptionAgeFrom.value;
     const ageTo = selectedOptionAgeTo.value;
     
@@ -184,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = {
         type: "team",
         game_id: gameId,        
-        has_microphone: mic === "Обязательно",  
+        has_microphone: mic,  
         rank_min: parseInt(ageFrom) || 0, 
         rank_max: parseInt(ageTo) || 99,
         description: description
@@ -193,6 +193,13 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
         const response = await apiRequestPost('http://localhost:8000/a/new', {} ,data); // ! ВСТАВИТЬ ЭНДПОИНТ !
         if (response.ok) {
+            const result = await response.json();
+            const newPostId = result.announcement_id;
+            let respondedMyPosts = JSON.parse(sessionStorage.getItem('respondedMyPosts')) || [];
+            if (newPostId && !respondedMyPosts.includes(newPostId)) {
+                respondedMyPosts.push(newPostId);
+                sessionStorage.setItem('respondedMyPosts', JSON.stringify(respondedMyPosts));
+            }
             alert('Объявление опубликовано!');
             
         } else {
@@ -206,6 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Сохранение фильтра
   filterBtn?.addEventListener('click', () => {
+    sessionStorage.removeItem("filterTags");
     // сборка данных
     const buttons = document.querySelectorAll('.chip.active');
     const games = Array.from(buttons).map(btn => btn.textContent.trim());
@@ -229,8 +237,10 @@ document.addEventListener("DOMContentLoaded", function () {
       ageTo: ageTo,
       micro: mic,
     };
+    console.log(data);
     // Сохранение фильтра в хранилище сессии
     sessionStorage.setItem("filterTags", JSON.stringify(data));
+    alert("Фильтр добавлен!")
   });
 
   document.addEventListener("click", (e) => {
