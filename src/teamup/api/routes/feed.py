@@ -1,15 +1,14 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, Response, status
 
 from teamup.application.di import (
     get_announcement_service,
     get_games_service,
-    get_user_games_use_case,
     get_user_use_case,
 )
 from teamup.application.services import AnnouncementService, GamesService
-from teamup.application.use_cases import GetUserGamesUseCase, GetUserUseCase
+from teamup.application.use_cases import GetUserUseCase
 from teamup.core import get_logger
 from teamup.core.di import get_current_user
 from teamup.schemas import (
@@ -44,20 +43,10 @@ async def get_all_announcememnt(
 async def create_announcement(
     req: AnnouncementCreateIn,
     token_data: TokenData = Depends(get_current_user),
-    ug_uc: GetUserGamesUseCase = Depends(get_user_games_use_case),
     gu_uc: GetUserUseCase = Depends(get_user_use_case),
     game_s: GamesService = Depends(get_games_service),
     ann_s: AnnouncementService = Depends(get_announcement_service),
 ):
-    user_games = await ug_uc(token_data.user_id)
-    if len(user_games) == 0:
-        raise HTTPException(status_code=400, detail="У пользовтеля нет игр.")
-    if not any(game.game_id == req.game_id for game in user_games):
-        raise HTTPException(
-            status_code=400,
-            detail="Пользователь не может создать объявление с игрой, которой нет в его библиотеке.",
-        )
-
     announcement = await ann_s.create_announcement(req, token_data.user_id)
     user = await gu_uc(token_data.user_id)
     game = await game_s.get_game_by_id(req.game_id)
