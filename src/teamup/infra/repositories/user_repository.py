@@ -123,13 +123,11 @@ class UserRepository(IUserRepository):
         return [UserMapper.to_domain(u) for u in users]
 
     async def update(self, user: User) -> Optional[User]:
-        stmt = select(UserORM).where(UserORM.user_id == user.user_id)
-        result = await self.session.execute(stmt)
-        orm_user = result.scalar()
+        orm_user = await self.session.get(UserORM, user.user_id)
         if orm_user is None:
-            self.logger.warning(f"Пользователь с id {user.user_id} не найден")
+            self.logger.warning(f"Пользователь с ID:{user.user_id} не найден")
             return None
-        # Обновление сущности делается таким способом, чтобы БД не подумала, что это новая запись
+        # Обновление сущности делается таким способом, чтобы sqlalchemy не подумала, что это новая запись
         orm_user.username = user.username
         orm_user.password_hash = user.password_hash
         orm_user.last_login = user.last_login
