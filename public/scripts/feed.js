@@ -177,7 +177,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const response = await apiRequest('http://localhost:8000/a');
             if (response.ok) {
                 const adData = await response.json();
-
                 const keys = Object.keys(adData.dbResults); // ! УКАЗАТЬ РЕАЛЬНЫЙ УЗЕЛ JSON !
                     
                 if (keys != null)

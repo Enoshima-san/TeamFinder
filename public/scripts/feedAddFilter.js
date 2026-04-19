@@ -119,13 +119,27 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
     // Функция для запросов с токеном авторизации
-    async function apiRequest(url, options = {}, data) {
+    async function apiRequestPost(url, options = {}, data) {
         const token = sessionStorage.getItem('token');
         console.log(token);
         if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
         options.method = 'POST';
         options.body = JSON.stringify(data);
         console.log(options)
+        try{
+            const response = await fetch(url, options);
+            return response;
+        }
+        catch (error) {
+            console.error('Ошибка авторизации:', error);
+            return;
+        }
+    }
+
+    async function apiRequest(url, options = {}) {
+        const token = sessionStorage.getItem('token');
+        console.log(token);
+        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
         try{
             const response = await fetch(url, options);
             return response;
@@ -161,6 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const mic = selectedOptionMic.text;
     const ageFrom = selectedOptionAgeFrom.value;
     const ageTo = selectedOptionAgeTo.value;
+    const selectedGameId = "00000000-0000-0000-0000-000000000000";
     
     if (!description.trim()) {
       alert('Введите описание!');
@@ -168,15 +183,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     // Объект с данными (!ИЗМЕНИТЬ ИМЕНА ЕСЛИ НУЖНО!)
     const data = {
-      games: games,
-      age_from: ageFrom,
-      age_to: ageTo,
-      micro: mic,
-      desc: description
+        type: "team",
+        game_id: selectedGameId,        
+        has_microphone: mic === "Да",  
+        rank_min: parseInt(ageFrom) || 0, 
+        rank_max: parseInt(ageTo) || 99,
+        description: description
     };
     // Отправка на сервер объявления
     try {
-        const response = await apiRequest('http://localhost:8000/add-new', {} ,data); // ! ВСТАВИТЬ ЭНДПОИНТ !
+        const response = await apiRequestPost('http://localhost:8000/a/new', {} ,data); // ! ВСТАВИТЬ ЭНДПОИНТ !
         if (response.ok) {
             alert('Объявление опубликовано!');
             

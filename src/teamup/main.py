@@ -58,6 +58,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "https://ff08xs96-8000.euw.devtunnels.ms",
+        "null"
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],

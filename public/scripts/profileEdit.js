@@ -133,10 +133,12 @@ document.addEventListener("DOMContentLoaded", function () {
               const userData = await response.json();
 
               if(profielInfo) {
-                    document.getElementById('userAvatar').textContent = userData.username.charAt(0).toUpperCase();
-                    document.getElementById('userNickName').textContent = userData.username;
-                    document.getElementById('userDesc').textContent = userData.desc;
-                    document.getElementById('userDate').textContent = userData.regDate;
+                    document.getElementById('profileAvatar').textContent = userData.username.charAt(0).toUpperCase();
+                    document.getElementById('profileName').textContent = userData.username;
+                    document.getElementById('userDesc').textContent = userData.about_me;
+                    const isoDate = userData.registration_date;
+                    const date = new Date(isoDate);
+                    document.getElementById('userDate').textContent = date.toLocaleDateString('ru-RU');
                 }
             console.log('Данные пользователя загружены:', userData);
           } else {
@@ -148,26 +150,10 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     if (sideBar){
-      // Пример изменения аватара и ника (ВРЕМЕННО)
-      const userData = {
-          username: "Krasawa",
-      };
-      document.getElementById('userAvatar').textContent = userData.username.charAt(0).toUpperCase();
-      document.getElementById('userNickName').textContent = userData.username;
-      // Загрузка реальных данных пользователя с сервера
       loadUserData();
     }
 
     if (profielInfo){
-        const userData = {
-            username: "Krasawa",
-            desc: "Real user",
-          regDate: "26 февраля 2026"
-        };
-        document.getElementById('profileAvatar').textContent = userData.username.charAt(0).toUpperCase();
-        document.getElementById('profileName').textContent = userData.username;
-        document.getElementById('userDesc').textContent = userData.desc;
-        document.getElementById('userDate').textContent = userData.regDate;
         loadProfileData();
     }
 

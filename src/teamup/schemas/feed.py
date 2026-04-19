@@ -13,7 +13,7 @@ class AnnouncementCreateIn(BaseModel):
     type: str
     game_id: UUID
     description: Optional[str] = None
-    has_micropphone: bool = False
+    has_microphone: bool = False
     rank_min: Optional[int] = None
     rank_max: Optional[int] = None
 
