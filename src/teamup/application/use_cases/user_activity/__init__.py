@@ -9,6 +9,7 @@ from .chat import (
 from .get_full_user import GetFullUserUseCase
 from .get_user import GetUserUseCase
 from .get_user_games import GetUserGamesUseCase
+from .update_user import UpdateUserUseCase
 
 __all__ = [
     "AddGameUseCase",
@@ -20,4 +21,5 @@ __all__ = [
     "CheckConversationAccessUseCase",
     "GetConversationWithMessagesUseCase",
     "GetConversationsByUserIdUseCase",
+    "UpdateUserUseCase",
 ]

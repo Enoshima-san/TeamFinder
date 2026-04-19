@@ -9,6 +9,7 @@ from .user_activity import (
     GetUserGamesUseCase,
     GetUserUseCase,
     SendMessageUseCase,
+    UpdateUserUseCase,
 )
 
 __all__ = [
@@ -22,4 +23,5 @@ __all__ = [
     "CheckConversationAccessUseCase",
     "GetConversationWithMessagesUseCase",
     "GetConversationsByUserIdUseCase",
+    "UpdateUserUseCase",
 ]
