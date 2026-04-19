@@ -46,3 +46,4 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
         finally:
             await session.close()
             logger.info("Сессия закрыта")
+            print()
