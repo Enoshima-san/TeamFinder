@@ -11,6 +11,7 @@ from .services import (
     get_responses_service,
     get_send_message_use_case,
     get_top_players_use_case,
+    get_update_user_use_case,
     get_user_games_use_case,
     get_user_use_case,
 )
@@ -30,4 +31,5 @@ __all__ = [
     "get_user_games_use_case",
     "get_user_use_case",
     "get_conversation_by_user_id_use_case",
+    "get_update_user_use_case",
 ]

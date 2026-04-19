@@ -18,6 +18,7 @@ from teamup.application.use_cases import (
     GetUserGamesUseCase,
     GetUserUseCase,
     SendMessageUseCase,
+    UpdateUserUseCase,
 )
 from teamup.core.di import (
     get_announcement_repository,
@@ -152,3 +153,9 @@ async def get_conversation_by_user_id_use_case(
     user_r: IUserRepository = Depends(get_user_repository),
 ) -> GetConversationsByUserIdUseCase:
     return GetConversationsByUserIdUseCase(conv_r=conv_r, user_r=user_r)
+
+
+async def get_update_user_use_case(
+    user_r: IUserRepository = Depends(get_user_repository),
+) -> UpdateUserUseCase:
+    return UpdateUserUseCase(user_r=user_r)
