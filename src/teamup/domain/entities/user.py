@@ -52,11 +52,11 @@ class User:
         """Время последнего входа"""
         self.last_login = datetime.now()
 
-    def set_about(self, about: str):
+    def set_about(self, about_me: str):
         """Установка описания пользователя"""
-        if len(about) > 255:
+        if len(about_me) > 255:
             raise ValueError("Описание пользователя слишком длинное")
-        self.about = about
+        self.about_me = about_me
 
     def go_online(self):
         """Пользователь онлайн"""
