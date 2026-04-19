@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+/* document.addEventListener("DOMContentLoaded", function () {
     const chatTabs = document.getElementById('chatTabs');
     const messagesContainer = document.getElementById('messages');
     const chatHeader = document.getElementById('chatHeader');
@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-
+*/
 // !!!!!! ПРИМЕР РАБОТЫ ЧАТА БЕЗ СЕРВЕРА !!!!!!
 // !!! РАСКОММИТИТЬ ЕСЛИ НУЖНО ПОСМОТРЕТЬ ИНТЕРФЕЙС !!!
 /**
@@ -348,7 +348,7 @@ renderChat();
  */
 
 // !!!! СКРИПТ ЧЕРЕЗ WEB SOCKET !!!!
-/*
+
 document.addEventListener("DOMContentLoaded", function () {
     const chatTabs = document.getElementById('chatTabs');
     const messagesContainer = document.getElementById('messages');
@@ -389,68 +389,59 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     //  WEBSOCKET 
-    function connectWebSocket() {
+    function connectWebSocket(announcement_id, conversation_id) {
         const token = sessionStorage.getItem('token');
-
-        socket = new WebSocket(`ws://localhost:8000/ws?token=${token}`);
-
-        socket.onopen = () => {
-            console.log('WebSocket подключен');
-        };
-
+    
+        // соблюдаем путь из бэкенда: /ws/chat/{ann}/{conv}
+        const wsUrl = `ws://localhost:8000/ws/chat/${announcement_id}/${conversation_id}?token=${token}`;
+        
+        console.log("Подключение к WS:", wsUrl);
+        socket = new WebSocket(wsUrl);
+    
+        socket.onopen = () => console.log('WebSocket подключен');
+        
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
-
-            // Новое сообщение
-            if (data.type === 'message') {
-                if (data.chatId === activeChatId) {
-                    addMessage(data.message);
-                }
-            }
-
-            // История чата
-            if (data.type === 'history') {
-                renderMessages(data.messages);
-            }
-
-            // Обновление чатов
-            if (data.type === 'chats') {
-                chats = data.chats;
-                renderChatTabs();
+            
+            // Обработка нового сообщения (тип "new_message" из бэкенда)
+            if (data.type === 'new_message') {
+                addMessage({
+                    sender_id: data.sender_id,
+                    content: data.content
+                });
             }
         };
-
-        socket.onclose = () => {
-            console.log('WebSocket закрыт');
-        };
-
-        socket.onerror = (error) => {
-            console.error('WebSocket ошибка:', error);
-        };
+    
+        socket.onerror = (error) => console.error('WS Error:', error);
+        socket.onclose = () => console.log('WS Closed');
     }
+
 
     function renderChatTabs() {
         chatTabs.innerHTML = '';
-
         chats.forEach(chat => {
             const tab = document.createElement('div');
             tab.className = 'chat-tab';
-            tab.textContent = '@' + chat.name;
+            if (chat.conversation_id === activeChatId) tab.classList.add('active');
 
-            if (chat.id === activeChatId) {
-                tab.classList.add('active');
-            }
+            // Выводим часть ID, пока не подгружены детали
+            tab.textContent = `Чат ...${chat.conversation_id.slice(-5)}`;
 
-            tab.onclick = () => openChat(chat.id);
-
+            tab.onclick = () => openChat(chat.conversation_id);
             chatTabs.appendChild(tab);
         });
     }
 
+
     function renderMessages(messages) {
         messagesContainer.innerHTML = '';
-
-        messages.forEach(msg => addMessage(msg));
+        messages.forEach(msg => {
+            // Подстраиваем под формат БД (content, sender_id)
+            addMessage({
+                sender_id: msg.sender_id,
+                content: msg.content
+            });
+        });
     }
 
     function addMessage(msg) {
@@ -466,39 +457,59 @@ document.addEventListener("DOMContentLoaded", function () {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    function openChat(chatId) {
-        activeChatId = chatId;
-        renderChatTabs();
-        messagesContainer.innerHTML = '';
+    async function openChat(conversation_id) {
+        activeChatId = conversation_id;
 
-        // подписка на чат
-        socket.send(JSON.stringify({
-            type: 'join',
-            chatId: chatId
-        }));
+        // Извлекаем ID объявления из хранилища
+        const respondedPosts = JSON.parse(sessionStorage.getItem('respondedPosts')) || [];
+        const annId = respondedPosts[0]; // Берем первый доступный для теста
 
-        const chat = chats.find(c => c.id === chatId);
-        chatHeader.textContent = 'Чат с @' + chat.name;
+        // HTTP запрос истории
+        try {
+            const response = await apiRequest(`http://localhost:8000/chats/${conversation_id}`);
+            if (response.ok) {
+                const data = await response.json();
+                renderMessages(data.messages);
+                chatHeader.textContent = `Чат: ${conversation_id.slice(-5)}`;
+            }
+        } catch (e) {
+            console.error("Ошибка загрузки истории:", e);
+        }
+
+        // WebSocket соединение
+        const token = sessionStorage.getItem('token').replace('Bearer ', '');
+
+        // URL по схеме: /ws/chat/{ann_id}/{conv_id}
+        const wsUrl = `ws://localhost:8000/ws/chat/${annId}/${conversation_id}?token=${token}`;
+
+        if (socket) socket.close();
+        socket = new WebSocket(wsUrl);
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'new_message') {
+                addMessage(data);
+            }
+        };
     }
 
     async function loadChats() {
         try {
-            const response = await apiRequest('http://localhost:8000/users/me/chats');
-
+            const response = await apiRequest('http://localhost:8000/chats');
             if (response.ok) {
-                const data = await response.json();
-                chats = data.chats;
-
+                chats = await response.json(); // Получаем массив напрямую
                 renderChatTabs();
 
-                if (chats.length > 0) {
-                    openChat(chats[0].id);
+                // Открываем первый чат, если он есть
+                if (chats.length > 0 && !activeChatId) {
+                    openChat(chats[0].conversation_id);
                 }
             }
         } catch (e) {
             console.error('Ошибка загрузки чатов:', e);
         }
     }
+
 
     function sendMessage() {
         const text = messageInput.value.trim();
@@ -558,4 +569,3 @@ document.addEventListener("DOMContentLoaded", function () {
         loadChats();       
     }
 });
-*/

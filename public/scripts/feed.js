@@ -103,15 +103,15 @@ document.addEventListener("DOMContentLoaded", function () {
     function createCard(data) {
         const card = document.createElement('div');
         card.className = 'card';
+        
         const respondedPosts = JSON.parse(sessionStorage.getItem('respondedPosts')) || [];
         const respondedMyPosts = JSON.parse(sessionStorage.getItem('respondedMyPosts')) || [];
-        const hasResponded = respondedPosts.includes(data.announcement_id);
-        const hasCreated = respondedMyPosts.includes(data.announcement_id);
+        
+        const isInteracted = respondedPosts.includes(data.announcement_id) || 
+                             respondedMyPosts.includes(data.announcement_id);
 
-        let applyBtnClass = hasResponded ? 'apply-btn hidden' : 'apply-btn';
-        applyBtnClass = hasCreated ? 'apply-btn hidden' : 'apply-btn';
+        const applyBtnClass = isInteracted ? 'apply-btn hidden' : 'apply-btn';
 
-        // Берем данные из вложенных объектов user и game
         const username = data.user.username;
         const gameName = data.game.game_name;
         const micStatus = data.user.has_microphone ? "Есть" : "Нет";
@@ -147,6 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
         return card;
     }
+
     // Функция фильтрации
     function filterPosts(filter) {
      const cards = document.querySelectorAll('.card');

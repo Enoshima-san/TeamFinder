@@ -168,28 +168,32 @@ document.addEventListener("DOMContentLoaded", function () {
     // Загрузка откликов
     async function loadMyResponces(){
         const storedIds = JSON.parse(sessionStorage.getItem('respondedPosts')) || [];
-
+        console.log("ID в хранилище:", storedIds);
         if (storedIds.length === 0) {
-            postsCont.innerHTML = '<p>Вы еще не взаимодействовали с объявлениями.</p>';
+            console.warn("Хранилище пустое");
             return;
         }
 
         try {
             postsCont.innerHTML = '';
-
             for (const annId of storedIds) {
+                console.log(`Запрос для ID: ${annId}`);
                 const response = await apiRequest(`http://localhost:8000/a/${annId}/responses/`);
 
                 if (response.ok) {
                     const responses = await response.json();
-                    console.log(responses);
+                    console.log(`Ответ сервера для ${annId}:`, responses);
 
                     if (Array.isArray(responses)) {
                         responses.forEach(item => {
                             console.log(item);
                             postsCont.appendChild(createMyCard(item));
                         });
+                    }else {
+                        console.log(`Для ID ${annId} откликов не найдено (массив пуст)`);
                     }
+                }else {
+                    console.error(`Сервер вернул ошибку ${response.status} для ID ${annId}`);
                 }
             }
         } catch (error) {
