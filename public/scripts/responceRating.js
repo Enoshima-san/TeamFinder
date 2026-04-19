@@ -97,19 +97,24 @@ document.addEventListener("DOMContentLoaded", function () {
         return card;
     }
     // Создание карточки рейтинга
-    function createRating(data){
+    function createRating(data, index) {
         const card = document.createElement("div");
         card.className = "player-card";
-            card.innerHTML = `
+        const nick = data.nickname || "Unknown";
+        const firstLetter = nick[0] || "?";
+        const rank = index + 1;
+        const discipline = data.disclipline ? data.disclipline[0] : "Dota 2";
+
+        card.innerHTML = `
           <div class="player-info">
-            <span class="rank-number">${data.top}.</span>
-            <div class="player-avatar">${data.nickName[0]}</div>
-            <span>${data.nickName}</span>
+            <span class="rank-number">${rank}.</span>
+            <div class="player-avatar">${firstLetter}</div>
+            <span>${nick}</span>
           </div>
           <div class="player-rank">
-            <span>${data.game}</span>
-            <span>${data.rank}</span>
-            <span>${data.role}</span>
+            <span>${discipline}</span>
+            <span>${data.total_money || "$ 0"}</span>
+            <span>Побед: ${data.stats?.wins || 0}</span>
           </div>
         `;
         return card;
@@ -183,19 +188,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // Загрузка рейтинга игроков
     async function loadRating(){
         try {
-            const response = await apiRequest('http://localhost:8000/rating'); // ! ЭНДПОИНТЫ !
+            const response = await apiRequest('http://localhost:8000/api/external/cyber-sport-ru/dota-2');
             if (response.ok) {
-                const adData = await response.json(); // ! ДАННЫЕ ДОЛЖНЫ БЫТЬ СОРТИРОВАНЫ ПО РЕЙТИНГУ В НИЗХОДЯЩЕМ ПОРЯДКЕ !
-
-                const keys = Object.keys(adData.dbResults); // ! УКАЗАТЬ РЕАЛЬНЫЙ УЗЕЛ JSON !
-                    
-                if (keys != null)
-                {   // Добавление отлков по каждой штуке из массива
-                    for (const key of keys) {
-                        ratingList.appendChild(createRating(adData.dbResults[key]));
-                    }
+                const data = await response.json(); 
+                ratingList.innerHTML = '';
+                if (Array.isArray(data)) {
+                    data.forEach((player, index) => {
+                        ratingList.appendChild(createRating(player, index));
+                    });
                 }
-                console.log('Результаты из БД:', adData.dbResults);
+
+                console.log('Результаты загружены:', data);
                 
             } else {
                 console.error('Ошибка при загрузке рейтинга');
@@ -225,12 +228,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (sideBar){
-        // Пример изменения аватара и ника (ВРЕМЕННО)
-        const userData = {
-            username: "Krasawa"
-        }
-        document.getElementById('userAvatar').textContent = userData.username.charAt(0).toUpperCase();
-        document.getElementById('userNickName').textContent = userData.username;
         // Загрузка реальных данных пользователя с сервера
         loadUserData();
     }
@@ -246,15 +243,6 @@ document.addEventListener("DOMContentLoaded", function () {
         loadResponces();
     }
     if (ratingList){
-        // Пример рейтинга
-        const data = {
-            top: 1,
-            nickName: "RandomChel",
-            game: "Dota 2",
-            rank: "2543",
-            role: "support"
-        }
-        ratingList.appendChild(createRating(data));
         loadRating();       
     }
 

@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function apiRequestPost(url, options = {}, data) {
         const token = sessionStorage.getItem('token');
         console.log(token);
-        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
+        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}`,"Content-Type": "application/json;charset=utf-8"};
         options.method = 'POST';
         options.body = JSON.stringify(data);
         console.log(options)
@@ -161,8 +161,8 @@ document.addEventListener("DOMContentLoaded", function () {
   publishBtn?.addEventListener('click', async () => {
     // сборка данных
     const description = document.querySelector('textarea').value;
-    const buttons = document.querySelectorAll('.chip.active');
-    const games = Array.from(buttons).map(btn => btn.textContent.trim());
+    const activeChip = document.querySelector('.chip.active');
+    const gameId = activeChip ? activeChip.getAttribute('data-id') : null;
     
     const dropDownMic = document.getElementById("micSelect");
     const selectedOptionMic = dropDownMic.options[dropDownMic.selectedIndex];
@@ -175,7 +175,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const mic = selectedOptionMic.text;
     const ageFrom = selectedOptionAgeFrom.value;
     const ageTo = selectedOptionAgeTo.value;
-    const selectedGameId = "00000000-0000-0000-0000-000000000000";
     
     if (!description.trim()) {
       alert('Введите описание!');
@@ -184,8 +183,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Объект с данными (!ИЗМЕНИТЬ ИМЕНА ЕСЛИ НУЖНО!)
     const data = {
         type: "team",
-        game_id: selectedGameId,        
-        has_microphone: mic === "Да",  
+        game_id: gameId,        
+        has_microphone: mic === "Обязательно",  
         rank_min: parseInt(ageFrom) || 0, 
         rank_max: parseInt(ageTo) || 99,
         description: description
