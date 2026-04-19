@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -23,3 +24,15 @@ class FullUserInfoResponse(BaseModel):
     games: list[GameBriefDto]
     announcements: list[AnnouncementBriefDto]
     responses: list[ResponseBriefDto]
+
+
+class UserUpdateRequest(BaseModel):
+    user_id: UUID
+    username: Optional[str] = None
+    about_me: Optional[str] = None
+
+
+class UserUpdateResponse(BaseModel):
+    user_id: UUID
+    username: str
+    about_me: Optional[str]

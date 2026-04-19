@@ -21,7 +21,7 @@ from .feed import (
     AnnouncementSummaryOut,
     AnnouncementUpdateIn,
 )
-from .use_cases import FullUserInfoResponse
+from .use_cases import FullUserInfoResponse, UserUpdateRequest, UserUpdateResponse
 from .user_activity import (
     GameResponse,
     ResponseCreationIn,
@@ -47,6 +47,8 @@ __all__ = [
     "GameResponse",
     "AnnouncementBriefDto",
     "ResponseBriefDto",
+    "UserUpdateRequest",
+    "UserUpdateResponse",
     "AnnouncementSummaryOut",
     "Player",
     "ResponseCreationOut",
