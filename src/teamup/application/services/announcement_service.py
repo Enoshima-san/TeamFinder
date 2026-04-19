@@ -81,7 +81,6 @@ class AnnouncementService:
         if announcement is None:
             logger.error(f"Не удалось создать объявление для пользователя {user_id}.")
             raise AnnouncementCreationError("Не удалось создать объявление")
-        await self._ann_r.save_session()
         return announcement
 
     async def get_active_announcements(
