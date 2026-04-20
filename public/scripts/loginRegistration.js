@@ -36,8 +36,6 @@ document.getElementById("loginForm")?.addEventListener("submit", async function 
       } else {
         alert("Ошибка авторизации");
       }
-
-      alert(result.message);
       // Вывод ошибки
     } catch (error) {
       alert("Ошибка соединения с сервером");
@@ -82,8 +80,6 @@ document.getElementById("registerForm")?.addEventListener("submit", async functi
       } else {
         alert("Ошибка авторизации");
       }
-
-      alert(result.message);
       // Вывод ошибки
     } catch (error) {
       alert("Ошибка соединения с сервером");
