@@ -23,8 +23,6 @@ from teamup.application.use_cases import (
 from teamup.core.di import (
     get_announcement_repository,
     get_conversation_repository,
-    get_current_user,
-    get_current_user_ws,
     get_game_repository,
     get_message_repository,
     get_response_repository,
@@ -38,7 +36,6 @@ from teamup.domain import (
     IUserRepository,
 )
 from teamup.infra.database import get_async_session
-from teamup.schemas import TokenData
 
 
 async def get_auth_service(
