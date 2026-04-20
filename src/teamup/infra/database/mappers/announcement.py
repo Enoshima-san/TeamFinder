@@ -1,36 +1,46 @@
-from src.teamup.domain import Announcement
+from typing import Optional, cast
+from uuid import UUID
+
+from teamup.domain import Announcement
 
 from ..models import AnnouncementORM
+from ._map_relation import _map_relation
 from .complaints import ComplaintsMapper
+from .conversation import ConversationMapper
+from .notification import NotificationMapper
 from .response import ResponseMapper
 
 
 class AnnouncementMapper:
     @staticmethod
-    def to_domain(orm: AnnouncementORM | None) -> Announcement:
-        if not orm:
+    def to_domain(orm: Optional[AnnouncementORM]) -> Announcement:
+        if orm is None:
             raise ValueError("ORM object is None")
 
-        complaints = [ComplaintsMapper.to_domain(c) for c in orm.complaints]
-        responses = [ResponseMapper.to_domain(r) for r in orm.responses]
+        complaints = _map_relation(orm, "complaints", ComplaintsMapper.to_domain)
+        responses = _map_relation(orm, "response", ResponseMapper.to_domain)
+        conversations = _map_relation(orm, "conversation", ConversationMapper.to_domain)
+        notifications = _map_relation(orm, "notification", NotificationMapper.to_domain)
 
         return Announcement(
-            announcement_id=orm.announcement_id,  # type: ignore[reportArgumentType]
-            user_id=orm.user_id,  # type: ignore[reportArgumentType]
-            game_id=orm.game_id,  # type: ignore[reportArgumentType]
-            type=orm.type,  # type: ignore[reportArgumentType]
-            rank_min=orm.rank_min,  # type: ignore[reportArgumentType]
-            rank_max=orm.rank_max,  # type: ignore[reportArgumentType]
-            description=orm.description,  # type: ignore[reportArgumentType]
-            status=orm.status,  # type: ignore[reportArgumentType]
-            created_at=orm.created_at,  # type: ignore[reportArgumentType]
-            updated_at=orm.updated_at,  # type: ignore[reportArgumentType]
-            responses=responses,
-            complaints=complaints,
+            announcement_id=cast(UUID, orm.announcement_id),
+            user_id=cast(UUID, orm.user_id),
+            game_id=cast(UUID, orm.game_id),
+            type=orm.type,
+            rank_min=orm.rank_min,
+            rank_max=orm.rank_max,
+            description=orm.description,
+            status=orm.status,
+            created_at=orm.created_at,
+            updated_at=orm.updated_at,
+            announcement_responses=responses,
+            announcement_complaints=complaints,
+            announcement_conversations=conversations,
+            announcement_notifications=notifications,
         )
 
     @staticmethod
-    def to_orm(entity: Announcement | None) -> AnnouncementORM:
+    def to_orm(entity: Optional[Announcement]) -> AnnouncementORM:
         if not entity:
             raise ValueError("Entity is None")
 

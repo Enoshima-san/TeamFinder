@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>TeamUp - Регистрация</title>
-<link rel="stylesheet" href="../styles/style.css">
+<link rel="stylesheet" href="../styles/loginRegistration.css">
 </head>
 
 <body>
@@ -16,25 +16,25 @@
     <form id="registerForm">
 
         <label>Ваш email:</label>
-        <input type="email" id="email" required placeholder="pochta@mail.ru">
+        <input type="email" id="email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" required placeholder="pochta@mail.ru">
 
         <label>Ваш никнейм:</label>
-        <input type="text" id="nickname" minlength="2"  required placeholder="John">
+        <input type="text" id="nickname" minlength="3" maxlength="15" pattern="[a-z0-9_]+$" required placeholder="john, jane_doe">
 
         <label>Пароль:</label>
-        <input type="password" id="password" minlength="6" required placeholder="********">
+        <input type="password" id="password" minlength="8" required placeholder="********">
 
-        <button type="submit">Зарегистрироваться</button>
+        <button class="btn registration" type="submit">Зарегистрироваться</button>
 
     </form>
 
     <div class="links">
-        <a href="#">Уже есть аккаунт?</a>
+        <a href="../pages/login.html">Уже есть аккаунт?</a>
     </div>
 
 </div>
 
-<script src="../scripts/script.js"></script>
+<script src="../scripts/loginRegistration.js"></script>
 
 </body>
 </html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>TeamUp - Отклики</title>
+<link rel="stylesheet" href="../styles/feed.css">
+</head>
+<body>
+
+   <div class="container">
+        <!-- Плавающие меню -->
+       <aside class="sidebar">
+       
+           <h1 class="logo">TeamUP</h1>
+           <button id="feed-page" class="menu-btn feed" type="submit">
+               <img src="../images/feedImage.png" alt="Лента">
+               <span>Лента</span>
+           </button>
+            <button id="chats-page" class="menu-btn">
+                <img src="../images/achievements.png" alt="Чаты">
+                <span>Мои чаты</span>
+            </button>
+            <button id="rating-page" class="menu-btn">
+                <img src="../images/rating.png" alt="Рейтинг">
+                <span>Рейтинг игроков</span>
+            </button>
+            <button id="resp-page" class="menu-btn active">
+                <img src="../images/response.png" alt="Отклики">
+                <span>Отклики</span>
+            </button>
+            <button id="profile-page" class="menu-btn">
+                <img src="../images/profile.png" alt="Профиль">
+                <span>Профиль</span>
+            </button>
+            
+            <!-- Скрытое меню аккаунта -->
+            <div class="account-box hidden">
+                <button class="account-btn" id="hiddenEdit">Настройки</button>
+                <hr class="separator-line">
+                <button class="account-btn" id="logOutBtn">Выход из аккаунта</button>
+            </div>
+            
+            <!-- Раздел аккаунта -->
+            <div class="user">
+                <div class="avatar" id="userAvatar">H</div>
+                <span id="userNickName">Ник пользователя</span>
+                <button class="open-settings-btn"></button>
+            </div>
+       
+       </aside>
+       
+
+       <!-- Контейнер основного контента -->
+       <main class="main">
+        <div class="tabsResp">
+          <button id="tabResponses" class="tabResp active">Отклики</button>
+          <button id="tabMyResponses" class="tabResp">Мои отклики</button>
+        </div>
+
+      <div class="resp-cont">
+        <div class="cardResp" id="card">
+          <p id="cardText">
+            Пользователь @Ник пользователя откликнулся на вашу заявку
+          </p>
+          <p class="contact">Способ связи:</p>
+        </div>
+      </div>
+      </main>
+       
+    </div>
+
+<script src="../scripts/responceRating.js"></script>
+
+</body>
+</html>

@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from src.teamup.core import settings
+from teamup.core import settings
 
 engine = create_async_engine(
     settings.db.get_dsn(), echo=settings.application.get_debug()

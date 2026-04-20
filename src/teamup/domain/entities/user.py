@@ -1,11 +1,12 @@
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID, uuid4
 
 from ..enums import UserRole
 from .announcement import Announcement
+from .chat import Conversation, Notification
 from .complaints import Complaints
 from .player_rating import PlayerRating
 from .response import Response
@@ -17,8 +18,6 @@ class User:
     email: str
     username: str
     password_hash: str
-    user_id: UUID = field(default_factory=uuid4)
-
     registration_date: datetime = field(default_factory=datetime.now)
     last_login: datetime = field(default_factory=datetime.now)
     is_active: bool = True
@@ -29,11 +28,15 @@ class User:
     is_blocked: bool = False
     blocked_reason: Optional[str] = None
 
-    user_games: List["UserGames"] = field(default_factory=list)
-    user_ratings: List["PlayerRating"] = field(default_factory=list)
-    user_responses: List["Response"] = field(default_factory=list)
-    user_announcements: List["Announcement"] = field(default_factory=list)
-    user_complaints: List["Complaints"] = field(default_factory=list)
+    user_id: UUID = field(default_factory=uuid4)
+
+    user_games: list["UserGames"] = field(default_factory=list)
+    user_rating: list["PlayerRating"] = field(default_factory=list)
+    user_response: list["Response"] = field(default_factory=list)
+    user_announcement: list["Announcement"] = field(default_factory=list)
+    user_complaints: list["Complaints"] = field(default_factory=list)
+    user_conversations: list["Conversation"] = field(default_factory=list)
+    user_notifications: list["Notification"] = field(default_factory=list)
 
     def set_username(self, username: str):
         """Установка имени пользователя"""
@@ -45,11 +48,15 @@ class User:
             raise ValueError("Имя пользователя слишком длинное")
         self.username = username
 
-    def set_about(self, about: str):
+    def set_last_login(self):
+        """Время последнего входа"""
+        self.last_login = datetime.now()
+
+    def set_about(self, about_me: str):
         """Установка описания пользователя"""
-        if len(about) > 255:
+        if len(about_me) > 255:
             raise ValueError("Описание пользователя слишком длинное")
-        self.about = about
+        self.about_me = about_me
 
     def go_online(self):
         """Пользователь онлайн"""
@@ -109,8 +116,7 @@ class User:
         is_blocked: bool = False,
     ) -> "User":
         if (
-            not email
-            or "@"
+            "@" not in email
             or len(email) > 255
             or not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email)
         ):

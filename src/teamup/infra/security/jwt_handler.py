@@ -4,7 +4,7 @@ from uuid import UUID
 
 import jwt
 
-from src.teamup.core import settings
+from teamup.core import settings
 
 
 class JWTHandler:
@@ -59,6 +59,8 @@ class JWTHandler:
             return None
 
     @staticmethod
-    def get_token_data(user_id: UUID, username: str, role: str) -> dict[str, str]:
+    def get_token_data(
+        user_id: UUID, username: str, email: str, role: str
+    ) -> dict[str, str]:
         """Формирует `payload` - содержимое JWT"""
-        return {"sub": str(user_id), "username": username, "role": role}
+        return {"sub": str(user_id), "email": email, "username": username, "role": role}

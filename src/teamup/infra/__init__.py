@@ -8,13 +8,21 @@ from .database import (
     ResponseORM,
     UserGamesORM,
     UserORM,
-    async_session,
     check_database_connection,
     engine,
+    get_async_session,
 )
-from .repositories import UserRepository
+from .repositories import (
+    AnnouncementRepository,
+    ConversationRepository,
+    GameRepository,
+    MessageRepository,
+    NotificationRepository,
+    ResponseRepository,
+    UserGamesRepository,
+    UserRepository,
+)
 from .security import JWTHandler, PasswordHasher
-from .services import AuthService
 
 __all__ = [
     "Base",
@@ -29,8 +37,14 @@ __all__ = [
     "PasswordHasher",
     "JWTHandler",
     "UserRepository",
-    "AuthService",
-    "async_session",
+    "AnnouncementRepository",
+    "GameRepository",
+    "UserGamesRepository",
+    "ResponseRepository",
+    "MessageRepository",
+    "ConversationRepository",
+    "NotificationRepository",
+    "get_async_session",
     "check_database_connection",
     "engine",
 ]

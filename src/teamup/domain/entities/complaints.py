@@ -11,11 +11,11 @@ class Complaints:
     user_id: UUID
     announcement_id: UUID
     response_id: UUID
-    complaint_id: UUID = field(default_factory=uuid4)
-
     status: str = ComplaintStatus.OPEN.value
     created_at: datetime = field(default_factory=datetime.now)
     resolved_at: Optional[datetime] = field(default_factory=datetime.now)
+
+    complaint_id: UUID = field(default_factory=uuid4)
 
     def set_status(self, status: str):
         """Назначить статус\n

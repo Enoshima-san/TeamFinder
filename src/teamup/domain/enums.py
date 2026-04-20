@@ -28,3 +28,9 @@ class PlayersBehavior(int, Enum):
     MIN_RATING = 1
     MAX_RATING = 100
     NEUTRAL = 50
+
+
+class WebSocketErrorType(str, Enum):
+    VALIDATION = "validation_error"
+    BUSINESS_LOGIC = "business_error"
+    INTERNAL = "internal_error"

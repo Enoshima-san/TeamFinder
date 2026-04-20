@@ -1,29 +1,33 @@
-from src.teamup.domain import Response
+from typing import Optional, cast
+from uuid import UUID
+
+from teamup.domain import Response
 
 from ..models import ResponseORM
+from ._map_relation import _map_relation
 from .complaints import ComplaintsMapper
 
 
 class ResponseMapper:
     @staticmethod
-    def to_domain(orm: ResponseORM | None):
+    def to_domain(orm: Optional[ResponseORM]) -> Response:
         if not orm:
             raise ValueError("ORM object is None")
 
-        complaints = [ComplaintsMapper.to_domain(c) for c in orm.complaints]
+        complaints = _map_relation(orm, "complaints", ComplaintsMapper.to_domain)
 
         return Response(
-            response_id=orm.response_id,  # type: ignore[reportArgumentType]
-            announcement_id=orm.announcement_id,  # type: ignore[reportArgumentType]
-            user_id=orm.user_id,  # type: ignore[reportArgumentType]
-            status=orm.status,  # type: ignore[reportArgumentType]
-            created_at=orm.created_at,  # type: ignore[reportArgumentType]
-            updated_at=orm.updated_at,  # type: ignore[reportArgumentType]
-            complaints=complaints,
+            response_id=cast(UUID, orm.response_id),
+            announcement_id=cast(UUID, orm.announcement_id),
+            user_id=cast(UUID, orm.user_id),
+            status=orm.status,
+            created_at=orm.created_at,
+            updated_at=orm.updated_at,
+            response_complaints=complaints,
         )
 
     @staticmethod
-    def to_orm(entity: Response | None) -> ResponseORM:
+    def to_orm(entity: Optional[Response]) -> ResponseORM:
         if not entity:
             raise ValueError("Entity is None")
 
