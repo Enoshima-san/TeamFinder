@@ -24,6 +24,7 @@ from teamup.core.di import (
     get_announcement_repository,
     get_conversation_repository,
     get_current_user,
+    get_current_user_ws,
     get_game_repository,
     get_message_repository,
     get_response_repository,
@@ -123,7 +124,6 @@ async def get_top_players_use_case(game_name: str) -> GetTopPlayersUseCase:
 
 
 async def get_check_conversation_access_use_case(
-    token_data: TokenData = Depends(get_current_user),
     ann_r: IAnnouncementRepository = Depends(get_announcement_repository),
     user_r: IUserRepository = Depends(get_user_repository),
     conv_r: IConversationRepository = Depends(get_conversation_repository),
@@ -132,7 +132,6 @@ async def get_check_conversation_access_use_case(
         ann_r=ann_r,
         user_r=user_r,
         conv_r=conv_r,
-        user_id=token_data.user_id,
     )
 
 

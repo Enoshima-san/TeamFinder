@@ -8,7 +8,7 @@ from teamup.domain.repositories import IMessageRepository
 from teamup.schemas import ConversationWithMessages
 
 from ....base_rules import BaseRules
-from ....exceptions import ForbiddenError
+from ....exceptions import ForbiddenError, UserNotFoundError
 
 
 class GetConversationWithMessagesUseCase:
@@ -18,7 +18,7 @@ class GetConversationWithMessagesUseCase:
         user_r: IUserRepository,
         conv_r: IConversationRepository,
     ):
-        self._m_r = mess_r
+        self._mess_r = mess_r
         self._user_r = user_r
         self._conv_r = conv_r
 
@@ -31,13 +31,25 @@ class GetConversationWithMessagesUseCase:
         conversation = await BaseRules.get_conversation_or_fail(
             self._conv_r, conversation_id
         )
-
         if not conversation.is_participant(user.user_id):
             raise ForbiddenError("Пользователь не является участником чата")
 
-        messages_list = await self._m_r.get_by_conversation_id(
+        interlocutor = None
+        if user.user_id == conversation.announcement_author_id:
+            interlocutor = await self._user_r.get_by_id(conversation.responder_id)
+        else:
+            interlocutor = await self._user_r.get_by_id(
+                conversation.announcement_author_id
+            )
+
+        if interlocutor is None:
+            raise UserNotFoundError("Пользователь не найден")
+
+        messages_list = await self._mess_r.get_by_conversation_id(
             conversation.conversation_id
         )
         return ConversationWithMessages(
-            conversation_id=conversation.conversation_id, messages=messages_list
+            conversation_id=conversation.conversation_id,
+            interlocutor=interlocutor.username,
+            messages=messages_list,
         )

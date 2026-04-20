@@ -15,12 +15,10 @@ from ....exceptions import ForbiddenError
 class CheckConversationAccessUseCase:
     def __init__(
         self,
-        user_id: UUID,
         ann_r: IAnnouncementRepository,
         user_r: IUserRepository,
         conv_r: IConversationRepository,
     ):
-        self._user_id = user_id
         self._ann_r = ann_r
         self._user_r = user_r
         self._conv_r = conv_r
@@ -37,9 +35,10 @@ class CheckConversationAccessUseCase:
         conversation = await BaseRules.get_conversation_or_fail(
             self._conv_r, conversation_id
         )
-        if announcement.user_id != conversation.announcement_author_id:
-            raise ForbiddenError("Нет доступа к чату")
-        if self._user_id != conversation.responder_id:
-            raise ForbiddenError("...")
-
+        is_author = user_id == conversation.announcement_author_id
+        is_responder = user_id == conversation.responder_id
+        if not (is_author or is_responder):
+            raise ForbiddenError("Пользователь не является участником диалога")
+        if announcement.announcement_id != conversation.announcement_id:
+            raise ForbiddenError("Диалог не относится к этому объявлению")
         return conversation, announcement

@@ -1,33 +1,47 @@
-from typing import Optional
+from uuid import UUID
 
 from fastapi import Query, WebSocket, WebSocketException, status
+from jose import JWTError, jwt
 
-from teamup.schemas import TokenData
+from teamup.core import get_logger, settings
+from teamup.schemas import JwtPayload, TokenData
 
-from .validate_payload import _validate_token_payload
+logger = get_logger()
 
 
 async def get_current_user_ws(
     websocket: WebSocket,
-    token: Optional[str] = Query(None),
+    token: str | None = Query(None),
 ) -> TokenData:
-    """
-    WebSocket-версия: токен из query-параметра.
-    Для браузера: new WebSocket("ws://.../chat/...?token=eyJ...")
-    """
-    # Пробуем получить токен из query-параметра
     if token is None:
         token = websocket.query_params.get("token")
 
     if not token:
         raise WebSocketException(
-            code=status.WS_1008_POLICY_VIOLATION,
-            reason="Missing authentication token. Use ?token=...",
+            code=status.WS_1008_POLICY_VIOLATION, reason="Missing authentication token"
         )
 
     try:
-        return _validate_token_payload(token)
-    except ValueError:
+        payload = jwt.decode(
+            token,
+            settings.security.get_secret_key(),
+            algorithms=[settings.security.get_algorithm()],
+        )
+        validated_payload = JwtPayload(**payload)
+
+        if not validated_payload.sub:
+            raise ValueError("Missing 'sub' in token")
+
+        return TokenData(
+            user_id=UUID(validated_payload.sub),
+            email=validated_payload.email,
+            username=validated_payload.username,
+            role=validated_payload.role,
+            exp=validated_payload.exp,
+        )
+
+    except (JWTError, ValueError, KeyError) as e:
+        logger.error(f"Token validation failed: {e}")
         raise WebSocketException(
             code=status.WS_1008_POLICY_VIOLATION, reason="Invalid or expired token"
         )
