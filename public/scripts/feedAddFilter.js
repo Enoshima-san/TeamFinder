@@ -68,12 +68,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (sideBar){
-    // Пример изменения аватара и ника (ВРЕМЕННО)
-    const userData = {
-        username: "Krasawa"
-    }
-    document.getElementById('userAvatar').textContent = userData.username.charAt(0).toUpperCase();
-    document.getElementById('userNickName').textContent = userData.username;
     // Загрузка реальных данных пользователя с сервера
     loadUserData();
   }
@@ -153,7 +147,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Включение кнопок игр при нажатии
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
-      chip.classList.toggle('active');
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
     });
   });
 
@@ -180,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
       alert('Введите описание!');
       return;
     }
-    // Объект с данными (!ИЗМЕНИТЬ ИМЕНА ЕСЛИ НУЖНО!)
+    // Объект с данными
     const data = {
         type: "team",
         game_id: gameId,        
@@ -191,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
     };
     // Отправка на сервер объявления
     try {
-        const response = await apiRequestPost('http://localhost:8000/a/new', {} ,data); // ! ВСТАВИТЬ ЭНДПОИНТ !
+        const response = await apiRequestPost('http://localhost:8000/a/new', {} ,data);
         if (response.ok) {
             const result = await response.json();
             const newPostId = result.announcement_id;
@@ -230,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const ageFrom = selectedOptionAgeFrom.value;
     const ageTo = selectedOptionAgeTo.value;
 
-    // Объект с данными (!ИЗМЕНИТЬ ИМЕНА ЕСЛИ НУЖНО!)
+    // Объект с данными
     const data = {
       games: games,
       ageFrom: ageFrom,

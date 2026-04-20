@@ -16,13 +16,13 @@
     <form id="registerForm">
 
         <label>Ваш email:</label>
-        <input type="email" id="email" required placeholder="pochta@mail.ru">
+        <input type="email" id="email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" required placeholder="pochta@mail.ru">
 
         <label>Ваш никнейм:</label>
-        <input type="text" id="nickname" minlength="2"  required placeholder="John">
+        <input type="text" id="nickname" minlength="3" maxlength="15" pattern="[a-z0-9_]+$" required placeholder="john, jane_doe">
 
         <label>Пароль:</label>
-        <input type="password" id="password" minlength="6" required placeholder="********">
+        <input type="password" id="password" minlength="8" required placeholder="********">
 
         <button class="btn registration" type="submit">Зарегистрироваться</button>
 
