@@ -31,8 +31,6 @@ document.getElementById("emailBtn")?.addEventListener("click", async function (e
       } else {
         alert("Ошибка отправки");
       }
-
-      alert(result.message);
       // Вывод ошибки
     } catch (error) {
       alert("Ошибка соединения с сервером");
@@ -73,8 +71,6 @@ document.getElementById("emailBtn")?.addEventListener("click", async function (e
       } else {
         alert("Ошибка отправки");
       }
-
-      alert(result.message);
       // Вывод ошибки
     } catch (error) {
       alert("Ошибка соединения с сервером");
@@ -119,8 +115,6 @@ document.getElementById("emailBtn")?.addEventListener("click", async function (e
       } else {
         alert("Ошибка авторизации");
       }
-
-      alert(result.message);
       // Вывод ошибки
     } catch (error) {
       alert("Ошибка соединения с сервером");
