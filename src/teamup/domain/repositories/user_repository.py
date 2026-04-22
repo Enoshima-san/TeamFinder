@@ -128,17 +128,17 @@ class IUserRepository(BaseRepository):
         """
         ...
 
-    @abstractmethod
-    async def update_password(self, email: str, hashed_password: str) -> Optional[User]:
-        """
-        Обновляет пароль пользователя в системе.
+    # @abstractmethod
+    # async def update_password(self, email: str, hashed_password: str) -> Optional[User]:
+    #     """
+    #     Обновляет пароль пользователя в системе.
 
-        Args:
-            - `email`: электронная почта пользователя
-            - `hashed_password`: хеш нового пароля
+    #     Args:
+    #         - `email`: электронная почта пользователя
+    #         - `hashed_password`: хеш нового пароля
 
-        Returns:
-            - `User`: обновлённый доменный объект
-            - `None`: если пользователь не найден
-        """
-        ...
+    #     Returns:
+    #         - `User`: обновлённый доменный объект
+    #         - `None`: если пользователь не найден
+    #     """
+    #     ...
