@@ -387,18 +387,62 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   async function apiRequest(url, options = {}) {
-    const token = sessionStorage.getItem("token");
-    if (token)
-      options.headers = {
-        ...options.headers,
-        Authorization: `Bearer ${token}`,
-      };
-
+    if (!options._retry) {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        options.headers = {
+          ...options.headers,
+          Authorization: `Bearer ${token}`,
+        };
+      }
+    }
     try {
-      return await fetch(url, options);
+      const response = await fetch(url, options);
+
+      if (response.status === 401 && !options._retry) {
+        options._retry = true;
+
+        const refreshToken = sessionStorage.getItem("refresh_token");
+        if (refreshToken) {
+          const refreshResponse = await fetch(
+            "http://localhost:8000/auth/refresh",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ refresh: refreshToken }),
+            },
+          );
+
+          if (refreshResponse.ok) {
+            const { access_token, refresh_token } =
+              await refreshResponse.json();
+
+            sessionStorage.setItem("token", access_token);
+            if (refresh_token) {
+              sessionStorage.setItem("refresh_token", refresh_token);
+            }
+
+            options.headers = {
+              ...options.headers,
+              Authorization: `Bearer ${access_token}`,
+            };
+            return await fetch(url, options);
+          } else {
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("refresh_token");
+            window.location.href = "/login";
+            throw new Error("Session expired");
+          }
+        }
+      }
+
+      return response;
     } catch (error) {
       console.error("Ошибка запроса:", error);
-      alert("Ошибка запроса");
+      if (error.message !== "Session expired") {
+        alert("Ошибка запроса");
+      }
+      throw error;
     }
   }
 
@@ -654,7 +698,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     } catch (error) {
-      alert("Ошибка пользователя")
+      alert("Ошибка пользователя");
       console.error("Ошибка пользователя:", error);
     }
   }

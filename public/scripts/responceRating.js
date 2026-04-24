@@ -1,120 +1,165 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const tabResponses = document.getElementById("tabResponses");
-    const tabMyResponses = document.getElementById("tabMyResponses");
-    const sideBar = document.querySelector('.sidebar');
-    const feedPage = document.getElementById('feed-page');
-    const postsCont = document.querySelector('.resp-cont');
-    const respBtn = document.getElementById('tabResponses');
-    const myRespBtn = document.getElementById('tabMyResponses');
-    const respPage = document.getElementById('resp-page');
-    const ratingList = document.getElementById("players-list");
-    const ratingPage = document.getElementById('rating-page');
-    const chatsPage = document.getElementById("chats-page");
-    const logOutBtn = document.getElementById("logOutBtn");
-    const profilePage = document.getElementById("profile-page");
-    const hiddEditBtn = document.getElementById("hiddenEdit");
+  const tabResponses = document.getElementById("tabResponses");
+  const tabMyResponses = document.getElementById("tabMyResponses");
+  const sideBar = document.querySelector(".sidebar");
+  const feedPage = document.getElementById("feed-page");
+  const postsCont = document.querySelector(".resp-cont");
+  const respBtn = document.getElementById("tabResponses");
+  const myRespBtn = document.getElementById("tabMyResponses");
+  const respPage = document.getElementById("resp-page");
+  const ratingList = document.getElementById("players-list");
+  const ratingPage = document.getElementById("rating-page");
+  const chatsPage = document.getElementById("chats-page");
+  const logOutBtn = document.getElementById("logOutBtn");
+  const profilePage = document.getElementById("profile-page");
+  const hiddEditBtn = document.getElementById("hiddenEdit");
 
-    // Ссылка на страницу ленты
-    feedPage.addEventListener("click", () => {
-        window.location.assign("feed.html");
-    });
+  // Ссылка на страницу ленты
+  feedPage.addEventListener("click", () => {
+    window.location.assign("feed.html");
+  });
 
-    // Ссылка на страницу чата
-    chatsPage.addEventListener("click", () => {
-        window.location.assign("chat.html");
-    });
-    
-    // Ссылка на страницу откликов
-    respPage.addEventListener("click", () => {
-        window.location.assign("myResponces.html");
-    });
-    // Ссылка на страницу рейтинга
-    ratingPage.addEventListener("click", () => {
-        window.location.assign("rating.html");
-    });
+  // Ссылка на страницу чата
+  chatsPage.addEventListener("click", () => {
+    window.location.assign("chat.html");
+  });
 
-    // Ссылка на страницу профиля
-    profilePage.addEventListener("click", () => {
-        window.location.assign("profile.html");
-    });
+  // Ссылка на страницу откликов
+  respPage.addEventListener("click", () => {
+    window.location.assign("myResponces.html");
+  });
+  // Ссылка на страницу рейтинга
+  ratingPage.addEventListener("click", () => {
+    window.location.assign("rating.html");
+  });
 
-    // Выход из аккаунта
-    logOutBtn.addEventListener("click", () => {
-        // Удаление токена пользователя из текущей сессии
-        sessionStorage.removeItem('token');
-        window.location.assign("login.html");
-    });
+  // Ссылка на страницу профиля
+  profilePage.addEventListener("click", () => {
+    window.location.assign("profile.html");
+  });
 
-    // Ссылка на страницу настроек
-    hiddEditBtn.addEventListener("click", () => {
-        window.location.assign("settings.html");
-    });
+  // Выход из аккаунта
+  logOutBtn.addEventListener("click", () => {
+    // Удаление токена пользователя из текущей сессии
+    sessionStorage.removeItem("token");
+    window.location.assign("login.html");
+  });
 
-    // Функция удаления всех подузлов указанного узла
-    function removeAllChildren(parentElement) {
-        while (parentElement.firstChild) {
-            parentElement.removeChild(parentElement.firstChild);
-        }
+  // Ссылка на страницу настроек
+  hiddEditBtn.addEventListener("click", () => {
+    window.location.assign("settings.html");
+  });
+
+  // Функция удаления всех подузлов указанного узла
+  function removeAllChildren(parentElement) {
+    while (parentElement.firstChild) {
+      parentElement.removeChild(parentElement.firstChild);
     }
+  }
 
-    // Функция для запросов с токеном авторизации
-    async function apiRequest(url, options = {}) {
-        const token = sessionStorage.getItem('token');
-        console.log(token);
-        if (token) options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
-        try{
-            const response = await fetch(url, options);
-            return response;
-        }
-        catch (error) {
-            alert('Ошибка авторизации:');
-            console.error('Ошибка авторизации:', error);
-            return;
-        }
+  // Функция для запросов с токеном авторизации
+  async function apiRequest(url, options = {}) {
+    if (!options._retry) {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        options.headers = {
+          ...options.headers,
+          Authorization: `Bearer ${token}`,
+        };
+      }
     }
+    try {
+      const response = await fetch(url, options);
 
-    // Создание карточек откликов
-    function createCard(data) {
-        const card = document.createElement('div');
-        card.className = 'cardResp';
-        const userId = data.user_id;
-        const status = data.status || "Ожидает";
+      if (response.status === 401 && !options._retry) {
+        options._retry = true;
 
-        card.innerHTML = `
+        const refreshToken = sessionStorage.getItem("refresh_token");
+        if (refreshToken) {
+          const refreshResponse = await fetch(
+            "http://localhost:8000/auth/refresh",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ refresh: refreshToken }),
+            },
+          );
+
+          if (refreshResponse.ok) {
+            const { access_token, refresh_token } =
+              await refreshResponse.json();
+
+            sessionStorage.setItem("token", access_token);
+            if (refresh_token) {
+              sessionStorage.setItem("refresh_token", refresh_token);
+            }
+
+            options.headers = {
+              ...options.headers,
+              Authorization: `Bearer ${access_token}`,
+            };
+            return await fetch(url, options);
+          } else {
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("refresh_token");
+            window.location.href = "/login";
+            throw new Error("Session expired");
+          }
+        }
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Ошибка запроса:", error);
+      if (error.message !== "Session expired") {
+        alert("Ошибка запроса");
+      }
+      throw error;
+    }
+  }
+
+  // Создание карточек откликов
+  function createCard(data) {
+    const card = document.createElement("div");
+    card.className = "cardResp";
+    const userId = data.user_id;
+    const status = data.status || "Ожидает";
+
+    card.innerHTML = `
           <p class="cardText">
             Отклик на объявление: <strong>${data.announcement_id}</strong>
           </p>
           <p class="contact">Статус: ${status}</p>
           <p class="contact">ID пользователя: ${userId}</p>
         `;
-        return card;
-    }
+    return card;
+  }
 
-    function createMyCard(data) {
-        const card = document.createElement('div');
-        card.className = 'cardResp';
-        const userId = data.user_id;
-        const status = data.status || "Ожидает";
+  function createMyCard(data) {
+    const card = document.createElement("div");
+    card.className = "cardResp";
+    const userId = data.user_id;
+    const status = data.status || "Ожидает";
 
-        card.innerHTML = `
+    card.innerHTML = `
           <p class="cardText">
             Вы откликнулись на объявление: <strong>${data.announcement_id}</strong>
           </p>
           <p class="contact">Статус: ${status}</p>
           <p class="contact">ID пользователя: ${userId}</p>
         `;
-        return card;
-    }
-    // Создание карточки рейтинга
-    function createRating(data, index) {
-        const card = document.createElement("div");
-        card.className = "player-card";
-        const nick = data.nickname || "Unknown";
-        const firstLetter = nick[0] || "?";
-        const rank = index + 1;
-        const discipline = data.disclipline ? data.disclipline[0] : "Dota 2";
+    return card;
+  }
+  // Создание карточки рейтинга
+  function createRating(data, index) {
+    const card = document.createElement("div");
+    card.className = "player-card";
+    const nick = data.nickname || "Unknown";
+    const firstLetter = nick[0] || "?";
+    const rank = index + 1;
+    const discipline = data.disclipline ? data.disclipline[0] : "Dota 2";
 
-        card.innerHTML = `
+    card.innerHTML = `
           <div class="player-info">
             <span class="rank-number">${rank}.</span>
             <div class="player-avatar">${firstLetter}</div>
@@ -126,168 +171,180 @@ document.addEventListener("DOMContentLoaded", function () {
             <span>Побед: ${data.stats?.wins || 0}</span>
           </div>
         `;
-        return card;
+    return card;
+  }
+
+  // Асинхронная функция запроса откликов к серверу
+  async function loadResponces() {
+    const storedIds =
+      JSON.parse(sessionStorage.getItem("respondedMyPosts")) || [];
+    console.log("ID в хранилище:", storedIds);
+
+    if (storedIds.length === 0) {
+      console.warn("Хранилище пустое");
+      return;
     }
 
-    // Асинхронная функция запроса откликов к серверу 
-    async function loadResponces() {
-        const storedIds = JSON.parse(sessionStorage.getItem('respondedMyPosts')) || [];
-        console.log("ID в хранилище:", storedIds);
+    try {
+      postsCont.innerHTML = "";
+      for (const annId of storedIds) {
+        console.log(`Запрос для ID: ${annId}`);
+        const response = await apiRequest(
+          `http://localhost:8000/a/${annId}/responses/`,
+        );
 
-        if (storedIds.length === 0) {
-            console.warn("Хранилище пустое");
-            return;
+        if (response.ok) {
+          const responses = await response.json();
+          console.log(`Ответ сервера для ${annId}:`, responses);
+
+          if (Array.isArray(responses) && responses.length > 0) {
+            responses.forEach((item) => {
+              postsCont.appendChild(createCard(item));
+            });
+          } else {
+            alert(`Для ID ${annId} откликов не найдено (массив пуст)`);
+            console.log(`Для ID ${annId} откликов не найдено (массив пуст)`);
+          }
+        } else {
+          alert(`Сервер вернул ошибку ${response.status} для ID ${annId}`);
+          console.error(
+            `Сервер вернул ошибку ${response.status} для ID ${annId}`,
+          );
         }
+      }
+    } catch (error) {
+      alert("Ошибка при загрузке откликов из хранилища");
+      console.error("Критическая ошибка:", error);
+    }
+  }
 
-        try {
-            postsCont.innerHTML = '';
-            for (const annId of storedIds) {
-                console.log(`Запрос для ID: ${annId}`);
-                const response = await apiRequest(`http://localhost:8000/a/${annId}/responses/`);
-
-                if (response.ok) {
-                    const responses = await response.json();
-                    console.log(`Ответ сервера для ${annId}:`, responses);
-
-                    if (Array.isArray(responses) && responses.length > 0) {
-                        responses.forEach(item => {
-                            postsCont.appendChild(createCard(item));
-                        });
-                    } else {
-                        alert(`Для ID ${annId} откликов не найдено (массив пуст)`);
-                        console.log(`Для ID ${annId} откликов не найдено (массив пуст)`);
-                    }
-                } else {
-                    alert(`Сервер вернул ошибку ${response.status} для ID ${annId}`);
-                    console.error(`Сервер вернул ошибку ${response.status} для ID ${annId}`);
-                }
-            }
-        } catch (error) {
-            alert('Ошибка при загрузке откликов из хранилища');
-            console.error('Критическая ошибка:', error);
-        }
+  // Загрузка откликов
+  async function loadMyResponces() {
+    const storedIds =
+      JSON.parse(sessionStorage.getItem("respondedPosts")) || [];
+    console.log("ID в хранилище:", storedIds);
+    if (storedIds.length === 0) {
+      console.warn("Хранилище пустое");
+      return;
     }
 
+    try {
+      postsCont.innerHTML = "";
+      for (const annId of storedIds) {
+        console.log(`Запрос для ID: ${annId}`);
+        const response = await apiRequest(
+          `http://localhost:8000/a/${annId}/responses/`,
+        );
 
-    // Загрузка откликов
-    async function loadMyResponces(){
-        const storedIds = JSON.parse(sessionStorage.getItem('respondedPosts')) || [];
-        console.log("ID в хранилище:", storedIds);
-        if (storedIds.length === 0) {
-            console.warn("Хранилище пустое");
-            return;
+        if (response.ok) {
+          const responses = await response.json();
+          console.log(`Ответ сервера для ${annId}:`, responses);
+
+          if (Array.isArray(responses)) {
+            responses.forEach((item) => {
+              console.log(item);
+              postsCont.appendChild(createMyCard(item));
+            });
+          } else {
+            alert(`Для ID ${annId} откликов не найдено (массив пуст)`);
+            console.log(`Для ID ${annId} откликов не найдено (массив пуст)`);
+          }
+        } else {
+          alert(`Сервер вернул ошибку ${response.status} для ID ${annId}`);
+          console.error(
+            `Сервер вернул ошибку ${response.status} для ID ${annId}`,
+          );
         }
-
-        try {
-            postsCont.innerHTML = '';
-            for (const annId of storedIds) {
-                console.log(`Запрос для ID: ${annId}`);
-                const response = await apiRequest(`http://localhost:8000/a/${annId}/responses/`);
-
-                if (response.ok) {
-                    const responses = await response.json();
-                    console.log(`Ответ сервера для ${annId}:`, responses);
-
-                    if (Array.isArray(responses)) {
-                        responses.forEach(item => {
-                            console.log(item);
-                            postsCont.appendChild(createMyCard(item));
-                        });
-                    }else {
-                        alert(`Для ID ${annId} откликов не найдено (массив пуст)`);
-                        console.log(`Для ID ${annId} откликов не найдено (массив пуст)`);
-                    }
-                }else {
-                    alert(`Сервер вернул ошибку ${response.status} для ID ${annId}`);
-                    console.error(`Сервер вернул ошибку ${response.status} для ID ${annId}`);
-                }
-            }
-        } catch (error) {
-            alert('Ошибка при загрузке откликов из хранилища');
-            console.error('Ошибка при загрузке откликов из хранилища:', error);
-        }
-    } 
-    // Загрузка рейтинга игроков
-    async function loadRating(){
-        try {
-            const response = await apiRequest('http://localhost:8000/api/external/cyber-sport-ru/dota-2');
-            if (response.ok) {
-                const data = await response.json(); 
-                ratingList.innerHTML = '';
-                if (Array.isArray(data)) {
-                    data.forEach((player, index) => {
-                        ratingList.appendChild(createRating(player, index));
-                    });
-                }
-
-                console.log('Результаты загружены:', data);
-                
-            } else {
-                alert('Ошибка при загрузке рейтинга');
-                console.error('Ошибка при загрузке рейтинга');
-            }
-        } catch (error) {
-            alert('Ошибка при загрузке рейтинга');
-            console.error('Ошибка при загрузке рейтинга:', error);
-        }
-    }    
-    // Подгрузка данных сайдбара
-    async function loadUserData() {
-        try {
-            const response = await apiRequest('http://localhost:8000/users/me');
-            if (response.ok) {
-                const userData = await response.json();
-                
-                if(document.querySelector('.user')) {
-                    document.getElementById('userAvatar').textContent = userData.username.charAt(0).toUpperCase();
-                    document.getElementById('userNickName').textContent = userData.username;
-                }
-                console.log('Данные пользователя загружены:', userData);
-            } else {
-                alert('Ошибка при загрузке данных пользователя');
-                console.error('Ошибка при загрузке данных пользователя');
-            }
-        } catch (error) {
-            alert('Ошибка при загрузке данных пользователя');
-            console.error('Ошибка при загрузке данных пользователя:', error);
-        }
+      }
+    } catch (error) {
+      alert("Ошибка при загрузке откликов из хранилища");
+      console.error("Ошибка при загрузке откликов из хранилища:", error);
     }
-
-    if (sideBar){
-        // Загрузка реальных данных пользователя с сервера
-        loadUserData();
-    }
-    if (postsCont){
-        loadResponces();
-    }
-    if (ratingList){
-        loadRating();       
-    }
-
-// Переключение на "Отклики"
-    tabResponses?.addEventListener("click", () => {
-      tabResponses.classList.add("active");
-      tabMyResponses.classList.remove("active");
-      removeAllChildren(postsCont); 
-        loadResponces();
-    });
-
-// Переключение на "Мои отклики"
-    tabMyResponses?.addEventListener("click", () => {
-      tabMyResponses.classList.add("active");
-      tabResponses.classList.remove("active");
-      removeAllChildren(postsCont); 
-        loadMyResponces();
-    });
-
-    document.addEventListener("click", (e) => {
-
-        // Открыть меню аккаунта
-        if (e.target.classList.contains("open-settings-btn")) {
-            const sidebar = e.target.closest(".sidebar");
-            const box = sidebar.querySelector(".account-box");
-            // Открыть и закрыть скрытое меню
-            box.classList.toggle("hidden");
+  }
+  // Загрузка рейтинга игроков
+  async function loadRating() {
+    try {
+      const response = await apiRequest(
+        "http://localhost:8000/api/external/cyber-sport-ru/dota-2",
+      );
+      if (response.ok) {
+        const data = await response.json();
+        ratingList.innerHTML = "";
+        if (Array.isArray(data)) {
+          data.forEach((player, index) => {
+            ratingList.appendChild(createRating(player, index));
+          });
         }
-    });
+
+        console.log("Результаты загружены:", data);
+      } else {
+        alert("Ошибка при загрузке рейтинга");
+        console.error("Ошибка при загрузке рейтинга");
+      }
+    } catch (error) {
+      alert("Ошибка при загрузке рейтинга");
+      console.error("Ошибка при загрузке рейтинга:", error);
+    }
+  }
+  // Подгрузка данных сайдбара
+  async function loadUserData() {
+    try {
+      const response = await apiRequest("http://localhost:8000/users/me");
+      if (response.ok) {
+        const userData = await response.json();
+
+        if (document.querySelector(".user")) {
+          document.getElementById("userAvatar").textContent = userData.username
+            .charAt(0)
+            .toUpperCase();
+          document.getElementById("userNickName").textContent =
+            userData.username;
+        }
+        console.log("Данные пользователя загружены:", userData);
+      } else {
+        alert("Ошибка при загрузке данных пользователя");
+        console.error("Ошибка при загрузке данных пользователя");
+      }
+    } catch (error) {
+      alert("Ошибка при загрузке данных пользователя");
+      console.error("Ошибка при загрузке данных пользователя:", error);
+    }
+  }
+
+  if (sideBar) {
+    // Загрузка реальных данных пользователя с сервера
+    loadUserData();
+  }
+  if (postsCont) {
+    loadResponces();
+  }
+  if (ratingList) {
+    loadRating();
+  }
+
+  // Переключение на "Отклики"
+  tabResponses?.addEventListener("click", () => {
+    tabResponses.classList.add("active");
+    tabMyResponses.classList.remove("active");
+    removeAllChildren(postsCont);
+    loadResponces();
+  });
+
+  // Переключение на "Мои отклики"
+  tabMyResponses?.addEventListener("click", () => {
+    tabMyResponses.classList.add("active");
+    tabResponses.classList.remove("active");
+    removeAllChildren(postsCont);
+    loadMyResponces();
+  });
+
+  document.addEventListener("click", (e) => {
+    // Открыть меню аккаунта
+    if (e.target.classList.contains("open-settings-btn")) {
+      const sidebar = e.target.closest(".sidebar");
+      const box = sidebar.querySelector(".account-box");
+      // Открыть и закрыть скрытое меню
+      box.classList.toggle("hidden");
+    }
+  });
 });
