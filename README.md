@@ -45,8 +45,6 @@ uv pip install -e .
 python -m src.teamup.utils.db_create_all
 # создание записей игр
 python -m src.teamup.utils.create_games
-
-
 ```
 
 ---
