@@ -43,6 +43,9 @@ uv pip install -e .
 Перед тем как запустить сервер надо создать в БД пустые таблицы (убедитесь, что вы подняли сервер PostgreSQL и создали новую базу данных с указанием секретов в .env):
 ```bash
 python -m src.teamup.utils.db_create_all
+# создание записей игр
+python -m src.teamup.utils.create_games
+
 
 ```
 
