@@ -16,17 +16,21 @@
 }
 
 body {
-  background:#FFFFFF;
+    background:#FFFFFF;
+    min-height: 100vh;
+
 }
 
 .container {
-  display: flex;
+    display: flex;
+    flex-direction: row; 
 }
 
 /* Контейнер бокового меню */
 
 .sidebar{
     width: 350px;
+    height: 100%;
     background:#FFFFFF;
     border-radius:12px;
     padding: 20px;
@@ -39,6 +43,8 @@ body {
     top: 20px;
     left: 20px;
     flex-shrink: 0;
+    position: fixed;
+    height: calc(100vh - 40px); 
     flex:1;
 }
 
@@ -161,6 +167,7 @@ body {
     margin-bottom: 20px;
     min-width: 0;
     flex:5;
+    margin-left: 400px;
 }
 
 .top-bar {
@@ -195,7 +202,7 @@ body {
     padding: 20px;
     border-radius: 20px;
     margin-bottom: 20px;
-    height: 350px;
+    min-height: 350px; 
     position: relative;
     font-size: 17px;
     font-family: "Inter";
@@ -726,4 +733,123 @@ select {
 
 .profile-save:hover {
   background: #eee;
+}
+
+/* Адаптивность интерфейса под разные разрешения */
+@media (max-width: 1800px) {
+    .user {
+        margin-top: 50%;
+    }
+}
+
+@media (max-width: 1600px) {
+    .tabsResp{
+        gap: 50%;
+    }
+    .user {
+        margin-top: 40%;
+    }
+}
+
+@media (max-width: 1400px) {
+    .sidebar {
+        width: 20%;
+        height: 100%;
+    }
+    .main {
+        margin-left: 320px;
+        margin-right: 20px;
+    }
+    .user {
+        margin-top: 0%;
+    }
+    .tabsResp{
+        gap: 50%;
+    }
+}
+
+@media (max-width: 1100px) {
+    .sidebar {
+        gap: 10px;
+    }
+}
+@media (max-width: 1000px) {
+    .container {
+        flex-direction: column; /* Сайдбар теперь сверху, контент снизу */
+    }
+
+    .sidebar {
+        position: relative;
+        width: calc(100% - 40px);
+        height: auto;
+        top: 0;
+        left: 20px;
+        margin: 20px 0;
+    }
+
+    .main {
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-top: 0;
+    }
+
+    .logo {
+        font-size: 60px;
+        text-align: center;
+    }
+
+    .user {
+        margin-top: 20px;
+    }
+
+    .top-bar {
+        flex-direction: column; /* Кнопки в топ-баре друг под другом */
+        gap: 10px;
+    }
+
+    .response-box {
+        width: 95%;
+        right: 2.5%;
+        top: 10%;
+    }
+
+    .filters {
+        flex-wrap: wrap; /* Фильтры переносятся на новую строку */
+        gap: 10px;
+    }
+
+    .microphone {
+        width: 100%;
+    }
+    
+    .filter-btn {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .tabsResp {
+        gap: 10px;
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .apply-btn {
+        position: static;
+        width: 100%;
+        margin-top: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        font-size: 48px;
+    }
+    
+    .card {
+        padding: 15px;
+    }
+
+    .menu-btn, .user, .account-btn {
+        width: 100%;
+    }
 }

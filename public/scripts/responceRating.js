@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return response;
         }
         catch (error) {
+            alert('Ошибка авторизации:');
             console.error('Ошибка авторизации:', error);
             return;
         }
@@ -153,13 +154,16 @@ document.addEventListener("DOMContentLoaded", function () {
                             postsCont.appendChild(createCard(item));
                         });
                     } else {
+                        alert(`Для ID ${annId} откликов не найдено (массив пуст)`);
                         console.log(`Для ID ${annId} откликов не найдено (массив пуст)`);
                     }
                 } else {
+                    alert(`Сервер вернул ошибку ${response.status} для ID ${annId}`);
                     console.error(`Сервер вернул ошибку ${response.status} для ID ${annId}`);
                 }
             }
         } catch (error) {
+            alert('Ошибка при загрузке откликов из хранилища');
             console.error('Критическая ошибка:', error);
         }
     }
@@ -190,13 +194,16 @@ document.addEventListener("DOMContentLoaded", function () {
                             postsCont.appendChild(createMyCard(item));
                         });
                     }else {
+                        alert(`Для ID ${annId} откликов не найдено (массив пуст)`);
                         console.log(`Для ID ${annId} откликов не найдено (массив пуст)`);
                     }
                 }else {
+                    alert(`Сервер вернул ошибку ${response.status} для ID ${annId}`);
                     console.error(`Сервер вернул ошибку ${response.status} для ID ${annId}`);
                 }
             }
         } catch (error) {
+            alert('Ошибка при загрузке откликов из хранилища');
             console.error('Ошибка при загрузке откликов из хранилища:', error);
         }
     } 
@@ -216,9 +223,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log('Результаты загружены:', data);
                 
             } else {
+                alert('Ошибка при загрузке рейтинга');
                 console.error('Ошибка при загрузке рейтинга');
             }
         } catch (error) {
+            alert('Ошибка при загрузке рейтинга');
             console.error('Ошибка при загрузке рейтинга:', error);
         }
     }    
@@ -235,9 +244,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 console.log('Данные пользователя загружены:', userData);
             } else {
+                alert('Ошибка при загрузке данных пользователя');
                 console.error('Ошибка при загрузке данных пользователя');
             }
         } catch (error) {
+            alert('Ошибка при загрузке данных пользователя');
             console.error('Ошибка при загрузке данных пользователя:', error);
         }
     }

@@ -76,6 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return response;
         }
         catch (error) {
+            alert('Ошибка авторизации');
             console.error('Ошибка авторизации:', error);
             return;
         }
@@ -94,6 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return response;
         }
         catch (error) {
+            alert('Ошибка авторизации');
             console.error('Ошибка авторизации:', error);
             return;
         }
@@ -197,9 +199,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log('Объявления загружены:', adData);
                 
             } else {
+                alert('Ошибка при загрузке объявлений');
                 console.error('Ошибка при загрузке объявлений');
             }
         } catch (error) {
+            alert('Ошибка при загрузке объявлений');
             console.error('Ошибка при загрузке объявлений:', error);
         }
     }
@@ -217,9 +221,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 console.log('Данные пользователя загружены:', userData);
             } else {
+                alert('Ошибка при загрузке данных пользователя');
                 console.error('Ошибка при загрузке данных пользователя');
             }
         } catch (error) {
+            alert('Ошибка при загрузке данных пользователя');
             console.error('Ошибка при загрузке данных пользователя:', error);
         }
     }

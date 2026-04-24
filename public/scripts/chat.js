@@ -398,6 +398,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return await fetch(url, options);
     } catch (error) {
       console.error("Ошибка запроса:", error);
+      alert("Ошибка запроса");
     }
   }
 
@@ -453,6 +454,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Извлекаем ID объявления из хранилища
     const chat = chats.find((c) => c.conversation_id === conversation_id);
     if (!chat) {
+      alert("Чат не найден в списке");
       console.error("Чат не найден в списке");
       return;
     }
@@ -469,6 +471,7 @@ document.addEventListener("DOMContentLoaded", function () {
         chatHeader.textContent = `Чат: ${data.interlocutor}`;
       }
     } catch (e) {
+      alert("Ошибка загрузки истории");
       console.error("Ошибка загрузки истории:", e);
     }
 
@@ -518,6 +521,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     } catch (e) {
+      alert("Ошибка загрузки чатов");
       console.error("Ошибка загрузки чатов:", e);
     }
   }
@@ -528,6 +532,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Находим чат, чтобы взять announcement_id
     const chat = chats.find((c) => c.conversation_id === activeChatId);
     if (!chat) {
+      alert("Чат не найден для реконнекта");
       console.error("❌ Чат не найден для реконнекта");
       return;
     }
@@ -561,9 +566,11 @@ document.addEventListener("DOMContentLoaded", function () {
         addMessage(data);
       }
       if (data.type === "validation_error") {
+        alert("Ошибка валидации");
         console.warn("⚠️ Validation error:", data.message);
       }
       if (data.type === "error") {
+        alert("Ошибка сервера");
         console.error("❌ Server error:", data.message);
       }
     };
@@ -647,6 +654,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     } catch (error) {
+      alert("Ошибка пользователя")
       console.error("Ошибка пользователя:", error);
     }
   }
