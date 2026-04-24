@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 
 from teamup.core import get_logger
@@ -13,11 +13,4 @@ logger = get_logger()
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
     """HTTP-версия: токен из заголовка Authorization: Bearer ..."""
-    try:
-        return _validate_token_payload(token)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    return _validate_token_payload(token)
