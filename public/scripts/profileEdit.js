@@ -59,6 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return response;
         }
         catch (error) {
+            alert('Ошибка авторизации:');
             console.error('Ошибка авторизации:', error);
             return;
         }
@@ -77,6 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return response;
         }
         catch (error) {
+            alert('Ошибка авторизации:');
             console.error('Ошибка авторизации:', error);
             return;
         }
@@ -101,9 +103,11 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.ok) {
             alert("Настройки сохранены!");
         } else {
+            alert('Ошибка при сохранении настроек');
             console.error('Ошибка при сохранении настроек');
         }
         } catch (error) {
+            alert('Ошибка при сохранении настроек');
             console.error('Ошибка при сохранении настроек:', error);
         }
     });
@@ -145,9 +149,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             console.log('Данные пользователя загружены:', userData);
           } else {
+                alert('Ошибка при загрузке данных пользователя');
               console.error('Ошибка при загрузке данных пользователя');
           }
       } catch (error) {
+            alert('Ошибка при загрузке данных пользователя');
           console.error('Ошибка при загрузке данных пользователя:', error);
       }
     };
