@@ -1,11 +1,11 @@
 import asyncio
 import io
-import uuid
 from pathlib import Path
+from uuid import UUID
 
 from PIL import Image
 
-from teamup.api.di import get_game_repository
+from teamup.core.di import get_game_repository
 from teamup.domain import Game
 from teamup.infra.database import get_async_session
 
@@ -22,14 +22,24 @@ def image_to_bytes(image_path: str) -> bytes:
 
 games = [
     {
-        "game_id": uuid.uuid4(),
+        "game_id": UUID("00000000-0000-0000-0000-000000000000"),
         "game_name": "Dota 2",
         "game_icon": image_to_bytes("images/dota.jpg"),
     },
     {
-        "game_id": uuid.uuid4(),
-        "game_name": "Counter-Strike",
+        "game_id": UUID("00000000-0000-0000-0000-000000000001"),
+        "game_name": "CS GO",
         "game_icon": image_to_bytes("images/cs.jpg"),
+    },
+    {
+        "game_id": UUID("00000000-0000-0000-0000-000000000002"),
+        "game_name": "LoL",
+        "game_icon": image_to_bytes("images/lol.png"),
+    },
+    {
+        "game_id": UUID("00000000-0000-0000-0000-000000000003"),
+        "game_name": "WoW",
+        "game_icon": image_to_bytes("images/wow.png"),
     },
 ]
 
