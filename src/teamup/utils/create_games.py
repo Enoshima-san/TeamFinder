@@ -24,22 +24,22 @@ games = [
     {
         "game_id": UUID("00000000-0000-0000-0000-000000000000"),
         "game_name": "Dota 2",
-        "game_icon": image_to_bytes("images/dota.jpg"),
+        "game_icon": "1234",
     },
     {
         "game_id": UUID("00000000-0000-0000-0000-000000000001"),
         "game_name": "CS GO",
-        "game_icon": image_to_bytes("images/cs.jpg"),
+        "game_icon": "1234",
     },
     {
         "game_id": UUID("00000000-0000-0000-0000-000000000002"),
         "game_name": "LoL",
-        "game_icon": image_to_bytes("images/lol.png"),
+        "game_icon": "1234",
     },
     {
         "game_id": UUID("00000000-0000-0000-0000-000000000003"),
         "game_name": "WoW",
-        "game_icon": image_to_bytes("images/wow.png"),
+        "game_icon": "1234",
     },
 ]
 
