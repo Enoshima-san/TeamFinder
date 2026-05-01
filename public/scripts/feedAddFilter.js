@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = {
       type: "team",
       game_id: gameId,
-      has_microphone: mic,
+      has_microphone: ["Обязательно", "1", 1, true].includes(mic),
       rank_min: parseInt(ageFrom) || 0,
       rank_max: parseInt(ageTo) || 99,
       description: description,

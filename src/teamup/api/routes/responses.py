@@ -51,9 +51,44 @@ async def create_response(
 async def get_responses_by_announcement(
     announcement_id: UUID,
     res_s: ResponsesService = Depends(get_responses_service),
-    token_data: TokenData = Depends(get_current_user),
 ):
     res = await res_s.get_responses_by_announcement(announcement_id)
+    return [
+        ResponseOut(
+            user_id=r.user_id,
+            announcement_id=r.announcement_id,
+            status=r.status,
+            created_at=r.created_at,
+            updated_at=r.updated_at,
+        )
+        for r in res
+    ]
+
+
+@responses_router.get("/users/me/responses", response_model=list[ResponseOut])
+async def get_by_user(
+    res_s: ResponsesService = Depends(get_responses_service),
+    token_data: TokenData = Depends(get_current_user),
+):
+    res = await res_s.get_responses_by_user(token_data.user_id)
+    return [
+        ResponseOut(
+            user_id=r.user_id,
+            announcement_id=r.announcement_id,
+            status=r.status,
+            created_at=r.created_at,
+            updated_at=r.updated_at,
+        )
+        for r in res
+    ]
+
+
+@responses_router.get("/users/{user_id}/responses", response_model=list[ResponseOut])
+async def get_by_user_id(
+    user_id: UUID,
+    res_s: ResponsesService = Depends(get_responses_service),
+):
+    res = await res_s.get_responses_by_user(user_id)
     return [
         ResponseOut(
             user_id=r.user_id,

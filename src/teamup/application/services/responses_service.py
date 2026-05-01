@@ -43,3 +43,8 @@ class ResponsesService:
         await BaseRules.get_announcement_or_fail(self._ann_r, announcement_id)
         res = await self._res_r.get_by_announcement(announcement_id)
         return res
+
+    async def get_responses_by_user(self, user_id: UUID) -> list[Response]:
+        await BaseRules.get_user_or_fail(self._user_r, user_id)
+        res = await self._res_r.get_by_user(user_id)
+        return res
