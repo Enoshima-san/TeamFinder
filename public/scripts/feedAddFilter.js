@@ -262,8 +262,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // Объект с данными
     const data = {
       type: "team",
+<<<<<<< HEAD
       game_id: gameIds,
       has_microphone: mic,
+=======
+      game_id: gameId,
+      has_microphone: ["Обязательно", "1", 1, true].includes(mic),
+>>>>>>> dev-fix-data
       rank_min: parseInt(ageFrom) || 0,
       rank_max: parseInt(ageTo) || 99,
       description: description,
