@@ -34,6 +34,9 @@ document.addEventListener("DOMContentLoaded", function () {
   logOutBtn.addEventListener("click", () => {
     // Удаление токена пользователя из текущей сессии
     sessionStorage.removeItem("token");
+    sessionStorage.removeItem("filterTags");
+    sessionStorage.removeItem("respondedPosts");
+    sessionStorage.removeItem("respondedMyPosts");
     window.location.assign("login.html");
   });
 
@@ -225,8 +228,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Включение кнопок игр при нажатии
   chips.forEach((chip) => {
     chip.addEventListener("click", () => {
-      chips.forEach((c) => c.classList.remove("active"));
-      chip.classList.add("active");
+      chip.classList.toggle("active");
     });
   });
 
@@ -234,8 +236,10 @@ document.addEventListener("DOMContentLoaded", function () {
   publishBtn?.addEventListener("click", async () => {
     // сборка данных
     const description = document.querySelector("textarea").value;
-    const activeChip = document.querySelector(".chip.active");
-    const gameId = activeChip ? activeChip.getAttribute("data-id") : null;
+    const activeChips = document.querySelectorAll(".chip.active");
+    const gameIds = Array.from(activeChips).map(chip => 
+        chip.getAttribute("data-id")
+    );
 
     const dropDownMic = document.getElementById("micSelect");
     const selectedOptionMic = dropDownMic.options[dropDownMic.selectedIndex];
@@ -258,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Объект с данными
     const data = {
       type: "team",
-      game_id: gameId,
+      game_id: gameIds,
       has_microphone: mic,
       rank_min: parseInt(ageFrom) || 0,
       rank_max: parseInt(ageTo) || 99,

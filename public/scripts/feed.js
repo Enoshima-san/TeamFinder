@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const chatsPage = document.getElementById("chats-page");
   const profilePage = document.getElementById("profile-page");
   const hiddEditBtn = document.getElementById("hiddenEdit");
+  const clearBtn = document.getElementById("clearBtn");
 
   // Ссылка на страницу фильтра
   filterBtn.addEventListener("click", () => {
@@ -50,12 +51,20 @@ document.addEventListener("DOMContentLoaded", function () {
   logOutBtn.addEventListener("click", () => {
     // Удаление токена пользователя из текущей сессии
     sessionStorage.removeItem("token");
+    sessionStorage.removeItem("filterTags");
+    sessionStorage.removeItem("respondedPosts");
+    sessionStorage.removeItem("respondedMyPosts");
     window.location.assign("login.html");
   });
 
   // Ссылка на страницу настроек
   hiddEditBtn.addEventListener("click", () => {
     window.location.assign("settings.html");
+  });
+
+  clearBtn.addEventListener("click", () => {
+    sessionStorage.removeItem("filterTags");
+    window.location.assign("feed.html");
   });
 
   // Функция удаления всех подузлов указанного узла
