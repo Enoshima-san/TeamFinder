@@ -176,7 +176,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const username = data.user.username;
     const gameName = data.game.game_name;
-    const micStatus = data.user.has_microphone ? "Есть" : "Нет";
+    const micStatus = data.has_microphone ? "Есть" : "Нет";
+    console.log(data);
+    console.log(data.has_microphone);
 
     card.innerHTML = `
         <div class="card-header">

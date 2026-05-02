@@ -14,6 +14,7 @@ class Announcement:
     user_id: UUID
     game_id: UUID
     type: str
+    has_microphone: bool = False
     rank_min: Optional[int] = None
     rank_max: Optional[int] = None
     description: Optional[str] = None
@@ -72,6 +73,7 @@ class Announcement:
         self,
         announcement_id: UUID,
         type: Optional[str] = None,
+        has_microphone: bool = False,
         description: Optional[str] = None,
         rank_min: Optional[int] = None,
         rank_max: Optional[int] = None,
@@ -87,6 +89,7 @@ class Announcement:
         self.rank_min = rank_min
         self.rank_max = rank_max
         self.status = status if status is not None else self.status
+        self.has_microphone = has_microphone
         self.updated_at = datetime.now()
 
     @staticmethod
@@ -94,6 +97,7 @@ class Announcement:
         user_id: UUID,
         game_id: UUID,
         type: str,
+        has_microphone: bool = False,
         rank_min: Optional[int] = None,
         rank_max: Optional[int] = None,
         description: Optional[str] = None,
@@ -116,6 +120,7 @@ class Announcement:
             user_id=user_id,
             game_id=game_id,
             type=type,
+            has_microphone=has_microphone,
             rank_min=rank_min,
             rank_max=rank_max,
             description=description,
