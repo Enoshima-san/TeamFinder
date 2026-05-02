@@ -10,8 +10,6 @@ from teamup.domain import Announcement, Conversation, Game, Message, Response, U
 class UserBriefDto(BaseModel):
     user_id: UUID
     username: str
-    has_microphone: bool
-    age: Optional[int]
     about_me: Optional[str]
     is_blocked: bool
     blocked_reason: Optional[str]
@@ -21,8 +19,6 @@ class UserBriefDto(BaseModel):
         return UserBriefDto(
             user_id=user.user_id,
             username=user.username,
-            has_microphone=user.has_microphone,
-            age=user.age,
             about_me=user.about_me,
             is_blocked=user.is_blocked,
             blocked_reason=user.blocked_reason,

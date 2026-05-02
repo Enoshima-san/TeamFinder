@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy import UUID, DateTime, ForeignKey, Integer, String
+from sqlalchemy import UUID, Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -21,6 +21,7 @@ class AnnouncementORM(Base):
         UUID(as_uuid=True), ForeignKey("game.game_id"), nullable=False
     )
     type: Mapped[str] = mapped_column(String(100), nullable=False)
+    has_microphone: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)  # noqa: F821
     rank_min: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     rank_max: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     description: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)

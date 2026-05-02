@@ -46,6 +46,7 @@ class AnnouncementSummaryOut(BaseModel):
     user_id: UUID
     type: str
     description: Optional[str]
+    has_microphone: bool
     rank_min: Optional[int]
     rank_max: Optional[int]
     status: str
@@ -63,6 +64,7 @@ class AnnouncementSummaryOut(BaseModel):
             user_id=user.user_id,
             type=announcement.type,
             description=announcement.description,
+            has_microphone=announcement.has_microphone,
             rank_min=announcement.rank_min,
             rank_max=announcement.rank_max,
             status=announcement.status,

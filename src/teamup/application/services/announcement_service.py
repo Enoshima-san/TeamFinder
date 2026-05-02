@@ -73,6 +73,7 @@ class AnnouncementService:
             user_id=user_id,
             game_id=req.game_id,
             description=req.description,
+            has_microphone=req.has_microphone,
             rank_min=req.rank_min,
             rank_max=req.rank_max,
         )
