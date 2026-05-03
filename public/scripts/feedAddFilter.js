@@ -237,8 +237,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // сборка данных
     const description = document.querySelector("textarea").value;
     const activeChips = document.querySelectorAll(".chip.active");
-    const gameIds = Array.from(activeChips).map(chip => 
-        chip.getAttribute("data-id")
+    const gameIds = Array.from(activeChips).map((chip) =>
+      chip.getAttribute("data-id"),
     );
 
     const dropDownMic = document.getElementById("micSelect");
@@ -262,13 +262,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Объект с данными
     const data = {
       type: "team",
-<<<<<<< HEAD
       game_id: gameIds,
       has_microphone: mic,
-=======
-      game_id: gameId,
       has_microphone: ["Обязательно", "1", 1, true].includes(mic),
->>>>>>> dev-fix-data
       rank_min: parseInt(ageFrom) || 0,
       rank_max: parseInt(ageTo) || 99,
       description: description,
