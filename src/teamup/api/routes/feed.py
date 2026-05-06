@@ -49,9 +49,12 @@ async def create_announcement(
 ):
     announcement = await ann_s.create_announcement(req, token_data.user_id)
     user = await gu_uc(token_data.user_id)
-    game = await game_s.get_game_by_id(req.game_id)
 
-    res = AnnouncementSummaryOut.create(announcement, user, game)
+    games = []
+    for game_id in req.game_ids:
+        games.append(await game_s.get_game_by_id(game_id))
+
+    res = AnnouncementSummaryOut.create(announcement, user, games)
     logger.info(
         f"Объявление {announcement.announcement_id} успешно создано пользователем {user.user_id}."
     )

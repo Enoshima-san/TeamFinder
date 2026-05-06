@@ -62,16 +62,13 @@ class AnnouncementService:
             raise InvalidRankRangeError("Некорректные значения требуемых рангов")
 
         await BaseRules.get_user_or_fail(self._user_r, user_id)
-        await BaseRules.get_game_or_fail(self._game_r, req.game_id)
-
-        logger.info(
-            f"Пользователь {user_id} создаёт объявление для игры {req.game_id}."
-        )
+        for g in req.game_ids:
+            await BaseRules.get_game_or_fail(self._game_r, g)
 
         new_announcement = Announcement.create(
             type=req.type,
             user_id=user_id,
-            game_id=req.game_id,
+            game_ids=req.game_ids,
             description=req.description,
             has_microphone=req.has_microphone,
             rank_min=req.rank_min,
@@ -124,8 +121,12 @@ class AnnouncementService:
 
         res = AnnouncementSummaryOut.create(*row)
 
-        if res.game is None:
-            raise GameNotFoundError(f"Игра с названием {res.game.game_name} не найдена")
+        if not res.games:
+            raise GameNotFoundError("Игра не указана в анонсе")
+
+        for g in res.games:
+            if g is None:
+                raise GameNotFoundError(f"Игра с названием {g.game_name} не найдена")
 
         logger.info(
             f"Объявление {announcement_id} получено пользователем {res.user.username}."
