@@ -3,6 +3,8 @@ from uuid import uuid4
 from sqlalchemy import UUID, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from .announcement import AnnouncementORM
+from .announcement_games import AnnouncementGamesORM
 from .base import Base
 
 
@@ -21,11 +23,13 @@ class GameORM(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-    announcement = relationship(
+    announcements: Mapped[list["AnnouncementORM"]] = relationship(
         "AnnouncementORM",
-        back_populates="game",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
+        secondary=AnnouncementGamesORM.__table__,
+        back_populates="games",
+    )
+    announcement_games_link = relationship(
+        "AnnouncementGamesORM", back_populates="game"
     )
     rank = relationship(
         "RankORM",

@@ -5,6 +5,7 @@ from uuid import uuid4
 from sqlalchemy import UUID, Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from .announcement_games import AnnouncementGamesORM
 from .base import Base
 
 
@@ -16,9 +17,6 @@ class AnnouncementORM(Base):
     )
     user_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("user.user_id"), nullable=False
-    )
-    game_id: Mapped[Optional[UUID]] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("game.game_id"), nullable=False
     )
     type: Mapped[str] = mapped_column(String(100), nullable=False)
     has_microphone: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)  # noqa: F821
@@ -34,7 +32,18 @@ class AnnouncementORM(Base):
     )
 
     user = relationship("UserORM", back_populates="announcement")
-    game = relationship("GameORM", back_populates="announcement")
+    games = relationship(
+        "GameORM",
+        secondary=AnnouncementGamesORM.__table__,
+        back_populates="announcements",
+        lazy="selectin",
+        cascade="all, delete",
+    )
+    announcement_games_link = relationship(
+        "AnnouncementGamesORM",
+        back_populates="announcement",
+        cascade="all, delete-orphan",
+    )
     response = relationship(
         "ResponseORM",
         back_populates="announcement",

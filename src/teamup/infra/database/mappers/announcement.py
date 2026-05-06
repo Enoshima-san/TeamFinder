@@ -3,7 +3,7 @@ from uuid import UUID
 
 from teamup.domain import Announcement
 
-from ..models import AnnouncementORM
+from ..models import AnnouncementORM, GameORM
 from ._map_relation import _map_relation
 from .complaints import ComplaintsMapper
 from .conversation import ConversationMapper
@@ -25,7 +25,7 @@ class AnnouncementMapper:
         return Announcement(
             announcement_id=cast(UUID, orm.announcement_id),
             user_id=cast(UUID, orm.user_id),
-            game_id=cast(UUID, orm.game_id),
+            game_ids=[g.game_id for g in orm.games],
             type=orm.type,
             has_microphone=orm.has_microphone,
             rank_min=orm.rank_min,
@@ -41,14 +41,15 @@ class AnnouncementMapper:
         )
 
     @staticmethod
-    def to_orm(entity: Optional[Announcement]) -> AnnouncementORM:
+    def to_orm(
+        entity: Optional[Announcement], games_orm: Optional[list["GameORM"]] = None
+    ) -> AnnouncementORM:
         if not entity:
             raise ValueError("Entity is None")
 
-        return AnnouncementORM(
+        orm = AnnouncementORM(
             announcement_id=entity.announcement_id,
             user_id=entity.user_id,
-            game_id=entity.game_id,
             type=entity.type,
             has_microphone=entity.has_microphone,
             rank_min=entity.rank_min,
@@ -58,3 +59,6 @@ class AnnouncementMapper:
             created_at=entity.created_at,
             updated_at=entity.updated_at,
         )
+        if games_orm:
+            orm.games = games_orm
+        return orm

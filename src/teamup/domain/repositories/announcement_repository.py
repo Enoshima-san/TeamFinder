@@ -62,7 +62,7 @@ class IAnnouncementRepository(BaseRepository):
     @abstractmethod
     async def get_by_id_with_relations(
         self, announcement_id: UUID
-    ) -> Optional[tuple[Announcement, User, Game]]:
+    ) -> Optional[tuple[Announcement, User, list[Game]]]:
         """
         Возвращает анонс по его id с его отношениями.
 
@@ -84,7 +84,7 @@ class IAnnouncementRepository(BaseRepository):
     @abstractmethod
     async def get_all_active_with_relations(
         self,
-    ) -> list[tuple[Announcement, User, Game]]:
+    ) -> list[tuple[Announcement, User, list[Game]]]:
         """
         Возвращает все активные анонсы с связанными пользователями и играми.
 

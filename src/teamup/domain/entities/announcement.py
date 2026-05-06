@@ -12,7 +12,7 @@ from .response import Response
 @dataclass
 class Announcement:
     user_id: UUID
-    game_id: UUID
+    game_ids: list[UUID]
     type: str
     has_microphone: bool = False
     rank_min: Optional[int] = None
@@ -95,7 +95,7 @@ class Announcement:
     @staticmethod
     def create(
         user_id: UUID,
-        game_id: UUID,
+        game_ids: list[UUID],
         type: str,
         has_microphone: bool = False,
         rank_min: Optional[int] = None,
@@ -118,7 +118,7 @@ class Announcement:
 
         return Announcement(
             user_id=user_id,
-            game_id=game_id,
+            game_ids=game_ids,
             type=type,
             has_microphone=has_microphone,
             rank_min=rank_min,
