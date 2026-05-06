@@ -33,7 +33,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Выход из аккаунта
   logOutBtn.addEventListener("click", () => {
     // Удаление токена пользователя из текущей сессии
-    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("access");
+    sessionStorage.removeItem("refresh");
     sessionStorage.removeItem("filterTags");
     sessionStorage.removeItem("respondedPosts");
     sessionStorage.removeItem("respondedMyPosts");
@@ -144,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function apiRequest(url, options = {}) {
     if (!options._retry) {
-      const token = sessionStorage.getItem("token");
+      const token = sessionStorage.getItem("access");
       if (token) {
         options.headers = {
           ...options.headers,
@@ -158,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (response.status === 401 && !options._retry) {
         options._retry = true;
 
-        const refreshToken = sessionStorage.getItem("refresh_token");
+        const refreshToken = sessionStorage.getItem("refresh");
         if (refreshToken) {
           const refreshResponse = await fetch(
             "http://localhost:8000/auth/refresh",
@@ -173,9 +174,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const { access_token, refresh_token } =
               await refreshResponse.json();
 
-            sessionStorage.setItem("token", access_token);
+            sessionStorage.setItem("access", access_token);
             if (refresh_token) {
-              sessionStorage.setItem("refresh_token", refresh_token);
+              sessionStorage.setItem("refresh", refresh_token);
             }
 
             options.headers = {
@@ -184,8 +185,8 @@ document.addEventListener("DOMContentLoaded", function () {
             };
             return await fetch(url, options);
           } else {
-            sessionStorage.removeItem("token");
-            sessionStorage.removeItem("refresh_token");
+            sessionStorage.removeItem("access");
+            sessionStorage.removeItem("refresh");
             window.location.href = "/login";
             throw new Error("Session expired");
           }
@@ -204,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Функция для запросов с методом GET с токеном авторизации
   async function apiRequestPost(url, options = {}, data) {
-    const token = sessionStorage.getItem("token");
+    const token = sessionStorage.getItem("access");
     console.log(token);
     if (token)
       options.headers = {
@@ -262,7 +263,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Объект с данными
     const data = {
       type: "team",
-      game_id: gameIds,
+      game_ids: gameIds,
       has_microphone: mic,
       has_microphone: ["Обязательно", "1", 1, true].includes(mic),
       rank_min: parseInt(ageFrom) || 0,
