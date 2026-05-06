@@ -17,7 +17,9 @@ class UserORM(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
     username: Mapped[str] = mapped_column(String(15), unique=True, nullable=False)
-    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=False, index=True
+    )
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     registration_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     last_login: Mapped[datetime] = mapped_column(
