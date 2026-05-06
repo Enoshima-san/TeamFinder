@@ -11,7 +11,7 @@ from .brief_dto import GameBriefDto, UserBriefDto
 
 class AnnouncementCreateIn(BaseModel):
     type: str = "team"
-    game_id: UUID
+    game_ids: list[UUID]
     description: Optional[str] = None
     has_microphone: bool = False
     rank_min: Optional[int] = None
@@ -53,11 +53,11 @@ class AnnouncementSummaryOut(BaseModel):
     updated_at: datetime
 
     user: UserBriefDto
-    game: GameBriefDto
+    games: list[GameBriefDto]
 
     @staticmethod
     def create(
-        announcement: Announcement, user: User, game: Game
+        announcement: Announcement, user: User, games: list[Game]
     ) -> "AnnouncementSummaryOut":
         return AnnouncementSummaryOut(
             announcement_id=announcement.announcement_id,
@@ -70,7 +70,7 @@ class AnnouncementSummaryOut(BaseModel):
             status=announcement.status,
             updated_at=announcement.updated_at,
             user=UserBriefDto.from_user(user),
-            game=GameBriefDto.from_game(game),
+            games=[GameBriefDto.from_game(g) for g in games],
         )
 
     def update(self, u_ann: "AnnouncementUpdateIn"):
