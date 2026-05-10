@@ -5,7 +5,7 @@
 ```bash
 git clone https://github.com/Enoshima-san/TeamUP.git
 # Обновления данных при выпуске новых версий проекта
-git pull https://github.com/Enoshima-san/TeamUP.git main
+git pull https://github.com/Enoshima-san/TeamUP.git master
 ```
 
 ## База данных
