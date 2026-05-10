@@ -42,6 +42,9 @@ document.addEventListener("DOMContentLoaded", function () {
     logOutBtn.addEventListener("click", () => {
         // Удаление токена пользователя из текущей сессии
         sessionStorage.removeItem('token');
+        sessionStorage.removeItem("filterTags");
+        sessionStorage.removeItem("respondedPosts");
+        sessionStorage.removeItem("respondedMyPosts");
         window.location.assign("login.html");
     });
 

@@ -417,6 +417,11 @@ select {
     cursor: pointer;
 }
 
+.right-group {
+    display: flex; 
+    gap: 10px;
+}
+
 /* Страница откликов */
 
 .tabsResp {
