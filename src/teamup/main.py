@@ -70,7 +70,7 @@ app.add_middleware(
 async def info():
     return {
         "head": "TeamUP",
-        "message": "find ur femboy",
+        "message": "find a team",
         "docs": "http://localhost:8000/docs",
     }
 
